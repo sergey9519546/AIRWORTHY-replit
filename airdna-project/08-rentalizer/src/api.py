@@ -181,6 +181,19 @@ async def property_report(request: Request):
     return templates.TemplateResponse(request=request, name="property.html")
 
 
+@app.get("/compare", response_class=HTMLResponse)
+async def compare_page(request: Request):
+    """Serve the property comparison screen.
+
+    Initial property facts (address, bedrooms, bathrooms, accommodates,
+    nightly_rate) arrive as query params from the homepage's or property
+    report's "Compare" action — the page itself is static; the initial
+    property plus any manually-added or saved properties are estimated
+    client-side against /v1/estimate, one request per property.
+    """
+    return templates.TemplateResponse(request=request, name="compare.html")
+
+
 @app.get("/api/cities")
 async def cities(state: str | None = None):
     """Return available cities with counts and bounding boxes."""
