@@ -5,6 +5,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class Settings:
     MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN", "")
+    REALIE_API_KEY = os.getenv("REALIE_API_KEY", "")
+    REALIE_BASE_URL = "https://app.realie.ai/api"
+    REALIE_TIMEOUT = 6  # seconds — parcel enrichment must never stall the estimate
     MODEL_PATH = os.path.join(BASE_DIR, "models", "revenue_model.pkl")
     META_PATH = os.path.join(BASE_DIR, "models", "meta.json")
     FEATURES_PATH = os.path.join(BASE_DIR, "models", "features.json")

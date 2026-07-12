@@ -60,6 +60,31 @@ class MarketResponse(BaseModel):
     occupancy_rate: float = 0.0
 
 
+class ParcelResponse(BaseModel):
+    """Real assessor/parcel record from Realie, alongside the modeled revenue
+    estimate. All fields are optional/nullable — public records coverage
+    varies by county, and this enrichment never blocks the estimate."""
+    parcel_id: str | None = None
+    year_built: int | None = None
+    lot_acres: float | None = None
+    building_area_sqft: float | None = None
+    bedrooms: int | None = None
+    bathrooms: float | None = None
+    stories: float | None = None
+    has_garage: bool | None = None
+    has_pool: bool | None = None
+    construction_type: str | None = None
+    roof_type: str | None = None
+    owner_name: str | None = None
+    assessed_market_value: float | None = None
+    avm_value: float | None = None
+    avm_value_low: float | None = None
+    avm_value_high: float | None = None
+    last_sale_price: float | None = None
+    last_sale_date: str | None = None
+    source: str = "realie"
+
+
 class EstimateResponse(BaseModel):
     address: str
     lat: float
@@ -70,6 +95,7 @@ class EstimateResponse(BaseModel):
     market: MarketResponse
     monthly_forecast: list[MonthlyForecastResponse] = Field(default_factory=list)
     performance_drivers: list[PerformanceDriverResponse] = Field(default_factory=list)
+    parcel: ParcelResponse | None = None
     disclaimer: str
     data_source: str
     model_version: str

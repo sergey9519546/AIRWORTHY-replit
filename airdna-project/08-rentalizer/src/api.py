@@ -17,7 +17,7 @@ from slowapi.util import get_remote_address
 from .config import settings
 from .schemas import (
     EstimateRequest, EstimateResponse, ErrorResponse,
-    ConfidenceResponse, CompResponse, MarketResponse,
+    ConfidenceResponse, CompResponse, MarketResponse, ParcelResponse,
     HealthResponse, ModelInfoResponse, CreditsResponse,
 )
 from .exceptions import (
@@ -26,6 +26,7 @@ from .exceptions import (
 )
 from .validation import validate_input, in_nyc_bounds
 from .geocoder import geocode
+from .realie_client import get_parcel
 from .comp_finder import build_index, find_comps, predict_from_comps, get_market_stats
 from .market_estimator import estimate_from_db, covered_markets
 from .features import build_features, get_borough_from_coords
@@ -313,14 +314,26 @@ async def _do_estimate(req: EstimateRequest) -> EstimateResponse:
     geo = geocode(req.address)
     geocode_ms = int((time.time() - t0) * 1000)
 
+    # 2b. Real parcel/assessor enrichment (Realie). Optional and fail-open:
+    #     never blocks or fails the estimate if unconfigured or unavailable.
+    try:
+        parcel = get_parcel(geo.lat, geo.lng)
+    except Exception as e:
+        logger.warning(f"[{request_id}] parcel enrichment failed: {e}")
+        parcel = None
+
     # 3. Route by coverage: NYC uses the trained ML model; every other market
     #    is served by the comp-based estimate over the shared listings DB.
     if in_nyc_bounds(geo.lat, geo.lng):
-        return _estimate_nyc_ml(req, geo, request_id, start, geocode_ms)
-    return _estimate_from_market(req, geo, request_id, start, geocode_ms)
+        return _estimate_nyc_ml(req, geo, request_id, start, geocode_ms, parcel)
+    return _estimate_from_market(req, geo, request_id, start, geocode_ms, parcel)
 
 
-def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, geocode_ms: int) -> EstimateResponse:
+def _parcel_response(parcel) -> ParcelResponse | None:
+    return ParcelResponse(**vars(parcel)) if parcel else None
+
+
+def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, geocode_ms: int, parcel=None) -> EstimateResponse:
     """NYC estimate using the trained LightGBM model + NYC comp index."""
     # 4. Find comps
     t0 = time.time()
@@ -456,6 +469,7 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
         ),
         monthly_forecast=monthly_forecast(annual_revenue, confidence.cv),
         performance_drivers=drivers,
+        parcel=_parcel_response(parcel),
         disclaimer=settings.DISCLAIMER,
         data_source=settings.DATA_SOURCE,
         model_version=get_model_info().get("version", settings.VERSION),
@@ -463,7 +477,7 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
     )
 
 
-def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: float, geocode_ms: int) -> EstimateResponse:
+def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: float, geocode_ms: int, parcel=None) -> EstimateResponse:
     """Comp-based estimate for any market present in the listings DB.
 
     Raises OutsideCoverageError (with a data-driven message) when there aren't
@@ -509,6 +523,7 @@ def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: flo
         market=MarketResponse(**result["market"]),
         monthly_forecast=result.get("monthly_forecast", []),
         performance_drivers=result.get("performance_drivers", []),
+        parcel=_parcel_response(parcel),
         disclaimer=settings.DISCLAIMER,
         data_source=settings.DATA_SOURCE,
         model_version="comps-1.0",

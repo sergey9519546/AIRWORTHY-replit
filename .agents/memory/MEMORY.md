@@ -4,3 +4,4 @@
 - [Rentalizer homepage entry-flow pattern](rentalizer-homepage-entry.md) — reuse AirworthyEnvelope/AirworthySaved shared modules; homepage links to /property, /compare with address/bedrooms/bathrooms/accommodates/nightly_rate params
 - [Rentalizer market map layers](rentalizer-map-layers.md) — ADR/occupancy/density derived client-side from existing /api/listings fields; comp-based revenue range formula for the inspection panel
 - [Rentalizer seasonal demand curves](rentalizer-seasonal-demand.md) — empty calendar/reviews tables; real Demand layer = per-listing 12-month booked-share precomputed from InsideAirbnb calendars into listings.demand_curve
+- [Rentalizer Realie parcel enrichment](rentalizer-realie-integration.md) — /v1/estimate.parcel via Realie location-search; needs ≥0.1mi radius (smaller silently 404s), results unsorted so client picks nearest by haversine
