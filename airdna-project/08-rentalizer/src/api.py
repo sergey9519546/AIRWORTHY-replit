@@ -32,7 +32,10 @@ from .market_estimator import estimate_from_db, covered_markets
 from .features import build_features, get_borough_from_coords
 from .model import load_model, predict, get_model_info, get_feature_columns
 from .confidence import compute_confidence
-from .enrichment import estimate_adr_occupancy, monthly_forecast, performance_drivers, confidence_reasons
+from .enrichment import (
+    estimate_adr_occupancy, monthly_forecast, performance_drivers, confidence_reasons,
+    amenity_multiplier, amenity_drivers,
+)
 
 import pandas as pd
 
@@ -164,6 +167,18 @@ async def home(request: Request):
 async def map_page(request: Request):
     """Serve the map explorer."""
     return templates.TemplateResponse(request=request, name="map.html")
+
+
+@app.get("/property", response_class=HTMLResponse)
+async def property_report(request: Request):
+    """Serve the property earnings report.
+
+    Property facts (address, bedrooms, bathrooms, accommodates, nightly_rate)
+    arrive as query params from the homepage's "View complete estimate" link
+    or the map's "Open estimate" link — the page itself is static; all data
+    fetching/rendering happens client-side against /v1/estimate.
+    """
+    return templates.TemplateResponse(request=request, name="property.html")
 
 
 @app.get("/api/cities")
@@ -396,6 +411,12 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
 
     annual_revenue = float(np.expm1(final_log_revenue))
 
+    # 9b. Apply property-facts amenity adjustment (facts editor) — a modest,
+    # disclosed uplift, applied after the model/comp blend so drivers below
+    # can report its dollar impact against the pre-amenity figure.
+    pre_amenity_revenue = annual_revenue
+    annual_revenue = annual_revenue * amenity_multiplier(req.amenities)
+
     # 10. Confidence
     comp_revenues = [c.revenue for c in comps]
     confidence = compute_confidence(annual_revenue, comp_revenues, len(comps))
@@ -420,6 +441,7 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
         is_superhost=req.is_superhost,
         avg_distance_km=avg_distance_km,
     )
+    drivers = drivers + amenity_drivers(req.amenities, pre_amenity_revenue)
     reasons, weaknesses = confidence_reasons(
         n_comps=len(comps),
         avg_distance_km=avg_distance_km,
@@ -494,6 +516,7 @@ def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: flo
             nightly_rate=req.nightly_rate,
             is_superhost=req.is_superhost,
             exclude_ids=set(req.exclude_comp_ids) if req.exclude_comp_ids else None,
+            amenities=req.amenities,
         )
         markets = covered_markets(conn)
     finally:

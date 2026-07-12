@@ -60,6 +60,48 @@ def monthly_forecast(annual_revenue: float, cv: float) -> list[dict]:
     return out
 
 
+
+# Amenity toggles the property-facts editor exposes. Each carries a modest,
+# disclosed percentage uplift applied to the annual revenue estimate — a
+# rough directional adjustment (like the other rule-based drivers below),
+# not a learned/precise amenity attribution.
+AMENITIES = {
+    "pool": {"label": "Private pool", "impact_pct": 0.06},
+    "hot_tub": {"label": "Hot tub / spa", "impact_pct": 0.04},
+    "parking": {"label": "Free on-site parking", "impact_pct": 0.02},
+    "ev_charger": {"label": "EV charger", "impact_pct": 0.015},
+    "gym": {"label": "Home gym / fitness equipment", "impact_pct": 0.02},
+    "pet_friendly": {"label": "Pet-friendly", "impact_pct": 0.015},
+    "workspace": {"label": "Dedicated workspace", "impact_pct": 0.01},
+}
+
+
+def amenity_multiplier(amenities: list[str] | None) -> float:
+    """Combined revenue multiplier from the selected amenity toggles."""
+    if not amenities:
+        return 1.0
+    total_pct = sum(AMENITIES[a]["impact_pct"] for a in amenities if a in AMENITIES)
+    return 1.0 + total_pct
+
+
+def amenity_drivers(amenities: list[str] | None, base_revenue: float) -> list[dict]:
+    """Performance-driver entries for the selected amenities, dollar impact
+    computed against the pre-amenity revenue so it reflects this change only."""
+    if not amenities:
+        return []
+    out = []
+    for key in amenities:
+        info = AMENITIES.get(key)
+        if not info:
+            continue
+        out.append({
+            "label": f"{info['label']} adds to guest appeal",
+            "direction": "positive",
+            "impact_dollars": round(base_revenue * info["impact_pct"], 0),
+        })
+    return out
+
+
 def performance_drivers(
     nightly_rate: float,
     bedrooms: int,

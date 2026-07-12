@@ -10,7 +10,10 @@ import math
 from collections import Counter
 from statistics import median
 
-from .enrichment import estimate_adr_occupancy, monthly_forecast, performance_drivers, confidence_reasons
+from .enrichment import (
+    estimate_adr_occupancy, monthly_forecast, performance_drivers, confidence_reasons,
+    amenity_multiplier, amenity_drivers,
+)
 
 MIN_COMPS = 5           # fewer than this within MAX_RADIUS_KM => no coverage
 TARGET_COMPS = 25       # cap on comps used for the point estimate
@@ -52,7 +55,7 @@ def covered_markets(conn):
 
 
 def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire home/apt",
-                      nightly_rate=None, is_superhost=False, exclude_ids=None):
+                      nightly_rate=None, is_superhost=False, exclude_ids=None, amenities=None):
     """Return a comp-based estimate dict, or None if there's no local coverage.
 
     The returned dict mirrors the fields the API response needs (annual_revenue,
@@ -129,7 +132,10 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
 
     # Similarity-weighted point estimate.
     wsum = sum(s["score"] for s in used) or 1.0
-    point = sum(s["score"] * s["rev"] for s in used) / wsum
+    pre_amenity_point = sum(s["score"] * s["rev"] for s in used) / wsum
+    # Property-facts amenity adjustment (facts editor) — modest, disclosed
+    # uplift applied after the comp-weighted point estimate.
+    point = pre_amenity_point * amenity_multiplier(amenities)
 
     # Data-driven interval from the comp revenue distribution (IQR).
     revs = sorted(s["rev"] for s in used)
@@ -221,6 +227,7 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
         is_superhost=is_superhost,
         avg_distance_km=avg_distance_km,
     )
+    drivers = drivers + amenity_drivers(amenities, pre_amenity_point)
     reasons, weaknesses = confidence_reasons(
         n_comps=n,
         avg_distance_km=avg_distance_km,

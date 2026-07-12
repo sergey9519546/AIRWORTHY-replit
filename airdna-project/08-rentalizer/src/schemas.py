@@ -15,6 +15,10 @@ class EstimateRequest(BaseModel):
     # IDs to drop from the comparable set before recomputing the estimate —
     # lets an "exclude this comp" UI action recompute without a new endpoint.
     exclude_comp_ids: list[int] = Field(default_factory=list)
+    # Amenity keys (see enrichment.AMENITIES) the property-facts editor can
+    # toggle — applies a small, disclosed rule-based revenue adjustment,
+    # consistent with the other heuristic performance drivers.
+    amenities: list[str] = Field(default_factory=list)
 
 
 class MonthlyForecastResponse(BaseModel):
