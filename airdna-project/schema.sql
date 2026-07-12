@@ -37,6 +37,7 @@ CREATE TABLE listings (
     room_type                   TEXT,
     accommodates                INTEGER,
     bedrooms                    REAL,
+    bathrooms                   REAL,
     beds                        REAL,
     price                       TEXT,
     price_numeric               REAL,

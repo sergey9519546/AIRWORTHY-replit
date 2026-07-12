@@ -282,7 +282,7 @@ async def listings(
         # Only show the latest snapshot per city to avoid duplicates when multiple snapshots exist.
         sql = """
             SELECT id, state, city, snapshot_date, name, room_type, bedrooms,
-                   accommodates, price_numeric, number_of_reviews,
+                   bathrooms, accommodates, price_numeric, number_of_reviews,
                    estimated_revenue_l365d, latitude, longitude, demand_curve
             FROM listings
             WHERE (state, city, snapshot_date) IN (

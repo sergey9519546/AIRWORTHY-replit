@@ -6,6 +6,7 @@ Supports multiple regions (states), cities, and snapshot dates.
 import csv
 import gzip
 import os
+import re
 import sqlite3
 import sys
 import urllib.request
@@ -130,6 +131,23 @@ def parse_float(val):
         return None
 
 
+def parse_bathrooms(text_val, num_val):
+    """Derive a numeric bathroom count.
+
+    InsideAirbnb's numeric `bathrooms` column is frequently blank, so we prefer
+    the leading number in the free-text `bathrooms_text` (e.g. "1.5 baths",
+    "1 shared bath", "Half-bath") and fall back to the numeric column.
+    """
+    if text_val:
+        t = text_val.strip().lower()
+        if t.startswith('half'):
+            return 0.5
+        m = re.match(r'\s*([0-9]+(?:\.[0-9]+)?)', t)
+        if m:
+            return float(m.group(1))
+    return parse_float(num_val)
+
+
 # Columns we extract from listings.csv (in order matching our schema)
 LISTINGS_COLUMNS = [
     'id', 'name', 'description', 'host_id', 'host_name', 'host_since',
@@ -173,7 +191,7 @@ def load_listings(conn, state, city, date):
     filepath = local_path(state, city, date, 'listings')
     print(f"Loading listings: {state}/{city}/{date} ...")
 
-    col_names = ['state', 'city', 'snapshot_date'] + LISTINGS_COLUMNS + ['price_numeric']
+    col_names = ['state', 'city', 'snapshot_date'] + LISTINGS_COLUMNS + ['price_numeric', 'bathrooms']
     placeholders = ', '.join(['?' for _ in col_names])
     insert_sql = f"INSERT INTO listings ({', '.join(col_names)}) VALUES ({placeholders})"
 
@@ -202,6 +220,13 @@ def load_listings(conn, state, city, date):
                 # Add parsed price
                 price_numeric = parse_price(row.get('price', ''))
                 values.append(price_numeric)
+
+                # Bathroom count. InsideAirbnb's numeric `bathrooms` column is
+                # frequently blank, so prefer the more-complete free-text
+                # `bathrooms_text` (e.g. "1.5 baths", "1 shared bath") and fall
+                # back to the numeric column.
+                values.append(parse_bathrooms(row.get('bathrooms_text', ''),
+                                              row.get('bathrooms', '')))
 
                 batch.append(values)
                 count += 1

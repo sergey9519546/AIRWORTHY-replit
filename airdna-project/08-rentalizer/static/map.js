@@ -237,13 +237,15 @@ async function loadListings() {
 // already-fetched bounding-box result. This keeps the API surface unchanged
 // while still exposing the filters the product brief calls for.
 function applyClientFilters(listings) {
-    const bedrooms = document.getElementById('bedrooms-filter').value;
-    const guests   = document.getElementById('guests-filter').value;
-    const minRev   = document.getElementById('min-revenue').value;
-    const maxRev   = document.getElementById('max-revenue').value;
+    const bedrooms  = document.getElementById('bedrooms-filter').value;
+    const bathrooms = document.getElementById('bathrooms-filter').value;
+    const guests    = document.getElementById('guests-filter').value;
+    const minRev    = document.getElementById('min-revenue').value;
+    const maxRev    = document.getElementById('max-revenue').value;
 
     return listings.filter(l => {
         if (bedrooms !== '' && (l.bedrooms || 0) < Number(bedrooms)) return false;
+        if (bathrooms !== '' && (l.bathrooms || 0) < Number(bathrooms)) return false;
         if (guests !== '' && (l.accommodates || 0) < Number(guests)) return false;
         if (minRev !== '' && (l.estimated_revenue_l365d || 0) < Number(minRev)) return false;
         if (maxRev !== '' && (l.estimated_revenue_l365d || 0) > Number(maxRev)) return false;
@@ -254,7 +256,7 @@ function applyClientFilters(listings) {
 // ─── Filter badge count ────────────────────────────────────────────────
 function updateFilterBadge() {
     const ids = ['state-filter', 'city-filter', 'room-filter', 'min-price', 'max-price',
-                 'bedrooms-filter', 'guests-filter', 'min-revenue', 'max-revenue'];
+                 'bedrooms-filter', 'bathrooms-filter', 'guests-filter', 'min-revenue', 'max-revenue'];
     let count = ids.filter(id => document.getElementById(id).value).length;
     if (document.getElementById('toggle-guest-fav').checked) count++;
     if (document.getElementById('toggle-instant').checked) count++;
@@ -756,7 +758,7 @@ document.getElementById('city-filter').addEventListener('change', () => {
     loadListings();
 });
 
-['min-price', 'max-price', 'bedrooms-filter', 'guests-filter', 'min-revenue', 'max-revenue'].forEach(id => {
+['min-price', 'max-price', 'bedrooms-filter', 'bathrooms-filter', 'guests-filter', 'min-revenue', 'max-revenue'].forEach(id => {
     document.getElementById(id).addEventListener('change', loadListings);
 });
 ['toggle-guest-fav', 'toggle-instant'].forEach(id => {
@@ -773,6 +775,7 @@ document.getElementById('reset-filters').addEventListener('click', () => {
     document.getElementById('min-price').value = '';
     document.getElementById('max-price').value = '';
     document.getElementById('bedrooms-filter').value = '';
+    document.getElementById('bathrooms-filter').value = '';
     document.getElementById('guests-filter').value = '';
     document.getElementById('min-revenue').value = '';
     document.getElementById('max-revenue').value = '';
