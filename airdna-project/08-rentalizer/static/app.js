@@ -1,4 +1,4 @@
-// Rentalizer Frontend — XSS-safe, Leaflet maps, request timeout
+// AIRWORTHY Frontend — XSS-safe, Leaflet maps, request timeout
 
 document.getElementById('estimate-form').addEventListener('submit', async (e) => {
     e.preventDefault();

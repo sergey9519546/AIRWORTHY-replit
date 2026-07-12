@@ -1,4 +1,4 @@
-# Rentalizer — Airbnb Revenue Estimator
+# AIRWORTHY — Airbnb Revenue Estimator
 
 Estimate annual short-term rental revenue for any NYC property.
 

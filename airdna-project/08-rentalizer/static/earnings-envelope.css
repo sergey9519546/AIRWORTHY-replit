@@ -1,0 +1,144 @@
+/* =========================================================================
+   AIRWORTHY — Earnings Envelope
+   A revenue-RANGE visualization, not a single falsely-precise number.
+   Renders a downside → likely-range → most-likely → upside field with a
+   confidence readout. Distinct from a generic progress bar: it is a banded
+   field with a marker, not a fill percentage.
+   See earnings-envelope.js for the render API.
+   ========================================================================= */
+
+.aw-envelope {
+    font-family: var(--aw-font-ui);
+    color: var(--aw-ink);
+}
+
+.aw-envelope-figure {
+    display: flex;
+    align-items: baseline;
+    gap: var(--aw-space-3);
+    margin-bottom: var(--aw-space-2);
+    flex-wrap: wrap;
+}
+.aw-envelope-figure-value {
+    font-family: var(--aw-font-display);
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+.aw-envelope-figure-label {
+    font-family: var(--aw-font-ui);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--aw-muted);
+}
+
+.aw-envelope-confidence {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: var(--aw-radius-pill);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-family: var(--aw-font-ui);
+}
+.aw-envelope-confidence::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+.aw-envelope-confidence.high   { background: var(--aw-lime-tint); color: var(--aw-lime-ink); }
+.aw-envelope-confidence.medium { background: #FFF6DE; color: #6B4E05; }
+.aw-envelope-confidence.low    { background: var(--aw-coral-tint); color: var(--aw-coral-ink); }
+
+/* The band itself: a horizontal field from downside to upside, with the
+   likely range highlighted and the most-likely value marked with a tick. */
+.aw-envelope-band-wrap {
+    margin: var(--aw-space-5) 0 var(--aw-space-2);
+}
+.aw-envelope-band {
+    position: relative;
+    height: 40px;
+    border-radius: var(--aw-radius-md);
+    background: linear-gradient(
+        90deg,
+        var(--aw-coral-tint) 0%,
+        var(--aw-coral-tint) var(--aw-downside-pct, 0%),
+        var(--aw-blue-tint) var(--aw-downside-pct, 0%),
+        var(--aw-blue-tint) var(--aw-upside-pct, 100%),
+        var(--aw-coral-tint) var(--aw-upside-pct, 100%),
+        var(--aw-coral-tint) 100%
+    );
+    border: 1px solid var(--aw-border);
+    overflow: visible;
+}
+.aw-envelope-likely-range {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: var(--aw-blue);
+    opacity: 0.16;
+    border-left: 1.5px dashed var(--aw-blue-ink);
+    border-right: 1.5px dashed var(--aw-blue-ink);
+}
+.aw-envelope-marker {
+    position: absolute;
+    top: -6px;
+    bottom: -6px;
+    width: 4px;
+    background: var(--aw-ink);
+    border-radius: 2px;
+    transform: translateX(-50%);
+}
+.aw-envelope-marker::after {
+    content: attr(data-label);
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--aw-ink);
+    white-space: nowrap;
+}
+
+.aw-envelope-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--aw-space-2);
+    font-family: var(--aw-font-mono);
+    font-size: 12px;
+    color: var(--aw-muted);
+}
+.aw-envelope-scale-mid {
+    color: var(--aw-blue-ink);
+    font-weight: 600;
+}
+
+.aw-envelope-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aw-space-4);
+    margin-top: var(--aw-space-4);
+    font-size: 12px;
+    color: var(--aw-muted);
+}
+.aw-envelope-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.aw-envelope-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+}

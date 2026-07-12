@@ -1,0 +1,65 @@
+/* =========================================================================
+   AIRWORTHY — shared design tokens
+   Bright, editorial, calm. Light paper background, near-black text, and
+   three accent colors tied to the Earnings Envelope: blue = forecast,
+   lime = confidence, coral = downside. No dark/glass/gradient chrome.
+   Every AIRWORTHY page includes this file first, then a page-specific sheet.
+   ========================================================================= */
+
+:root {
+    /* --- Palette --- */
+    --aw-bg: #F7F6F1;
+    --aw-paper: #FFFFFF;
+    --aw-ink: #14151A;
+    --aw-muted: #6B6E76;
+    --aw-border: #E4E1D6;
+    --aw-border-strong: #CFCBBB;
+
+    --aw-blue: #2A55FF;       /* forecast / primary action */
+    --aw-blue-ink: #16307A;
+    --aw-blue-tint: #EAEEFF;
+
+    --aw-lime: #C6F135;       /* confidence / positive signal */
+    --aw-lime-ink: #3B4A05;
+    --aw-lime-tint: #F3FBD9;
+
+    --aw-coral: #FF6350;      /* downside / caution */
+    --aw-coral-ink: #7A1F14;
+    --aw-coral-tint: #FFEBE7;
+
+    /* --- Typography --- */
+    --aw-font-ui: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --aw-font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --aw-font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+    /* --- Spacing scale --- */
+    --aw-space-1: 4px;
+    --aw-space-2: 8px;
+    --aw-space-3: 12px;
+    --aw-space-4: 16px;
+    --aw-space-5: 24px;
+    --aw-space-6: 32px;
+    --aw-space-7: 48px;
+    --aw-space-8: 64px;
+
+    /* --- Geometry --- */
+    --aw-radius-sm: 6px;
+    --aw-radius-md: 10px;
+    --aw-radius-lg: 16px;
+    --aw-radius-pill: 999px;
+
+    --aw-shadow-card: 0 1px 2px rgba(20,21,26,0.04), 0 8px 24px rgba(20,21,26,0.05);
+    --aw-shadow-card-hover: 0 2px 4px rgba(20,21,26,0.05), 0 12px 32px rgba(20,21,26,0.08);
+
+    /* --- Legacy aliases (kept during rebrand so existing rules keep working
+       until each stylesheet migrates to the --aw- tokens directly) --- */
+    --coral: var(--aw-blue);
+    --coral-dark: var(--aw-blue-ink);
+    --coral-light: var(--aw-blue-tint);
+    --font: var(--aw-font-ui);
+    --color-text: var(--aw-ink);
+    --color-muted: var(--aw-muted);
+    --color-border: var(--aw-border);
+    --color-bg: var(--aw-bg);
+    --color-card: var(--aw-paper);
+}

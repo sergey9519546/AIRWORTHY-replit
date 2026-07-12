@@ -10,6 +10,8 @@ import math
 from collections import Counter
 from statistics import median
 
+from .enrichment import estimate_adr_occupancy, monthly_forecast, performance_drivers, confidence_reasons
+
 MIN_COMPS = 5           # fewer than this within MAX_RADIUS_KM => no coverage
 TARGET_COMPS = 25       # cap on comps used for the point estimate
 MAX_RADIUS_KM = 30.0    # widest search ring
@@ -49,12 +51,16 @@ def covered_markets(conn):
     return [r[0].upper() for r in rows]
 
 
-def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire home/apt"):
+def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire home/apt",
+                      nightly_rate=None, is_superhost=False, exclude_ids=None):
     """Return a comp-based estimate dict, or None if there's no local coverage.
 
     The returned dict mirrors the fields the API response needs (annual_revenue,
-    confidence, comps, market, data_freshness, n_comps).
+    confidence, comps, market, data_freshness, n_comps). `exclude_ids` drops
+    specific comparable listing IDs before scoring, so callers can recompute
+    the estimate after a user excludes a comp — without a new endpoint.
     """
+    exclude_ids = set(exclude_ids or [])
     # Over-fetch a bounding box for the widest ring, then filter by true distance.
     dlat = MAX_RADIUS_KM / 111.0
     coslat = max(0.1, math.cos(math.radians(lat)))
@@ -62,7 +68,7 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
 
     rows = conn.execute(
         """
-        SELECT city, state, bedrooms, accommodates, price_numeric,
+        SELECT id, city, state, bedrooms, accommodates, price_numeric,
                estimated_revenue_l365d AS rev, latitude, longitude
         FROM listings
         WHERE (state, city, snapshot_date) IN (
@@ -81,6 +87,8 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
 
     cand = []
     for r in rows:
+        if exclude_ids and r["id"] in exclude_ids:
+            continue
         d = _haversine_km(lat, lng, r["latitude"], r["longitude"])
         if d <= MAX_RADIUS_KM:
             cand.append((d, r))
@@ -163,16 +171,63 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
         (state, city_slug),
     ).fetchone()[0]
 
-    comps_out = [
-        {
+    bed_matches = sum(
+        1 for s in used
+        if s["row"]["bedrooms"] is not None and int(s["row"]["bedrooms"]) == bedrooms
+    )
+    bedroom_match_ratio = bed_matches / n if n else 0.0
+    avg_distance_km = sum(s["dist"] for s in used) / n if n else 0.0
+
+    # Larger, ID-stable comparable list for an explorer UI — every comp
+    # carries a plain-language reason for inclusion and a note on how it
+    # differs from the subject property.
+    comps_out = []
+    for s in used[:20]:
+        row = s["row"]
+        comp_bedrooms = int(row["bedrooms"]) if row["bedrooms"] is not None else 0
+        bed_diff = comp_bedrooms - bedrooms
+        diff_bits = []
+        if bed_diff != 0:
+            diff_bits.append(f"{abs(bed_diff)} {'more' if bed_diff > 0 else 'fewer'} bedroom(s)")
+        if s["dist"] > 1:
+            diff_bits.append(f"{s['dist']:.1f} km away")
+        reason_bits = []
+        if bed_diff == 0:
+            reason_bits.append("same bedroom count")
+        if s["dist"] <= 2:
+            reason_bits.append("nearby")
+        if not reason_bits:
+            reason_bits.append("closest available match")
+
+        comps_out.append({
+            "id": int(row["id"]),
             "distance_km": round(s["dist"], 2),
-            "bedrooms": int(s["row"]["bedrooms"]) if s["row"]["bedrooms"] is not None else 0,
+            "bedrooms": comp_bedrooms,
             "revenue": round(s["rev"], 0),
             "similarity_score": round(s["score"], 4),
             "borough": city_label,
-        }
-        for s in used[:5]
-    ]
+            "price": float(row["price_numeric"]) if row["price_numeric"] is not None else None,
+            "reason_included": ", ".join(reason_bits),
+            "differences": ", ".join(diff_bits) if diff_bits else "closely matches this property",
+        })
+
+    nightly_rate_for_adr = nightly_rate if nightly_rate else median_price
+    adr, occupancy = estimate_adr_occupancy(point, nightly_rate_for_adr)
+    drivers = performance_drivers(
+        nightly_rate=nightly_rate_for_adr,
+        bedrooms=bedrooms,
+        median_price=median_price,
+        n_comps=n,
+        is_superhost=is_superhost,
+        avg_distance_km=avg_distance_km,
+    )
+    reasons, weaknesses = confidence_reasons(
+        n_comps=n,
+        avg_distance_km=avg_distance_km,
+        cv=cv,
+        data_freshness=freshness or "",
+        bedroom_match_ratio=bedroom_match_ratio,
+    )
 
     return {
         "annual_revenue": round(point, 0),
@@ -181,6 +236,8 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
             "revenue_lower": round(min(lower, point), 0),
             "revenue_upper": round(max(upper, point), 0),
             "cv": round(cv, 4),
+            "reasons": reasons,
+            "weaknesses": weaknesses,
         },
         "comps": comps_out,
         "market": {
@@ -188,7 +245,11 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
             "median_revenue": round(median(revs), 0),
             "median_price": round(median_price, 0),
             "active_listings": int(active),
+            "adr": adr,
+            "occupancy_rate": occupancy,
         },
+        "monthly_forecast": monthly_forecast(point, cv),
+        "performance_drivers": drivers,
         "data_freshness": freshness,
         "n_comps": n,
     }

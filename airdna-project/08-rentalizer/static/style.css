@@ -1,20 +1,13 @@
-/* ===== CORAL COAST — Shared Design System ===== */
+/* ===== AIRWORTHY — page-level styles =====
+   Palette, type, and spacing come from tokens.css (loaded before this
+   file). Only page-specific geometry lives here. */
 
 :root {
-    --coral: #FF385C;
-    --coral-dark: #e03151;
-    --coral-light: #fff0f2;
-    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 20px;
-    --shadow-card: 0 2px 12px rgba(0,0,0,0.07);
-    --shadow-card-hover: 0 4px 20px rgba(0,0,0,0.10);
-    --color-text: #111827;
-    --color-muted: #6b7280;
-    --color-border: #e5e7eb;
-    --color-bg: #f9fafb;
-    --color-card: #ffffff;
+    --radius-sm: var(--aw-radius-sm);
+    --radius-md: var(--aw-radius-md);
+    --radius-lg: var(--aw-radius-lg);
+    --shadow-card: var(--aw-shadow-card);
+    --shadow-card-hover: var(--aw-shadow-card-hover);
 }
 
 /* Reset */
@@ -40,27 +33,11 @@ body {
     text-align: center;
     margin-bottom: 40px;
 }
-.header-logo {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--coral);
-    margin-bottom: 8px;
-}
-.header-logo-icon {
-    width: 32px;
-    height: 32px;
-}
-.header-logo-text {
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--color-text);
-    letter-spacing: -0.5px;
-}
 .header-sub {
     font-size: 15px;
     color: var(--color-muted);
     margin-bottom: 14px;
+    margin-top: 8px;
 }
 .header-map-link {
     display: inline-flex;
@@ -68,16 +45,16 @@ body {
     gap: 6px;
     font-size: 14px;
     font-weight: 600;
-    color: var(--coral);
+    color: var(--aw-blue-ink);
     text-decoration: none;
     padding: 8px 16px;
     border-radius: 999px;
-    background: var(--coral-light);
-    border: 1px solid rgba(255,56,92,0.15);
+    background: var(--aw-blue-tint);
+    border: 1px solid rgba(42,85,255,0.15);
     transition: background 0.15s, transform 0.1s;
 }
 .header-map-link:hover {
-    background: rgba(255,56,92,0.12);
+    background: rgba(42,85,255,0.14);
     transform: translateY(-1px);
 }
 

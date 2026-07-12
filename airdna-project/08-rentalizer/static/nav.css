@@ -1,0 +1,74 @@
+/* AIRWORTHY shared navigation bar — pairs with templates/_nav.html */
+
+.aw-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--aw-space-4) var(--aw-space-5);
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+.aw-nav-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--aw-space-2);
+    text-decoration: none;
+    color: var(--aw-ink);
+}
+.aw-nav-mark-icon {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+}
+.aw-nav-wordmark {
+    font-family: var(--aw-font-display);
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--aw-ink);
+}
+
+.aw-nav-links {
+    display: flex;
+    align-items: center;
+    gap: var(--aw-space-2);
+}
+.aw-nav-link {
+    font-family: var(--aw-font-ui);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--aw-muted);
+    text-decoration: none;
+    padding: var(--aw-space-2) var(--aw-space-4);
+    border-radius: var(--aw-radius-pill);
+    transition: background 0.15s, color 0.15s;
+}
+.aw-nav-link:hover {
+    background: var(--aw-blue-tint);
+    color: var(--aw-blue-ink);
+}
+.aw-nav-link.active {
+    background: var(--aw-ink);
+    color: #fff;
+}
+
+/* Floating variant for full-bleed map/dashboard pages: fixed to the top,
+   over the canvas, with its own background so content can scroll underneath. */
+.aw-nav.aw-nav-floating {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    max-width: none;
+    background: rgba(247, 246, 241, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--aw-border);
+}
+
+@media (max-width: 600px) {
+    .aw-nav-wordmark { font-size: 16px; }
+    .aw-nav-link { padding: var(--aw-space-2) var(--aw-space-3); font-size: 13px; }
+}

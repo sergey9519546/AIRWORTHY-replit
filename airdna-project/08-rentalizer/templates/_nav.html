@@ -1,0 +1,22 @@
+{#
+  AIRWORTHY shared navigation partial.
+  Include on every page with: {% include "_nav.html" %}
+  Add the "aw-nav-floating" class (see nav.css) if a page needs the bar to
+  sit over a full-bleed map/canvas instead of the default in-flow top bar.
+  Only real, working destinations belong here — no placeholder buttons.
+#}
+<header class="aw-nav">
+    <a href="/" class="aw-nav-mark" aria-label="AIRWORTHY home">
+        <svg viewBox="0 0 32 32" class="aw-nav-mark-icon" aria-hidden="true">
+            <rect x="1" y="1" width="30" height="30" rx="8" fill="var(--aw-ink)"/>
+            <rect x="8"  y="18" width="4" height="9"  rx="1.5" fill="var(--aw-coral)"/>
+            <rect x="14" y="12" width="4" height="15" rx="1.5" fill="var(--aw-lime)"/>
+            <rect x="20" y="6"  width="4" height="21" rx="1.5" fill="var(--aw-blue)"/>
+        </svg>
+        <span class="aw-nav-wordmark">AIRWORTHY</span>
+    </a>
+    <nav class="aw-nav-links" aria-label="Primary">
+        <a href="/" class="aw-nav-link">Estimate</a>
+        <a href="/map" class="aw-nav-link">Market Map</a>
+    </nav>
+</header>

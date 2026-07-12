@@ -12,6 +12,22 @@ class EstimateRequest(BaseModel):
     minimum_nights: int = Field(ge=1, le=365, default=1)
     is_superhost: bool = Field(default=False)
     host_listings_count: int = Field(ge=1, le=1000, default=1)
+    # IDs to drop from the comparable set before recomputing the estimate —
+    # lets an "exclude this comp" UI action recompute without a new endpoint.
+    exclude_comp_ids: list[int] = Field(default_factory=list)
+
+
+class MonthlyForecastResponse(BaseModel):
+    month: str
+    expected: float
+    low: float
+    high: float
+
+
+class PerformanceDriverResponse(BaseModel):
+    label: str
+    direction: str  # "positive" | "negative"
+    impact_dollars: float
 
 
 class ConfidenceResponse(BaseModel):
@@ -19,14 +35,20 @@ class ConfidenceResponse(BaseModel):
     revenue_lower: float
     revenue_upper: float
     cv: float
+    reasons: list[str] = Field(default_factory=list)
+    weaknesses: list[str] = Field(default_factory=list)
 
 
 class CompResponse(BaseModel):
+    id: int
     distance_km: float
     bedrooms: int
     revenue: float
     similarity_score: float
     borough: str
+    price: float | None = None
+    reason_included: str = ""
+    differences: str = ""
 
 
 class MarketResponse(BaseModel):
@@ -34,6 +56,8 @@ class MarketResponse(BaseModel):
     median_revenue: float
     median_price: float
     active_listings: int
+    adr: float = 0.0
+    occupancy_rate: float = 0.0
 
 
 class EstimateResponse(BaseModel):
@@ -44,6 +68,8 @@ class EstimateResponse(BaseModel):
     confidence: ConfidenceResponse
     comps: list[CompResponse]
     market: MarketResponse
+    monthly_forecast: list[MonthlyForecastResponse] = Field(default_factory=list)
+    performance_drivers: list[PerformanceDriverResponse] = Field(default_factory=list)
     disclaimer: str
     data_source: str
     model_version: str

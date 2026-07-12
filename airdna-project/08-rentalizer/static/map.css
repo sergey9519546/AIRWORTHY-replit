@@ -1,12 +1,12 @@
 /* ===== MAP PAGE — Coral Coast Design ===== */
 
 :root {
-    --coral: #FF385C;
-    --coral-dark: #e03151;
-    --coral-glow: rgba(255, 56, 92, 0.25);
+    --coral: var(--aw-blue);
+    --coral-dark: var(--aw-blue-ink);
+    --coral-glow: rgba(42, 85, 255, 0.22);
     --sidebar-w: 320px;
-    --sidebar-radius: 20px;
-    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --sidebar-radius: var(--aw-radius-lg);
+    --font: var(--aw-font-ui);
 }
 
 /* Reset */
@@ -29,11 +29,11 @@
 
 /* Custom coral cluster marker */
 .coral-cluster {
-    background: #FF385C;
+    background: var(--aw-blue);
     color: #fff;
     border-radius: 50%;
     border: 3px solid #fff;
-    box-shadow: 0 2px 12px rgba(255, 56, 92, 0.45);
+    box-shadow: 0 2px 12px rgba(42, 85, 255, 0.45);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -66,7 +66,7 @@
 .marker-cluster-small div,
 .marker-cluster-medium div,
 .marker-cluster-large div {
-    background-color: #FF385C !important;
+    background-color: var(--aw-blue) !important;
     color: #fff !important;
     font-family: var(--font) !important;
     font-weight: 800 !important;

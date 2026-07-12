@@ -1,4 +1,4 @@
-"""FastAPI application — Rentalizer API."""
+"""FastAPI application — AIRWORTHY API."""
 import logging
 import os
 import time
@@ -31,6 +31,7 @@ from .market_estimator import estimate_from_db, covered_markets
 from .features import build_features, get_borough_from_coords
 from .model import load_model, predict, get_model_info, get_feature_columns
 from .confidence import compute_confidence
+from .enrichment import estimate_adr_occupancy, monthly_forecast, performance_drivers, confidence_reasons
 
 import pandas as pd
 
@@ -79,8 +80,8 @@ async def lifespan(app: FastAPI):
 limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(
-    title="Rentalizer",
-    description="Short-term rental revenue estimation tool",
+    title="AIRWORTHY",
+    description="Short-term rental earnings instrument — modeled revenue ranges, not falsely-precise numbers.",
     version=settings.VERSION,
     lifespan=lifespan,
 )
@@ -323,7 +324,10 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
     """NYC estimate using the trained LightGBM model + NYC comp index."""
     # 4. Find comps
     t0 = time.time()
-    comps = find_comps(geo.lat, geo.lng, req.bedrooms, req.accommodates, req.bathrooms)
+    comps = find_comps(
+        geo.lat, geo.lng, req.bedrooms, req.accommodates, req.bathrooms,
+        exclude_ids=set(req.exclude_comp_ids) if req.exclude_comp_ids else None,
+    )
     comp_ms = int((time.time() - t0) * 1000)
 
     # 5. Comp-based prediction
@@ -390,6 +394,27 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
         f"geocode={geocode_ms}ms comp={comp_ms}ms model={model_ms}ms total={total_ms}ms"
     )
 
+    # 11. Derived metrics, forecast, drivers, and confidence reasons
+    adr, occupancy = estimate_adr_occupancy(annual_revenue, req.nightly_rate)
+    avg_distance_km = sum(c.distance_km for c in comps) / len(comps) if comps else 0.0
+    bed_matches = sum(1 for c in comps if c.bedrooms == req.bedrooms)
+    bedroom_match_ratio = bed_matches / len(comps) if comps else 0.0
+    drivers = performance_drivers(
+        nightly_rate=req.nightly_rate,
+        bedrooms=req.bedrooms,
+        median_price=market.get("median_price", 0),
+        n_comps=len(comps),
+        is_superhost=req.is_superhost,
+        avg_distance_km=avg_distance_km,
+    )
+    reasons, weaknesses = confidence_reasons(
+        n_comps=len(comps),
+        avg_distance_km=avg_distance_km,
+        cv=confidence.cv,
+        data_freshness=settings.DATA_FRESHNESS,
+        bedroom_match_ratio=bedroom_match_ratio,
+    )
+
     # 12. Format response
     return EstimateResponse(
         address=req.address,
@@ -401,23 +426,36 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
             revenue_lower=confidence.revenue_lower,
             revenue_upper=confidence.revenue_upper,
             cv=confidence.cv,
+            reasons=reasons,
+            weaknesses=weaknesses,
         ),
         comps=[
             CompResponse(
+                id=c.listing_id,
                 distance_km=c.distance_km,
                 bedrooms=c.bedrooms,
                 revenue=round(c.revenue, 0),
                 similarity_score=c.score,
                 borough=c.borough,
+                price=c.price,
+                reason_included="same bedroom count" if c.bedrooms == req.bedrooms else "closest available match",
+                differences=(
+                    f"{abs(c.bedrooms - req.bedrooms)} {'more' if c.bedrooms > req.bedrooms else 'fewer'} bedroom(s)"
+                    if c.bedrooms != req.bedrooms else "closely matches this property"
+                ),
             )
-            for c in comps[:5]
+            for c in comps[:20]
         ],
         market=MarketResponse(
             borough=market.get("borough", borough),
             median_revenue=market.get("median_revenue", 0),
             median_price=market.get("median_price", 0),
             active_listings=market.get("active_listings", 0),
+            adr=adr,
+            occupancy_rate=occupancy,
         ),
+        monthly_forecast=monthly_forecast(annual_revenue, confidence.cv),
+        performance_drivers=drivers,
         disclaimer=settings.DISCLAIMER,
         data_source=settings.DATA_SOURCE,
         model_version=get_model_info().get("version", settings.VERSION),
@@ -438,7 +476,10 @@ def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: flo
     conn = _get_map_db()
     try:
         result = estimate_from_db(
-            conn, geo.lat, geo.lng, req.bedrooms, req.accommodates, req.property_type
+            conn, geo.lat, geo.lng, req.bedrooms, req.accommodates, req.property_type,
+            nightly_rate=req.nightly_rate,
+            is_superhost=req.is_superhost,
+            exclude_ids=set(req.exclude_comp_ids) if req.exclude_comp_ids else None,
         )
         markets = covered_markets(conn)
     finally:
@@ -466,6 +507,8 @@ def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: flo
         confidence=ConfidenceResponse(**result["confidence"]),
         comps=[CompResponse(**c) for c in result["comps"]],
         market=MarketResponse(**result["market"]),
+        monthly_forecast=result.get("monthly_forecast", []),
+        performance_drivers=result.get("performance_drivers", []),
         disclaimer=settings.DISCLAIMER,
         data_source=settings.DATA_SOURCE,
         model_version="comps-1.0",

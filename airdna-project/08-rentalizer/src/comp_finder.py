@@ -73,10 +73,16 @@ def _get_borough(row):
     return "Unknown"
 
 
-def find_comps(lat: float, lng: float, bedrooms: int, accommodates: int, bathrooms: int = 1, k: int = 20) -> list[Comp]:
-    """Find k nearest comparable listings."""
+def find_comps(lat: float, lng: float, bedrooms: int, accommodates: int, bathrooms: int = 1, k: int = 20,
+               exclude_ids: set | None = None) -> list[Comp]:
+    """Find k nearest comparable listings. `exclude_ids` drops specific
+    listing IDs before scoring, so a caller can recompute after a user
+    excludes a comparable from the set."""
     if _tree is None or _listings is None:
         raise RuntimeError("Index not built. Call build_index() first.")
+
+    exclude_ids = exclude_ids or set()
+
 
     # Query KD-Tree (haversine distance in radians)
     query = np.radians([[lat, lng]])
@@ -92,6 +98,9 @@ def find_comps(lat: float, lng: float, bedrooms: int, accommodates: int, bathroo
     comps = []
     for dist_km, idx in zip(distances_km, indices):
         listing = _listings[idx]
+
+        if listing["id"] in exclude_ids:
+            continue
 
         # Filter: bedrooms within ±1
         if abs(listing["bedrooms"] - bedrooms) > 1:
@@ -124,7 +133,7 @@ def find_comps(lat: float, lng: float, bedrooms: int, accommodates: int, bathroo
 
     # If too few comps, relax filters and try again
     if len(comps) < 3:
-        comps = _find_comps_relaxed(lat, lng, k)
+        comps = [c for c in _find_comps_relaxed(lat, lng, k) if c.listing_id not in exclude_ids]
 
     return comps[:settings.MAX_COMPS]
 
