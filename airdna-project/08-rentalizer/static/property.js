@@ -162,7 +162,66 @@
         renderConfidence(data);
         renderComps(data);
         populateFactsForm(facts);
+        renderScenario(data);
     }
+
+    // ---- Scenario laboratory: net revenue under real operating costs ----
+    // Pure post-processing over the current estimate's revenue numbers — no
+    // backend round-trip. Recomputes on every input change.
+    const scenarioInputs = {
+        cleaning: document.getElementById('s-cleaning-fee'),
+        management: document.getElementById('s-management-fee'),
+        platform: document.getElementById('s-platform-fee'),
+        opex: document.getElementById('s-opex'),
+    };
+
+    function readScenarioAssumptions() {
+        const pct = (el) => Math.max(0, Math.min(100, parseFloat(el.value) || 0)) / 100;
+        return {
+            cleaningPct: pct(scenarioInputs.cleaning),
+            managementPct: pct(scenarioInputs.management),
+            platformPct: pct(scenarioInputs.platform),
+            monthlyOpex: Math.max(0, parseFloat(scenarioInputs.opex.value) || 0),
+        };
+    }
+
+    function netForRevenue(revenue, assumptions) {
+        const feePct = assumptions.cleaningPct + assumptions.managementPct + assumptions.platformPct;
+        const variableCosts = revenue * feePct;
+        const fixedCosts = assumptions.monthlyOpex * 12;
+        const totalCosts = variableCosts + fixedCosts;
+        return { net: revenue - totalCosts, totalCosts };
+    }
+
+    function renderScenario(data) {
+        const assumptions = readScenarioAssumptions();
+        const gross = netForRevenue(data.annual_revenue, assumptions);
+        const lower = netForRevenue(data.confidence.revenue_lower, assumptions);
+        const upper = netForRevenue(data.confidence.revenue_upper, assumptions);
+
+        document.getElementById('scenario-gross').textContent = formatCurrency(data.annual_revenue) + '/yr';
+        document.getElementById('scenario-costs').textContent = formatCurrency(gross.totalCosts) + '/yr';
+        document.getElementById('scenario-net').textContent = formatCurrency(gross.net) + '/yr';
+        document.getElementById('scenario-net-range').textContent =
+            `${formatCurrency(lower.net)} – ${formatCurrency(upper.net)}`;
+
+        const verdict = document.getElementById('scenario-verdict');
+        if (gross.net >= 0) {
+            verdict.textContent = 'Cash-flow positive';
+            verdict.classList.remove('negative');
+            verdict.classList.add('positive');
+        } else {
+            verdict.textContent = 'Cash-flow negative';
+            verdict.classList.remove('positive');
+            verdict.classList.add('negative');
+        }
+    }
+
+    Object.values(scenarioInputs).forEach((input) => {
+        input.addEventListener('input', () => {
+            if (currentData) renderScenario(currentData);
+        });
+    });
 
     // ---- Save (shared module) ----
     function wireSaveButtons(data, facts) {

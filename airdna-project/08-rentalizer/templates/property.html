@@ -105,6 +105,7 @@
                         <a href="#drivers-heading">Performance drivers</a>
                         <a href="#confidence-heading">Confidence</a>
                         <a href="#comps-heading">Comparable evidence</a>
+                        <a href="#scenario-heading">Scenario laboratory</a>
                         <a href="#facts-heading">Facts &amp; assumptions</a>
                     </nav>
                 </div>
@@ -174,6 +175,57 @@
                     </div>
                     <p id="comps-count-note" class="report-section-note"></p>
                     <div id="comps-list" class="comps-list"></div>
+                </section>
+
+                <!-- Scenario laboratory: net revenue under real operating costs -->
+                <section class="report-section no-print" aria-labelledby="scenario-heading">
+                    <h2 id="scenario-heading" class="report-section-title">Scenario laboratory</h2>
+                    <p class="report-section-note">Layer your own operating costs onto this estimate to see what actually lands as profit. Updates instantly as you type — no re-run needed.</p>
+
+                    <div class="scenario-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="s-cleaning-fee">Cleaning fee (% of revenue)</label>
+                            <input type="number" id="s-cleaning-fee" class="form-input" min="0" max="100" step="0.5" value="10">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="s-management-fee">Management fee (% of revenue)</label>
+                            <input type="number" id="s-management-fee" class="form-input" min="0" max="100" step="0.5" value="20">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="s-platform-fee">Platform fee (% of revenue)</label>
+                            <input type="number" id="s-platform-fee" class="form-input" min="0" max="100" step="0.5" value="3">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="s-opex">Fixed monthly opex ($)</label>
+                            <input type="number" id="s-opex" class="form-input" min="0" max="100000" step="10" value="400">
+                        </div>
+                    </div>
+
+                    <div class="scenario-result">
+                        <div class="scenario-result-head">
+                            <span class="scenario-result-label">Net of your assumptions</span>
+                            <span id="scenario-verdict" class="scenario-verdict">&mdash;</span>
+                        </div>
+                        <div class="scenario-result-grid">
+                            <div class="scenario-result-item">
+                                <span class="scenario-result-item-label">Gross revenue (from estimate)</span>
+                                <span id="scenario-gross" class="scenario-result-item-value">&mdash;</span>
+                            </div>
+                            <div class="scenario-result-item">
+                                <span class="scenario-result-item-label">Total costs modeled</span>
+                                <span id="scenario-costs" class="scenario-result-item-value">&mdash;</span>
+                            </div>
+                            <div class="scenario-result-item scenario-result-item-primary">
+                                <span class="scenario-result-item-label">Net annual profit</span>
+                                <span id="scenario-net" class="scenario-result-item-value">&mdash;</span>
+                            </div>
+                            <div class="scenario-result-item">
+                                <span class="scenario-result-item-label">Net range (downside &ndash; upside)</span>
+                                <span id="scenario-net-range" class="scenario-result-item-value">&mdash;</span>
+                            </div>
+                        </div>
+                        <p class="report-section-note scenario-disclaimer">This is your own cost model applied on top of the estimated revenue above — it doesn't change the underlying market estimate, and actual costs vary by market, manager, and operator.</p>
+                    </div>
                 </section>
 
                 <!-- Property facts / assumptions editor -->
