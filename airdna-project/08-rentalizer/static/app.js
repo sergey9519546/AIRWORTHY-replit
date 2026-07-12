@@ -9,7 +9,7 @@
     const form = document.getElementById('estimate-form');
     const detailsToggle = document.getElementById('details-toggle');
     const detailsPanel = document.getElementById('details-panel');
-    const entrySection = document.getElementById('entry');
+    const entrySection = document.querySelector('.hero');
     const sequenceSection = document.getElementById('sequence');
     const errorSection = document.getElementById('error');
     const resultsSection = document.getElementById('results');
@@ -217,6 +217,16 @@
         btn.textContent = saved ? 'Saved ✓' : 'Save property';
         btn.classList.toggle('is-saved', saved);
     }
+
+    // ---- Sample address chips ----
+    document.querySelectorAll('.sample-chip').forEach((chip) => {
+        chip.addEventListener('click', () => {
+            const addressInput = document.getElementById('address');
+            addressInput.value = chip.dataset.address;
+            clearInputError();
+            form.requestSubmit();
+        });
+    });
 
     // "Adjust details & re-run" scrolls back up, opens the details panel,
     // and focuses the first editable field — the address stays populated.

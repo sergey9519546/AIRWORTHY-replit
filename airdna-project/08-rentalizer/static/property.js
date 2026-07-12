@@ -101,7 +101,7 @@
             currentData = data;
             renderReport(data, facts);
             showOnly(reportSection);
-            reportSection.focus();
+            reportSection.focus({ preventScroll: true });
             history.replaceState(null, '', `/property?${paramsFromFacts(facts).toString()}`);
             return data;
         } catch (err) {
@@ -155,6 +155,7 @@
         document.getElementById('compare-link').href = `/compare?${compareParams.toString()}`;
         document.getElementById('compare-link-footer').href = `/compare?${compareParams.toString()}`;
 
+        renderScoreGauge(data);
         wireSaveButtons(data, facts);
         renderForecast(data);
         renderDrivers(data);
@@ -199,6 +200,27 @@
                 update();
             };
         });
+    }
+
+    // ---- Confidence score gauge ----
+    // A genuine score derived from the estimate's coefficient of variation
+    // (cv): tighter agreement across comparable revenue outcomes -> a
+    // higher score. Mirrors the same cv thresholds the backend uses to
+    // classify high/medium/low confidence, so the gauge and the label
+    // always agree.
+    const SCORE_GAUGE_CIRCUMFERENCE = 2 * Math.PI * 50;
+    function renderScoreGauge(data) {
+        const cv = typeof data.confidence.cv === 'number' ? data.confidence.cv : 1;
+        const score = Math.max(2, Math.min(99, Math.round((1 - cv) * 100)));
+        const level = data.confidence.level || 'low';
+
+        const fill = document.getElementById('score-gauge-fill');
+        fill.classList.remove('level-high', 'level-medium', 'level-low');
+        fill.classList.add(`level-${level}`);
+        fill.style.strokeDashoffset = String(SCORE_GAUGE_CIRCUMFERENCE * (1 - score / 100));
+
+        document.getElementById('score-gauge-value').textContent = String(score);
+        document.getElementById('score-gauge-level').textContent = `${capitalize(level)} confidence`;
     }
 
     // ---- Monthly forecast ----

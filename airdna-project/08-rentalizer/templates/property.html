@@ -42,215 +42,239 @@
             <p id="error-suggestion" class="error-suggestion"></p>
         </section>
 
-        <!-- ===== Report ===== -->
-        <article id="report" class="report hidden" aria-live="polite" tabindex="-1">
+        <!-- ===== Report: two-column dashboard ===== -->
+        <article id="report" class="report hidden dashboard-grid" aria-live="polite" tabindex="-1">
 
-            <!-- Hero -->
-            <header class="report-hero">
-                <div class="report-hero-top">
-                    <div>
-                        <p class="report-eyebrow">Earnings report</p>
-                        <h1 id="report-address" class="report-address">&mdash;</h1>
-                        <p id="report-updated" class="report-updated"></p>
+            <!-- ===== Left: sticky summary card ===== -->
+            <aside class="dashboard-left no-print-sticky">
+                <div class="summary-card">
+                    <p class="report-eyebrow">Earnings report</p>
+                    <h1 id="report-address" class="report-address">&mdash;</h1>
+                    <p id="report-updated" class="report-updated"></p>
+
+                    <div class="score-gauge">
+                        <svg viewBox="0 0 120 120" class="score-gauge-svg" aria-hidden="true">
+                            <circle class="score-gauge-track" cx="60" cy="60" r="50"></circle>
+                            <circle class="score-gauge-fill" id="score-gauge-fill" cx="60" cy="60" r="50"></circle>
+                        </svg>
+                        <div class="score-gauge-center">
+                            <span class="score-gauge-value" id="score-gauge-value">&mdash;</span>
+                            <span class="score-gauge-caption">confidence score</span>
+                        </div>
                     </div>
-                    <div class="report-hero-actions no-print">
+                    <p class="score-gauge-level" id="score-gauge-level">&mdash;</p>
+                    <p class="score-gauge-note">Derived from the spread of comparable revenue outcomes — tighter agreement scores higher.</p>
+
+                    <div id="envelope-slot" class="report-envelope-slot"></div>
+
+                    <div class="summary-metrics">
+                        <div class="metric-card">
+                            <span class="metric-label">Nightly rate</span>
+                            <span id="metric-adr" class="metric-value">&mdash;</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Occupancy</span>
+                            <span id="metric-occupancy" class="metric-value">&mdash;</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Comparables</span>
+                            <span id="metric-comps" class="metric-value">&mdash;</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Confidence</span>
+                            <span id="metric-confidence" class="metric-value">&mdash;</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Forecast horizon</span>
+                            <span class="metric-value">12 months</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Data updated</span>
+                            <span id="metric-freshness" class="metric-value">&mdash;</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-actions no-print">
                         <button type="button" id="save-btn" class="btn-secondary">Save property</button>
                         <a id="compare-link" href="#" class="btn-secondary">Compare</a>
-                        <button type="button" id="export-btn" class="btn-secondary">Export / print</button>
+                        <button type="button" id="export-btn" class="btn-primary">Export / print</button>
                     </div>
+
+                    <nav class="summary-jumpnav no-print" aria-label="Report sections">
+                        <a href="#forecast-heading">Monthly forecast</a>
+                        <a href="#drivers-heading">Performance drivers</a>
+                        <a href="#confidence-heading">Confidence</a>
+                        <a href="#comps-heading">Comparable evidence</a>
+                        <a href="#facts-heading">Facts &amp; assumptions</a>
+                    </nav>
                 </div>
+            </aside>
 
-                <div id="envelope-slot" class="report-envelope-slot"></div>
+            <!-- ===== Right: scrolling detail sections ===== -->
+            <div class="dashboard-right">
 
-                <div class="report-hero-metrics">
-                    <div class="metric-card">
-                        <span class="metric-label">Average nightly rate</span>
-                        <span id="metric-adr" class="metric-value">&mdash;</span>
+                <!-- Monthly forecast -->
+                <section class="report-section" aria-labelledby="forecast-heading">
+                    <div class="report-section-head">
+                        <h2 id="forecast-heading" class="report-section-title">Monthly forecast</h2>
+                        <div class="segmented no-print" id="forecast-toggle" role="tablist" aria-label="Forecast view">
+                            <button type="button" class="segmented-btn active" data-mode="monthly" role="tab" aria-selected="true">Monthly</button>
+                            <button type="button" class="segmented-btn" data-mode="seasonal" role="tab" aria-selected="false">Seasonal</button>
+                            <button type="button" class="segmented-btn" data-mode="annual" role="tab" aria-selected="false">Annual</button>
+                        </div>
                     </div>
-                    <div class="metric-card">
-                        <span class="metric-label">Expected occupancy</span>
-                        <span id="metric-occupancy" class="metric-value">&mdash;</span>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label">Comparable properties</span>
-                        <span id="metric-comps" class="metric-value">&mdash;</span>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label">Estimate confidence</span>
-                        <span id="metric-confidence" class="metric-value">&mdash;</span>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label">Forecast horizon</span>
-                        <span class="metric-value">12 months</span>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label">Data last updated</span>
-                        <span id="metric-freshness" class="metric-value">&mdash;</span>
-                    </div>
-                </div>
-            </header>
+                    <p class="report-section-note">Modeled from this estimate and a general short-term-rental seasonality curve — not this specific listing's booking history.</p>
 
-            <!-- Monthly forecast -->
-            <section class="report-section" aria-labelledby="forecast-heading">
-                <div class="report-section-head">
-                    <h2 id="forecast-heading" class="report-section-title">Monthly forecast</h2>
-                    <div class="segmented no-print" id="forecast-toggle" role="tablist" aria-label="Forecast view">
-                        <button type="button" class="segmented-btn active" data-mode="monthly" role="tab" aria-selected="true">Monthly</button>
-                        <button type="button" class="segmented-btn" data-mode="seasonal" role="tab" aria-selected="false">Seasonal</button>
-                        <button type="button" class="segmented-btn" data-mode="annual" role="tab" aria-selected="false">Annual</button>
+                    <div id="forecast-chart" class="forecast-chart"></div>
+                    <div id="forecast-annual" class="forecast-annual hidden"></div>
+
+                    <div id="month-detail" class="month-detail hidden">
+                        <button type="button" id="month-detail-close" class="month-detail-close no-print" aria-label="Close month detail">&times;</button>
+                        <div class="month-detail-grid">
+                            <div><span class="month-detail-label">Month</span><span id="md-month" class="month-detail-value">&mdash;</span></div>
+                            <div><span class="month-detail-label">Expected revenue</span><span id="md-expected" class="month-detail-value">&mdash;</span></div>
+                            <div><span class="month-detail-label">Range</span><span id="md-range" class="month-detail-value">&mdash;</span></div>
+                            <div><span class="month-detail-label">ADR</span><span id="md-adr" class="month-detail-value">&mdash;</span></div>
+                            <div><span class="month-detail-label">Occupancy</span><span id="md-occupancy" class="month-detail-value">&mdash;</span></div>
+                            <div><span class="month-detail-label">Demand level</span><span id="md-demand" class="month-detail-value">&mdash;</span></div>
+                        </div>
                     </div>
-                </div>
-                <p class="report-section-note">Modeled from this estimate and a general short-term-rental seasonality curve — not this specific listing's booking history.</p>
+                </section>
 
-                <div id="forecast-chart" class="forecast-chart"></div>
-                <div id="forecast-annual" class="forecast-annual hidden"></div>
+                <!-- Performance drivers -->
+                <section class="report-section" aria-labelledby="drivers-heading">
+                    <h2 id="drivers-heading" class="report-section-title">Performance drivers</h2>
+                    <p class="report-section-note">What pushes this estimate up or down, with a rough directional dollar impact — not a precise attribution.</p>
+                    <ul id="drivers-list" class="drivers-list"></ul>
+                </section>
 
-                <div id="month-detail" class="month-detail hidden">
-                    <button type="button" id="month-detail-close" class="month-detail-close no-print" aria-label="Close month detail">&times;</button>
-                    <div class="month-detail-grid">
-                        <div><span class="month-detail-label">Month</span><span id="md-month" class="month-detail-value">&mdash;</span></div>
-                        <div><span class="month-detail-label">Expected revenue</span><span id="md-expected" class="month-detail-value">&mdash;</span></div>
-                        <div><span class="month-detail-label">Range</span><span id="md-range" class="month-detail-value">&mdash;</span></div>
-                        <div><span class="month-detail-label">ADR</span><span id="md-adr" class="month-detail-value">&mdash;</span></div>
-                        <div><span class="month-detail-label">Occupancy</span><span id="md-occupancy" class="month-detail-value">&mdash;</span></div>
-                        <div><span class="month-detail-label">Demand level</span><span id="md-demand" class="month-detail-value">&mdash;</span></div>
+                <!-- Confidence -->
+                <section class="report-section" aria-labelledby="confidence-heading">
+                    <h2 id="confidence-heading" class="report-section-title">Why this confidence level</h2>
+                    <div class="confidence-body">
+                        <ul id="confidence-reasons" class="confidence-list confidence-list-good"></ul>
+                        <ul id="confidence-weaknesses" class="confidence-list confidence-list-weak"></ul>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <!-- Performance drivers -->
-            <section class="report-section" aria-labelledby="drivers-heading">
-                <h2 id="drivers-heading" class="report-section-title">Performance drivers</h2>
-                <p class="report-section-note">What pushes this estimate up or down, with a rough directional dollar impact — not a precise attribution.</p>
-                <ul id="drivers-list" class="drivers-list"></ul>
-            </section>
-
-            <!-- Confidence -->
-            <section class="report-section" aria-labelledby="confidence-heading">
-                <h2 id="confidence-heading" class="report-section-title">Why this confidence level</h2>
-                <div class="confidence-body">
-                    <ul id="confidence-reasons" class="confidence-list confidence-list-good"></ul>
-                    <ul id="confidence-weaknesses" class="confidence-list confidence-list-weak"></ul>
-                </div>
-            </section>
-
-            <!-- Comparable-rental explorer -->
-            <section class="report-section" aria-labelledby="comps-heading">
-                <div class="report-section-head">
-                    <h2 id="comps-heading" class="report-section-title">Comparable evidence</h2>
-                    <div class="comps-controls no-print">
-                        <label class="sr-only" for="comps-sort">Sort comparables</label>
-                        <select id="comps-sort" class="form-select comps-sort-select">
-                            <option value="similarity">Sort: similarity</option>
-                            <option value="revenue">Sort: revenue</option>
-                            <option value="distance">Sort: distance</option>
-                            <option value="adr">Sort: ADR</option>
-                        </select>
-                        <button type="button" id="comps-recalc" class="btn-secondary" disabled>Recalculate with exclusions</button>
+                <!-- Comparable-rental explorer -->
+                <section class="report-section" aria-labelledby="comps-heading">
+                    <div class="report-section-head">
+                        <h2 id="comps-heading" class="report-section-title">Comparable evidence</h2>
+                        <div class="comps-controls no-print">
+                            <label class="sr-only" for="comps-sort">Sort comparables</label>
+                            <select id="comps-sort" class="form-select comps-sort-select">
+                                <option value="similarity">Sort: similarity</option>
+                                <option value="revenue">Sort: revenue</option>
+                                <option value="distance">Sort: distance</option>
+                                <option value="adr">Sort: ADR</option>
+                            </select>
+                            <button type="button" id="comps-recalc" class="btn-secondary" disabled>Recalculate with exclusions</button>
+                        </div>
                     </div>
-                </div>
-                <p id="comps-count-note" class="report-section-note"></p>
-                <div id="comps-list" class="comps-list"></div>
-            </section>
+                    <p id="comps-count-note" class="report-section-note"></p>
+                    <div id="comps-list" class="comps-list"></div>
+                </section>
 
-            <!-- Property facts / assumptions editor -->
-            <section class="report-section no-print" aria-labelledby="facts-heading">
-                <h2 id="facts-heading" class="report-section-title">Property facts &amp; assumptions</h2>
-                <p class="report-section-note">Change a fact and re-run the estimate — the full report above updates to match.</p>
-                <form id="facts-form" class="facts-form">
-                    <div class="facts-grid">
-                        <div class="form-group">
-                            <label class="form-label" for="f-bedrooms">Bedrooms</label>
-                            <div class="form-select-wrap">
-                                <select id="f-bedrooms" class="form-select">
-                                    <option value="0">Studio</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5+</option>
-                                </select>
+                <!-- Property facts / assumptions editor -->
+                <section class="report-section no-print" aria-labelledby="facts-heading">
+                    <h2 id="facts-heading" class="report-section-title">Property facts &amp; assumptions</h2>
+                    <p class="report-section-note">Change a fact and re-run the estimate — the full report above updates to match.</p>
+                    <form id="facts-form" class="facts-form">
+                        <div class="facts-grid">
+                            <div class="form-group">
+                                <label class="form-label" for="f-bedrooms">Bedrooms</label>
+                                <div class="form-select-wrap">
+                                    <select id="f-bedrooms" class="form-select">
+                                        <option value="0">Studio</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5+</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="f-bathrooms">Bathrooms</label>
+                                <div class="form-select-wrap">
+                                    <select id="f-bathrooms" class="form-select">
+                                        <option value="1">1</option>
+                                        <option value="1.5">1.5</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3+</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="f-accommodates">Guests</label>
+                                <div class="form-select-wrap">
+                                    <select id="f-accommodates" class="form-select">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="6">6</option>
+                                        <option value="8">8</option>
+                                        <option value="10">10+</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="f-nightly-rate">Nightly rate ($)</label>
+                                <input type="number" id="f-nightly-rate" class="form-input" min="25" max="5000">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="f-property-type">Property type</label>
+                                <div class="form-select-wrap">
+                                    <select id="f-property-type" class="form-select">
+                                        <option value="Entire home/apt">Entire home</option>
+                                        <option value="Private room">Private room</option>
+                                        <option value="Hotel room">Hotel room</option>
+                                        <option value="Shared room">Shared room</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="f-min-nights">Minimum nights</label>
+                                <input type="number" id="f-min-nights" class="form-input" min="1" max="365">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="f-host-listings">Host's other listings</label>
+                                <input type="number" id="f-host-listings" class="form-input" min="1" max="1000">
+                            </div>
+                            <div class="form-group facts-checkbox-group">
+                                <label class="form-label">Host status</label>
+                                <label class="facts-checkbox"><input type="checkbox" id="f-superhost"> Superhost</label>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label" for="f-bathrooms">Bathrooms</label>
-                            <div class="form-select-wrap">
-                                <select id="f-bathrooms" class="form-select">
-                                    <option value="1">1</option>
-                                    <option value="1.5">1.5</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3+</option>
-                                </select>
-                            </div>
+
+                        <fieldset class="amenities-fieldset">
+                            <legend class="form-label">Amenities</legend>
+                            <div class="amenities-grid" id="amenities-grid"></div>
+                        </fieldset>
+
+                        <div class="facts-actions">
+                            <button type="submit" id="facts-submit" class="btn-primary">Update estimate</button>
+                            <span id="facts-delta" class="facts-delta" aria-live="polite"></span>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label" for="f-accommodates">Guests</label>
-                            <div class="form-select-wrap">
-                                <select id="f-accommodates" class="form-select">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="6">6</option>
-                                    <option value="8">8</option>
-                                    <option value="10">10+</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="f-nightly-rate">Nightly rate ($)</label>
-                            <input type="number" id="f-nightly-rate" class="form-input" min="25" max="5000">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="f-property-type">Property type</label>
-                            <div class="form-select-wrap">
-                                <select id="f-property-type" class="form-select">
-                                    <option value="Entire home/apt">Entire home</option>
-                                    <option value="Private room">Private room</option>
-                                    <option value="Hotel room">Hotel room</option>
-                                    <option value="Shared room">Shared room</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="f-min-nights">Minimum nights</label>
-                            <input type="number" id="f-min-nights" class="form-input" min="1" max="365">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="f-host-listings">Host's other listings</label>
-                            <input type="number" id="f-host-listings" class="form-input" min="1" max="1000">
-                        </div>
-                        <div class="form-group facts-checkbox-group">
-                            <label class="form-label">Host status</label>
-                            <label class="facts-checkbox"><input type="checkbox" id="f-superhost"> Superhost</label>
-                        </div>
+                    </form>
+                </section>
+
+                <!-- Decision footer -->
+                <footer class="report-footer no-print">
+                    <p id="disclaimer" class="footer-disclaimer"></p>
+                    <div class="report-footer-actions">
+                        <button type="button" id="save-btn-footer" class="btn-secondary">Save property</button>
+                        <a id="compare-link-footer" href="#" class="btn-secondary">Compare another</a>
+                        <button type="button" id="export-btn-footer" class="btn-primary">Export report</button>
                     </div>
-
-                    <fieldset class="amenities-fieldset">
-                        <legend class="form-label">Amenities</legend>
-                        <div class="amenities-grid" id="amenities-grid"></div>
-                    </fieldset>
-
-                    <div class="facts-actions">
-                        <button type="submit" id="facts-submit" class="btn-primary">Update estimate</button>
-                        <span id="facts-delta" class="facts-delta" aria-live="polite"></span>
-                    </div>
-                </form>
-            </section>
-
-            <!-- Decision footer -->
-            <footer class="report-footer no-print">
-                <p id="disclaimer" class="footer-disclaimer"></p>
-                <div class="report-footer-actions">
-                    <button type="button" id="save-btn-footer" class="btn-secondary">Save property</button>
-                    <a id="compare-link-footer" href="#" class="btn-secondary">Compare another</a>
-                    <button type="button" id="export-btn-footer" class="btn-primary">Export report</button>
-                </div>
-                <p class="footer-attr">
-                    Data source: <a href="https://insideairbnb.com" target="_blank">InsideAirbnb</a>
-                    — Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
-                </p>
-            </footer>
+                    <p class="footer-attr">
+                        Data source: <a href="https://insideairbnb.com" target="_blank">InsideAirbnb</a>
+                        — Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
+                    </p>
+                </footer>
+            </div>
         </article>
     </div>
 

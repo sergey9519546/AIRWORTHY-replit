@@ -6,3 +6,4 @@
 - [Rentalizer seasonal demand curves](rentalizer-seasonal-demand.md) — empty calendar/reviews tables; real Demand layer = per-listing 12-month booked-share precomputed from InsideAirbnb calendars into listings.demand_curve
 - [Rentalizer Realie parcel enrichment](rentalizer-realie-integration.md) — /v1/estimate.parcel via Realie location-search; needs ≥0.1mi radius (smaller silently 404s), results unsorted so client picks nearest by haversine
 - [Rentalizer property report pattern](rentalizer-property-report.md) — /property route + exclude_comp_ids/amenities re-estimate loop for live include/exclude and facts editing
+- [Rentalizer desktop SaaS redesign](rentalizer-desktop-redesign.md) — focus({preventScroll:true}) to avoid hiding in-flow nav, map.invalidateSize() on inspector resize, genuine cv-derived confidence gauge

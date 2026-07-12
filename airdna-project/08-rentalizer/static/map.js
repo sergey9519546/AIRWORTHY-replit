@@ -481,6 +481,10 @@ function showInspector(listing) {
 
     document.getElementById('inspector').hidden = false;
     updateTimelineVisibility();
+    // The inspector is a flex sibling of the map canvas (not an overlay), so
+    // opening it changes the canvas width — Leaflet caches its container
+    // size and needs an explicit nudge to redraw correctly.
+    requestAnimationFrame(() => map.invalidateSize());
 }
 
 document.getElementById('inspector-close').addEventListener('click', () => {
@@ -488,6 +492,7 @@ document.getElementById('inspector-close').addEventListener('click', () => {
     selectedId = null;
     clearSelectionVisuals();
     updateTimelineVisibility();
+    requestAnimationFrame(() => map.invalidateSize());
 });
 
 // ─── Layer selector ──────────────────────────────────────────────────────

@@ -18,14 +18,11 @@
 
     {% include "_nav.html" %}
 
-    <!-- Full-screen map -->
-    <div id="map"></div>
+    <div class="map-workspace">
 
-    <!-- ===== Top command rail ===== -->
-    <div class="rail" id="rail">
-        <div class="rail-row">
-            <!-- Location -->
-            <div class="rail-field rail-location">
+        <!-- ===== Left sidebar: location, filters, analytical layer ===== -->
+        <aside class="map-sidebar">
+            <div class="sidebar-section sidebar-location">
                 <svg class="rail-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                 <div class="rail-location-text">
                     <span class="rail-location-title" id="rail-title">California &amp; Florida</span>
@@ -33,189 +30,195 @@
                 </div>
             </div>
 
-            <div class="rail-divider"></div>
-
-            <!-- Primary filters -->
-            <div class="rail-field rail-select-wrap">
-                <select id="state-filter" class="rail-select" aria-label="Filter by state">
-                    <option value="">All states</option>
-                    <option value="ca">California</option>
-                    <option value="fl">Florida</option>
-                </select>
-            </div>
-            <div class="rail-field rail-select-wrap">
-                <select id="city-filter" class="rail-select" aria-label="Filter by city or region">
-                    <option value="">All cities</option>
-                </select>
-            </div>
-            <div class="rail-field rail-select-wrap">
-                <select id="room-filter" class="rail-select" aria-label="Property type">
-                    <option value="">Any type</option>
-                    <option value="Entire home/apt">Entire home</option>
-                    <option value="Private room">Private room</option>
-                    <option value="Hotel room">Hotel room</option>
-                    <option value="Shared room">Shared room</option>
-                </select>
+            <div class="sidebar-section">
+                <span class="sidebar-section-title">Location</span>
+                <div class="sidebar-field">
+                    <select id="state-filter" class="rail-select" aria-label="Filter by state">
+                        <option value="">All states</option>
+                        <option value="ca">California</option>
+                        <option value="fl">Florida</option>
+                    </select>
+                </div>
+                <div class="sidebar-field">
+                    <select id="city-filter" class="rail-select" aria-label="Filter by city or region">
+                        <option value="">All cities</option>
+                    </select>
+                </div>
+                <div class="rail-chips" id="map-chips"></div>
             </div>
 
-            <button class="rail-more" id="toggle-more-filters" aria-expanded="false" aria-controls="more-filters">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-                <span>More filters</span>
-                <span class="filter-badge" id="filter-badge" hidden>0</span>
+            <div class="sidebar-section">
+                <span class="sidebar-section-title">Property type</span>
+                <div class="sidebar-field">
+                    <select id="room-filter" class="rail-select" aria-label="Property type">
+                        <option value="">Any type</option>
+                        <option value="Entire home/apt">Entire home</option>
+                        <option value="Private room">Private room</option>
+                        <option value="Hotel room">Hotel room</option>
+                        <option value="Shared room">Shared room</option>
+                    </select>
+                </div>
+
+                <button class="rail-more" id="toggle-more-filters" aria-expanded="false" aria-controls="more-filters">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+                    <span>More filters</span>
+                    <span class="filter-badge" id="filter-badge" hidden>0</span>
+                </button>
+
+                <!-- Progressive disclosure: secondary filters -->
+                <div class="more-filters" id="more-filters" hidden>
+                    <div class="mf-group">
+                        <label class="mf-label" for="bedrooms-filter">Bedrooms</label>
+                        <select id="bedrooms-filter" class="mf-select">
+                            <option value="">Any</option>
+                            <option value="0">Studio</option>
+                            <option value="1">1+</option>
+                            <option value="2">2+</option>
+                            <option value="3">3+</option>
+                            <option value="4">4+</option>
+                        </select>
+                    </div>
+                    <div class="mf-group">
+                        <label class="mf-label" for="guests-filter">Guests</label>
+                        <select id="guests-filter" class="mf-select">
+                            <option value="">Any</option>
+                            <option value="2">2+</option>
+                            <option value="4">4+</option>
+                            <option value="6">6+</option>
+                            <option value="8">8+</option>
+                        </select>
+                    </div>
+                    <div class="mf-group mf-range">
+                        <label class="mf-label">ADR / night</label>
+                        <div class="mf-range-inputs">
+                            <input type="number" id="min-price" class="mf-input" placeholder="$0" min="0" aria-label="Minimum nightly rate">
+                            <span class="mf-dash">&ndash;</span>
+                            <input type="number" id="max-price" class="mf-input" placeholder="Any" min="0" aria-label="Maximum nightly rate">
+                        </div>
+                    </div>
+                    <div class="mf-group mf-range">
+                        <label class="mf-label">Annual revenue</label>
+                        <div class="mf-range-inputs">
+                            <input type="number" id="min-revenue" class="mf-input" placeholder="$0" min="0" aria-label="Minimum annual revenue">
+                            <span class="mf-dash">&ndash;</span>
+                            <input type="number" id="max-revenue" class="mf-input" placeholder="Any" min="0" aria-label="Maximum annual revenue">
+                        </div>
+                    </div>
+                    <div class="mf-group mf-toggles">
+                        <label class="mf-toggle-row">
+                            <input type="checkbox" id="toggle-guest-fav">
+                            <span>Guest favorites</span>
+                        </label>
+                        <label class="mf-toggle-row">
+                            <input type="checkbox" id="toggle-instant">
+                            <span>Instant Book</span>
+                        </label>
+                    </div>
+                    <div class="mf-actions">
+                        <button class="mf-clear" id="reset-filters">Clear all</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section sidebar-layers">
+                <span class="sidebar-section-title">Map layer</span>
+                <div class="layer-rail" id="layer-rail" role="tablist" aria-label="Map analytical layer">
+                    <button class="layer-btn active" data-layer="revenue" role="tab" aria-selected="true">
+                        <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
+                        Revenue
+                    </button>
+                    <button class="layer-btn" data-layer="adr" role="tab" aria-selected="false">
+                        <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
+                        ADR
+                    </button>
+                    <button class="layer-btn" data-layer="occupancy" role="tab" aria-selected="false">
+                        <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
+                        Occupancy
+                    </button>
+                    <button class="layer-btn" data-layer="demand" role="tab" aria-selected="false">
+                        <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
+                        Demand
+                    </button>
+                    <button class="layer-btn" data-layer="density" role="tab" aria-selected="false">
+                        <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
+                        Comp density
+                    </button>
+                </div>
+
+                <div class="map-legend" id="map-legend">
+                    <div class="map-legend-title" id="legend-title">Revenue</div>
+                    <div class="legend-gradient"><span></span></div>
+                    <div class="legend-scale">
+                        <span id="legend-low">Low</span>
+                        <span id="legend-high">High</span>
+                    </div>
+                    <div class="legend-attribution">
+                        Data: <a href="https://insideairbnb.com" target="_blank">InsideAirbnb</a> &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===== Map canvas ===== -->
+        <div class="map-canvas">
+            <div id="map"></div>
+
+            <div class="visible-count" id="visible-count-pill">
+                <span class="pulse-ring"></span><span class="pulse-dot"></span>
+                <span id="visible-count">Loading&hellip;</span>
+            </div>
+
+            <!-- ===== Seasonal demand timeline (drives the Demand layer) ===== -->
+            <div class="map-timeline" id="map-timeline" hidden>
+                <div class="timeline-head">
+                    <span class="timeline-title">Seasonal demand</span>
+                    <span class="timeline-sub" id="timeline-sub">Full year average</span>
+                    <button class="timeline-clear" id="timeline-clear" hidden>Full year</button>
+                </div>
+                <div class="timeline-months" id="timeline-months" role="group" aria-label="Select a month to see seasonal demand"></div>
+                <div class="timeline-note">Booked share of nights from listings&rsquo; forward calendars &middot; not host-blocked vs. booked</div>
+            </div>
+        </div>
+
+        <!-- ===== Property inspection panel (right side) ===== -->
+        <aside class="inspector" id="inspector" hidden>
+            <button class="inspector-close" id="inspector-close" aria-label="Close inspection panel">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
-        </div>
-
-        <!-- City chips -->
-        <div class="rail-chips" id="map-chips"></div>
-    </div>
-
-    <!-- Progressive disclosure: secondary filters -->
-    <div class="more-filters" id="more-filters" hidden>
-        <div class="more-filters-inner">
-            <div class="mf-group">
-                <label class="mf-label" for="bedrooms-filter">Bedrooms</label>
-                <select id="bedrooms-filter" class="mf-select">
-                    <option value="">Any</option>
-                    <option value="0">Studio</option>
-                    <option value="1">1+</option>
-                    <option value="2">2+</option>
-                    <option value="3">3+</option>
-                    <option value="4">4+</option>
-                </select>
-            </div>
-            <div class="mf-group">
-                <label class="mf-label" for="guests-filter">Guests</label>
-                <select id="guests-filter" class="mf-select">
-                    <option value="">Any</option>
-                    <option value="2">2+</option>
-                    <option value="4">4+</option>
-                    <option value="6">6+</option>
-                    <option value="8">8+</option>
-                </select>
-            </div>
-            <div class="mf-group mf-range">
-                <label class="mf-label">ADR / night</label>
-                <div class="mf-range-inputs">
-                    <input type="number" id="min-price" class="mf-input" placeholder="$0" min="0" aria-label="Minimum nightly rate">
-                    <span class="mf-dash">&ndash;</span>
-                    <input type="number" id="max-price" class="mf-input" placeholder="Any" min="0" aria-label="Maximum nightly rate">
+            <div class="inspector-handle" id="inspector-handle" aria-hidden="true"></div>
+            <div class="inspector-body">
+                <div class="inspector-header">
+                    <div class="inspector-type-dot" id="inspector-dot"></div>
+                    <div class="inspector-heading">
+                        <div class="inspector-name" id="inspector-name">&mdash;</div>
+                        <div class="inspector-meta" id="inspector-meta">&mdash;</div>
+                    </div>
                 </div>
-            </div>
-            <div class="mf-group mf-range">
-                <label class="mf-label">Annual revenue</label>
-                <div class="mf-range-inputs">
-                    <input type="number" id="min-revenue" class="mf-input" placeholder="$0" min="0" aria-label="Minimum annual revenue">
-                    <span class="mf-dash">&ndash;</span>
-                    <input type="number" id="max-revenue" class="mf-input" placeholder="Any" min="0" aria-label="Maximum annual revenue">
+
+                <div class="inspector-envelope" id="inspector-envelope"></div>
+
+                <div class="inspector-stats">
+                    <div class="inspector-stat">
+                        <div class="inspector-stat-label">ADR</div>
+                        <div class="inspector-stat-value" id="inspector-adr">&mdash;</div>
+                    </div>
+                    <div class="inspector-stat">
+                        <div class="inspector-stat-label">Occupancy</div>
+                        <div class="inspector-stat-value" id="inspector-occupancy">&mdash;</div>
+                    </div>
+                    <div class="inspector-stat">
+                        <div class="inspector-stat-label">Comparables</div>
+                        <div class="inspector-stat-value" id="inspector-comps">&mdash;</div>
+                    </div>
                 </div>
+
+                <a class="inspector-cta" id="inspector-cta" href="/property">
+                    Open estimate
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
             </div>
-            <div class="mf-group mf-toggles">
-                <label class="mf-toggle-row">
-                    <input type="checkbox" id="toggle-guest-fav">
-                    <span>Guest favorites</span>
-                </label>
-                <label class="mf-toggle-row">
-                    <input type="checkbox" id="toggle-instant">
-                    <span>Instant Book</span>
-                </label>
-            </div>
-            <div class="mf-actions">
-                <button class="mf-clear" id="reset-filters">Clear all</button>
-            </div>
-        </div>
+        </aside>
     </div>
-
-    <!-- ===== Layer selector ===== -->
-    <div class="layer-rail" id="layer-rail" role="tablist" aria-label="Map analytical layer">
-        <button class="layer-btn active" data-layer="revenue" role="tab" aria-selected="true">
-            <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
-            Revenue
-        </button>
-        <button class="layer-btn" data-layer="adr" role="tab" aria-selected="false">
-            <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
-            ADR
-        </button>
-        <button class="layer-btn" data-layer="occupancy" role="tab" aria-selected="false">
-            <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
-            Occupancy
-        </button>
-        <button class="layer-btn" data-layer="demand" role="tab" aria-selected="false">
-            <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
-            Demand
-        </button>
-        <button class="layer-btn" data-layer="density" role="tab" aria-selected="false">
-            <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
-            Comp density
-        </button>
-    </div>
-
-    <!-- Legend -->
-    <div class="map-legend" id="map-legend">
-        <div class="map-legend-title" id="legend-title">Revenue</div>
-        <div class="legend-gradient"><span></span></div>
-        <div class="legend-scale">
-            <span id="legend-low">Low</span>
-            <span id="legend-high">High</span>
-        </div>
-        <div class="legend-attribution">
-            Data: <a href="https://insideairbnb.com" target="_blank">InsideAirbnb</a> &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
-        </div>
-    </div>
-
-    <div class="visible-count" id="visible-count-pill">
-        <span class="pulse-ring"></span><span class="pulse-dot"></span>
-        <span id="visible-count">Loading&hellip;</span>
-    </div>
-
-    <!-- ===== Seasonal demand timeline (drives the Demand layer) ===== -->
-    <div class="map-timeline" id="map-timeline" hidden>
-        <div class="timeline-head">
-            <span class="timeline-title">Seasonal demand</span>
-            <span class="timeline-sub" id="timeline-sub">Full year average</span>
-            <button class="timeline-clear" id="timeline-clear" hidden>Full year</button>
-        </div>
-        <div class="timeline-months" id="timeline-months" role="group" aria-label="Select a month to see seasonal demand"></div>
-        <div class="timeline-note">Booked share of nights from listings&rsquo; forward calendars &middot; not host-blocked vs. booked</div>
-    </div>
-
-    <!-- ===== Property inspection panel (bottom dock) ===== -->
-    <aside class="inspector" id="inspector" hidden>
-        <div class="inspector-handle" id="inspector-handle" aria-hidden="true"></div>
-        <button class="inspector-close" id="inspector-close" aria-label="Close inspection panel">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-        <div class="inspector-body">
-            <div class="inspector-header">
-                <div class="inspector-type-dot" id="inspector-dot"></div>
-                <div class="inspector-heading">
-                    <div class="inspector-name" id="inspector-name">&mdash;</div>
-                    <div class="inspector-meta" id="inspector-meta">&mdash;</div>
-                </div>
-            </div>
-
-            <div class="inspector-envelope" id="inspector-envelope"></div>
-
-            <div class="inspector-stats">
-                <div class="inspector-stat">
-                    <div class="inspector-stat-label">ADR</div>
-                    <div class="inspector-stat-value" id="inspector-adr">&mdash;</div>
-                </div>
-                <div class="inspector-stat">
-                    <div class="inspector-stat-label">Occupancy</div>
-                    <div class="inspector-stat-value" id="inspector-occupancy">&mdash;</div>
-                </div>
-                <div class="inspector-stat">
-                    <div class="inspector-stat-label">Comparables</div>
-                    <div class="inspector-stat-value" id="inspector-comps">&mdash;</div>
-                </div>
-            </div>
-
-            <a class="inspector-cta" id="inspector-cta" href="/property">
-                Open estimate
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-            </a>
-        </div>
-    </aside>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="/static/earnings-envelope.js"></script>
