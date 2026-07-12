@@ -167,6 +167,17 @@
         <span id="visible-count">Loading&hellip;</span>
     </div>
 
+    <!-- ===== Seasonal demand timeline (drives the Demand layer) ===== -->
+    <div class="map-timeline" id="map-timeline" hidden>
+        <div class="timeline-head">
+            <span class="timeline-title">Seasonal demand</span>
+            <span class="timeline-sub" id="timeline-sub">Full year average</span>
+            <button class="timeline-clear" id="timeline-clear" hidden>Full year</button>
+        </div>
+        <div class="timeline-months" id="timeline-months" role="group" aria-label="Select a month to see seasonal demand"></div>
+        <div class="timeline-note">Booked share of nights from listings&rsquo; forward calendars &middot; not host-blocked vs. booked</div>
+    </div>
+
     <!-- ===== Property inspection panel (bottom dock) ===== -->
     <aside class="inspector" id="inspector" hidden>
         <div class="inspector-handle" id="inspector-handle" aria-hidden="true"></div>

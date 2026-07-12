@@ -37,3 +37,8 @@ externalPort = 80
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 120000
+
+[userenv]
+
+[userenv.shared]
+REALIE_API_KEY = "6b5881aceb7c87415b8c5b19d464edd9"

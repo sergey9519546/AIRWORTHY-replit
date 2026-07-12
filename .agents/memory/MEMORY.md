@@ -2,4 +2,5 @@
 - [Rentalizer estimator architecture](rentalizer-estimator-architecture.md) — hybrid: NYC uses ML model, all other markets use comp-based DB estimate; coverage is data-driven, not region-hardcoded
 - [AIRWORTHY design direction](airworthy-design.md) — authoritative brief at airdna-project/08-rentalizer/AIRWORTHY-DESIGN-BRIEF.md; text wins over the mockup image; positioning=certification, not calculator
 - [Rentalizer homepage entry-flow pattern](rentalizer-homepage-entry.md) — reuse AirworthyEnvelope/AirworthySaved shared modules; homepage links to /property, /compare with address/bedrooms/bathrooms/accommodates/nightly_rate params
-- [Rentalizer market map layers](rentalizer-map-layers.md) — ADR/occupancy/demand/density are all derived client-side from existing /api/listings fields, not new API params; comp-based revenue range formula for the inspection panel
+- [Rentalizer market map layers](rentalizer-map-layers.md) — ADR/occupancy/density derived client-side from existing /api/listings fields; comp-based revenue range formula for the inspection panel
+- [Rentalizer seasonal demand curves](rentalizer-seasonal-demand.md) — empty calendar/reviews tables; real Demand layer = per-listing 12-month booked-share precomputed from InsideAirbnb calendars into listings.demand_curve

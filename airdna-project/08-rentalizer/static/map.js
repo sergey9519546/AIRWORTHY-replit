@@ -35,6 +35,10 @@ let lastRequestId = 0;
 let currentListings = [];
 let activeLayer = 'revenue';
 let selectedId = null;
+// null = full-year average; 0-11 = a specific calendar month (Jan..Dec).
+let activeMonth = null;
+
+const MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 // ─── Color scale: coral (low) → blue (mid) → lime (high) ──────────────────
 function hexToRgb(hex) {
@@ -68,13 +72,50 @@ function metricOccupancy(l) {
     if (!l.price_numeric || !l.estimated_revenue_l365d) return 0;
     return Math.max(0, Math.min(1, l.estimated_revenue_l365d / (l.price_numeric * 365)));
 }
-function metricDemand(l) { return l.number_of_reviews || 0; }
+// Real seasonal demand: a 12-value booked-share curve per listing, derived from
+// each listing's forward availability calendar (see scripts/load_demand_curves.py)
+// and delivered on the demand_curve field. Index 0 = Jan ... 11 = Dec; each value
+// is the share of scheduled nights that are booked/blocked in that calendar month.
+// This replaces the old lifetime-review-count proxy with a genuine seasonality
+// signal that the JAN…DEC timeline can scrub through.
+function parseDemandCurve(l) {
+    if (l.__demandCurve !== undefined) return l.__demandCurve;
+    let curve = null;
+    if (l.demand_curve) {
+        try {
+            const arr = JSON.parse(l.demand_curve);
+            if (Array.isArray(arr) && arr.length === 12) curve = arr;
+        } catch (e) { curve = null; }
+    }
+    l.__demandCurve = curve;
+    return curve;
+}
+
+function demandAnnual(curve) {
+    const vals = curve.filter(v => typeof v === 'number');
+    if (!vals.length) return null;
+    return vals.reduce((a, b) => a + b, 0) / vals.length;
+}
+
+function metricDemand(l) {
+    const curve = parseDemandCurve(l);
+    if (!curve) return 0;
+    let v;
+    if (activeMonth == null) {
+        v = demandAnnual(curve);
+    } else {
+        v = curve[activeMonth];
+        // Fall back to the annual average if this specific month has no data.
+        if (typeof v !== 'number') v = demandAnnual(curve);
+    }
+    return typeof v === 'number' ? v : 0;
+}
 
 const LAYER_DEFS = {
     revenue:   { get: metricRevenue,   label: 'Revenue',      fmt: v => '$' + Math.round(v).toLocaleString(), low: 'Low', high: 'High' },
     adr:       { get: metricAdr,       label: 'ADR',          fmt: v => '$' + Math.round(v).toLocaleString(), low: 'Low', high: 'High' },
     occupancy: { get: metricOccupancy, label: 'Occupancy',    fmt: v => Math.round(v * 100) + '%', low: 'Low', high: 'High' },
-    demand:    { get: metricDemand,    label: 'Demand (review velocity proxy)', fmt: v => Math.round(v) + ' reviews', low: 'Quiet', high: 'Active' },
+    demand:    { get: metricDemand,    label: 'Demand · forward bookings', fmt: v => Math.round(v * 100) + '% booked', low: 'Quiet', high: 'Booked' },
     density:   { get: null,            label: 'Comparable density', fmt: v => Math.round(v) + ' nearby', low: 'Sparse', high: 'Dense' },
 };
 
@@ -325,8 +366,17 @@ function renderPropertyDots(listings, getValue, scale) {
     if (selectedId != null) applySelectionVisuals();
 }
 
+function layerTitle(def) {
+    if (activeLayer === 'demand') {
+        return activeMonth == null
+            ? 'Demand · full-year bookings'
+            : `Demand · ${MONTH_ABBR[activeMonth]} bookings`;
+    }
+    return def.label;
+}
+
 function updateLegend(def, scale) {
-    document.getElementById('legend-title').textContent = def.label;
+    document.getElementById('legend-title').textContent = layerTitle(def);
     document.getElementById('legend-low').textContent = def.low + ' ' + (def.fmt ? def.fmt(scale.lo) : '');
     document.getElementById('legend-high').textContent = def.high + ' ' + (def.fmt ? def.fmt(scale.hi) : '');
 }
@@ -430,12 +480,14 @@ function showInspector(listing) {
     cta.href = `/property?${ctaParams.toString()}`;
 
     document.getElementById('inspector').hidden = false;
+    updateTimelineVisibility();
 }
 
 document.getElementById('inspector-close').addEventListener('click', () => {
     document.getElementById('inspector').hidden = true;
     selectedId = null;
     clearSelectionVisuals();
+    updateTimelineVisibility();
 });
 
 // ─── Layer selector ──────────────────────────────────────────────────────
@@ -448,9 +500,69 @@ document.querySelectorAll('.layer-btn').forEach(btn => {
         btn.classList.add('active');
         btn.setAttribute('aria-selected', 'true');
         activeLayer = btn.dataset.layer;
+        updateTimelineVisibility();
         renderLayer();
     });
 });
+
+// ─── Seasonal demand timeline (JAN…DEC scrubber) ─────────────────────────────
+// Only meaningful for the Demand layer, which now carries a real month-by-month
+// booked-share curve per listing. Dragging months recolors the map by that
+// month's demand instead of a single static value.
+function buildTimeline() {
+    const container = document.getElementById('timeline-months');
+    if (!container) return;
+    MONTH_ABBR.forEach((abbr, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'timeline-month';
+        btn.dataset.month = String(idx);
+        btn.textContent = abbr;
+        btn.setAttribute('aria-pressed', 'false');
+        btn.addEventListener('click', () => selectMonth(idx));
+        container.appendChild(btn);
+    });
+}
+
+function selectMonth(idx) {
+    activeMonth = (activeMonth === idx) ? null : idx;
+    syncTimelineUI();
+    renderLayer();
+}
+
+function syncTimelineUI() {
+    document.querySelectorAll('.timeline-month').forEach(b => {
+        const on = Number(b.dataset.month) === activeMonth;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', String(on));
+    });
+    const sub = document.getElementById('timeline-sub');
+    const clear = document.getElementById('timeline-clear');
+    if (activeMonth == null) {
+        if (sub) sub.textContent = 'Full year average';
+        if (clear) clear.hidden = true;
+    } else {
+        if (sub) sub.textContent = MONTH_ABBR[activeMonth];
+        if (clear) clear.hidden = false;
+    }
+}
+
+function updateTimelineVisibility() {
+    const tl = document.getElementById('map-timeline');
+    if (!tl) return;
+    // Hidden unless the Demand layer is active and the inspector isn't covering
+    // the bottom of the screen.
+    const inspectorOpen = !document.getElementById('inspector').hidden;
+    tl.hidden = !(activeLayer === 'demand' && !inspectorOpen);
+}
+
+const timelineClearBtn = document.getElementById('timeline-clear');
+if (timelineClearBtn) {
+    timelineClearBtn.addEventListener('click', () => {
+        activeMonth = null;
+        syncTimelineUI();
+        renderLayer();
+    });
+}
 
 // ─── City labels ──────────────────────────────────────────────────────────
 const CITY_LABELS = {
@@ -686,6 +798,9 @@ map.on('moveend zoomend', scheduleLoad);
 
 // ─── Boot ──────────────────────────────────────────────────────────────────
 (async function init() {
+    buildTimeline();
+    syncTimelineUI();
+    updateTimelineVisibility();
     await loadCities();
     loadListings();
 })();

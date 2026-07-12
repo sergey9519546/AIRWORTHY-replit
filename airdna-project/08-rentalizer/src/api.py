@@ -254,7 +254,7 @@ async def listings(
         sql = """
             SELECT id, state, city, snapshot_date, name, room_type, bedrooms,
                    accommodates, price_numeric, number_of_reviews,
-                   estimated_revenue_l365d, latitude, longitude
+                   estimated_revenue_l365d, latitude, longitude, demand_curve
             FROM listings
             WHERE (state, city, snapshot_date) IN (
                 SELECT state, city, MAX(snapshot_date)
