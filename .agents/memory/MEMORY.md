@@ -1,0 +1,2 @@
+- [Rentalizer startup quirks](rentalizer-startup.md) — libgomp LD_LIBRARY_PATH, new TemplateResponse API, HTTPException vs JSONResponse in auth deps, pytest install via uv
+- [Rentalizer estimator architecture](rentalizer-estimator-architecture.md) — hybrid: NYC uses ML model, all other markets use comp-based DB estimate; coverage is data-driven, not region-hardcoded

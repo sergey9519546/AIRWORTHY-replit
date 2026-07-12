@@ -1,0 +1,2534 @@
+{
+  "data": {
+    "merlin": {
+      "__typename": "MerlinQuery",
+      "pdpAvailabilityCalendar": {
+        "__typename": "MerlinPdpAvailabilityCalendarResponse",
+        "calendarMonths": [
+          {
+            "__typename": "MerlinCalendarMonth",
+            "month": 7,
+            "year": 2026,
+            "days": [
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-01",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-02",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-03",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-04",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-05",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-06",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-07",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-08",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-09",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-10",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-11",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-12",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-13",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-14",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-15",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-16",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-17",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-18",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-19",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-20",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 4,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-21",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-22",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-23",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-24",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-25",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-26",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-27",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-28",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-29",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-30",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-07-31",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              }
+            ],
+            "conditionRanges": [
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-01",
+                "endDate": "2026-07-01"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-02",
+                "endDate": "2026-07-02"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-03",
+                "endDate": "2026-07-03"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-04",
+                "endDate": "2026-07-04"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-05",
+                "endDate": "2026-07-05"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-06",
+                "endDate": "2026-07-06"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-07",
+                "endDate": "2026-07-07"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-08",
+                "endDate": "2026-07-08"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-09",
+                "endDate": "2026-07-09"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-10",
+                "endDate": "2026-07-10"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-11",
+                "endDate": "2026-07-11"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-12",
+                "endDate": "2026-07-12"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-13",
+                "endDate": "2026-07-13"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-14",
+                "endDate": "2026-07-14"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-15",
+                "endDate": "2026-07-15"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-16",
+                "endDate": "2026-07-16"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-17",
+                "endDate": "2026-07-17"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-18",
+                "endDate": "2026-07-18"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-19",
+                "endDate": "2026-07-19"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 4
+                },
+                "startDate": "2026-07-20",
+                "endDate": "2026-07-20"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-07-21",
+                "endDate": "2026-07-21"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-07-22",
+                "endDate": "2026-07-22"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-07-23",
+                "endDate": "2026-07-23"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-07-24",
+                "endDate": "2026-07-24"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-07-25",
+                "endDate": "2026-07-25"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-07-26",
+                "endDate": "2026-07-26"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-07-27",
+                "endDate": "2026-07-27"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-07-28",
+                "endDate": "2026-07-28"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-07-29",
+                "endDate": "2026-07-29"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-07-30",
+                "endDate": "2026-07-30"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-07-31",
+                "endDate": "2026-07-31"
+              }
+            ],
+            "listingId": "1023955178372504211"
+          },
+          {
+            "__typename": "MerlinCalendarMonth",
+            "month": 8,
+            "year": 2026,
+            "days": [
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-01",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-02",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-03",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-04",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-05",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-06",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-07",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-08",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-09",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-10",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-11",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-12",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-13",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-14",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-15",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-16",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-17",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-18",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-19",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-20",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-21",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-22",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-23",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-24",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-25",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-26",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-27",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-28",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-29",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-30",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-08-31",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              }
+            ],
+            "conditionRanges": [
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-01",
+                "endDate": "2026-08-01"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-02",
+                "endDate": "2026-08-02"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-03",
+                "endDate": "2026-08-03"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-04",
+                "endDate": "2026-08-04"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-05",
+                "endDate": "2026-08-05"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-06",
+                "endDate": "2026-08-06"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-07",
+                "endDate": "2026-08-07"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-08",
+                "endDate": "2026-08-08"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-09",
+                "endDate": "2026-08-09"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-10",
+                "endDate": "2026-08-10"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-11",
+                "endDate": "2026-08-11"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-12",
+                "endDate": "2026-08-12"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-13",
+                "endDate": "2026-08-13"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-14",
+                "endDate": "2026-08-14"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-15",
+                "endDate": "2026-08-15"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-16",
+                "endDate": "2026-08-16"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-17",
+                "endDate": "2026-08-17"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-18",
+                "endDate": "2026-08-18"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-19",
+                "endDate": "2026-08-19"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-20",
+                "endDate": "2026-08-20"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-21",
+                "endDate": "2026-08-21"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-22",
+                "endDate": "2026-08-22"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-23",
+                "endDate": "2026-08-23"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-24",
+                "endDate": "2026-08-24"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-25",
+                "endDate": "2026-08-25"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-26",
+                "endDate": "2026-08-26"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-27",
+                "endDate": "2026-08-27"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-28",
+                "endDate": "2026-08-28"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-29",
+                "endDate": "2026-08-29"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-30",
+                "endDate": "2026-08-30"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-08-31",
+                "endDate": "2026-08-31"
+              }
+            ],
+            "listingId": "1023955178372504211"
+          },
+          {
+            "__typename": "MerlinCalendarMonth",
+            "month": 9,
+            "year": 2026,
+            "days": [
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-01",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-02",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-03",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-04",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-05",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-06",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-07",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-08",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-09",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-10",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-11",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-12",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-13",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-14",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-15",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-16",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-17",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-18",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-19",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-20",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-21",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-22",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-23",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-24",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-25",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-26",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-27",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-28",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-29",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              },
+              {
+                "__typename": "MerlinCalendarDay",
+                "calendarDate": "2026-09-30",
+                "available": true,
+                "maxNights": 1125,
+                "minNights": 7,
+                "availableForCheckin": true,
+                "availableForCheckout": true,
+                "bookable": true,
+                "price": {
+                  "__typename": "MerlinCalendarDayPrice",
+                  "localPriceFormatted": null
+                }
+              }
+            ],
+            "conditionRanges": [
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-01",
+                "endDate": "2026-09-01"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-02",
+                "endDate": "2026-09-02"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-03",
+                "endDate": "2026-09-03"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-04",
+                "endDate": "2026-09-04"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-05",
+                "endDate": "2026-09-05"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-06",
+                "endDate": "2026-09-06"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-07",
+                "endDate": "2026-09-07"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-08",
+                "endDate": "2026-09-08"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-09",
+                "endDate": "2026-09-09"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-10",
+                "endDate": "2026-09-10"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-11",
+                "endDate": "2026-09-11"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-12",
+                "endDate": "2026-09-12"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-13",
+                "endDate": "2026-09-13"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-14",
+                "endDate": "2026-09-14"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-15",
+                "endDate": "2026-09-15"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-16",
+                "endDate": "2026-09-16"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-17",
+                "endDate": "2026-09-17"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-18",
+                "endDate": "2026-09-18"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-19",
+                "endDate": "2026-09-19"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-20",
+                "endDate": "2026-09-20"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-21",
+                "endDate": "2026-09-21"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-22",
+                "endDate": "2026-09-22"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-23",
+                "endDate": "2026-09-23"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-24",
+                "endDate": "2026-09-24"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-25",
+                "endDate": "2026-09-25"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-26",
+                "endDate": "2026-09-26"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-27",
+                "endDate": "2026-09-27"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-28",
+                "endDate": "2026-09-28"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-29",
+                "endDate": "2026-09-29"
+              },
+              {
+                "__typename": "MerlinCalendarConditionRange",
+                "conditions": {
+                  "__typename": "MerlinCalendarConditions",
+                  "closedToArrival": false,
+                  "closedToDeparture": false,
+                  "endDayOfWeek": null,
+                  "maxNights": 1125,
+                  "minNights": 7
+                },
+                "startDate": "2026-09-30",
+                "endDate": "2026-09-30"
+              }
+            ],
+            "listingId": "1023955178372504211"
+          }
+        ],
+        "metadata": {
+          "__typename": "MerlinCalendarMonthMetadata",
+          "constantMinNights": null,
+          "onlyShowAvailableForCheckinOnDatepicker": null
+        }
+      }
+    }
+  },
+  "extensions": {
+    "traceId": "t3dB1K339fJRmQNx84w7ag=="
+  }
+}

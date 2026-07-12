@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rentalizer — Airbnb Revenue Estimator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+    <div class="page-shell">
+        <header class="page-header">
+            <div class="header-logo">
+                <svg viewBox="0 0 32 32" fill="#FF385C" class="header-logo-icon" aria-hidden="true">
+                    <path d="M16 1c-1.738 0-3.503.486-4.935 1.41L3.19 7.547c-.628.4-.975 1.098-.916 1.845.058.747.52 1.37 1.27 1.37h1.956v13.148c0 .828.672 1.5 1.5 1.5h6.075c.828 0 1.5-.672 1.5-1.5V18.25h2.85v5.66c0 .828.672 1.5 1.5 1.5h6.075c.828 0 1.5-.672 1.5-1.5V10.762h1.956c.75 0 1.212-.623 1.27-1.37.059-.747-.288-1.445-.916-1.845L20.935 2.41C19.503 1.486 17.738 1 16 1zm0 3.012c.802 0 1.57.224 2.202.625l6.558 4.237H7.24l6.558-4.237A4.08 4.08 0 0 1 16 4.012z"/>
+                </svg>
+                <span class="header-logo-text">Rentalizer</span>
+            </div>
+            <p class="header-sub">Estimate Airbnb revenue by address</p>
+            <a href="/map" class="header-map-link">
+                Explore the market map
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+        </header>
+
+        <main>
+            <form id="estimate-form" class="estimate-form" novalidate>
+                <div class="form-group">
+                    <label class="form-label" for="address">Address</label>
+                    <input type="text" id="address" name="address"
+                           class="form-input" placeholder="350 5th Ave, New York, NY" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="bedrooms">Bedrooms</label>
+                        <div class="form-select-wrap">
+                            <select id="bedrooms" name="bedrooms" class="form-select">
+                                <option value="0">Studio</option>
+                                <option value="1" selected>1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5+</option>
+                            </select>
+                            <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="bathrooms">Bathrooms</label>
+                        <div class="form-select-wrap">
+                            <select id="bathrooms" name="bathrooms" class="form-select">
+                                <option value="1" selected>1</option>
+                                <option value="2">2</option>
+                                <option value="3">3+</option>
+                            </select>
+                            <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="accommodates">Guests</label>
+                        <div class="form-select-wrap">
+                            <select id="accommodates" name="accommodates" class="form-select">
+                                <option value="1">1</option>
+                                <option value="2" selected>2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="6">6</option>
+                                <option value="8">8</option>
+                                <option value="10">10+</option>
+                            </select>
+                            <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="nightly_rate">Nightly Rate ($)</label>
+                        <input type="number" id="nightly_rate" name="nightly_rate"
+                               class="form-input" value="150" min="25" max="5000">
+                    </div>
+                </div>
+                <button type="submit" id="submit-btn" class="btn-primary">Estimate Revenue</button>
+            </form>
+
+            <div id="loading" class="loading hidden" role="status" aria-live="polite">
+                <div class="loading-spinner" aria-hidden="true"></div>
+                <p>Analyzing property…</p>
+            </div>
+
+            <div id="error" class="error-box hidden" role="alert" aria-live="assertive">
+                <p id="error-message"></p>
+            </div>
+
+            <div id="results" class="hidden" aria-live="polite" tabindex="-1">
+                <div class="result-hero">
+                    <span class="result-hero-label">Estimated Annual Revenue</span>
+                    <span id="revenue-range" class="result-hero-range"></span>
+                    <span id="confidence-badge" class="confidence-badge"></span>
+                </div>
+
+                <div class="result-grid">
+                    <div class="result-card">
+                        <h3 class="result-card-title">Confidence</h3>
+                        <div id="confidence-details"></div>
+                    </div>
+                    <div class="result-card">
+                        <h3 class="result-card-title">Market</h3>
+                        <div id="market-details"></div>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3 class="result-card-title">Comparable Properties</h3>
+                    <div id="comps-list"></div>
+                </div>
+
+                <div class="result-card">
+                    <h3 class="result-card-title">Location</h3>
+                    <div id="map" class="mini-map"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="page-footer">
+            <p id="disclaimer" class="footer-disclaimer"></p>
+            <p class="footer-attr">
+                Data source: <a href="https://insideairbnb.com" target="_blank">InsideAirbnb</a>
+                — Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+    <script src="/static/app.js" defer></script>
+</body>
+</html>

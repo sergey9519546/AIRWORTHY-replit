@@ -1,0 +1,1032 @@
+# AIRWORTHY — COMPLETE PRODUCT-LED UI/UX REDESIGN
+
+## ROLE
+
+Act as a senior product designer, creative director, UX architect, data-visualization designer, and frontend engineer.
+
+Your task is to inspect the existing AIRWORTHY project, understand how the current product works, and redesign the entire user experience into a distinctive, production-quality short-term-rental revenue estimation platform.
+
+Do not make a superficial visual refresh.
+
+Do not simply change colors, fonts, cards, border radii, or hero imagery.
+
+Reconsider the product hierarchy, information architecture, interactions, visual language, page composition, data presentation, and user journey from first principles.
+
+---
+
+# 1. PRODUCT DEFINITION
+
+AIRWORTHY is a tool that estimates how much a residential property could earn if operated as a short-term rental on platforms such as Airbnb, Vrbo, and Booking.com.
+
+The core user job is:
+
+> Enter a property and understand how much it could realistically earn as a short-term rental.
+
+The user should be able to answer:
+
+1. How much could this property earn annually?
+2. How much could it earn each month?
+3. What occupancy and nightly rate support that estimate?
+4. How reliable is the estimate?
+5. Which comparable properties were used?
+6. What property features increase or reduce revenue?
+7. How would the estimate change if the property or assumptions changed?
+8. How does the property compare with the surrounding market?
+
+AIRWORTHY is not primarily:
+
+* A mortgage calculator
+* A real-estate brokerage
+* A generic investment dashboard
+* A property-management platform
+* An aviation-themed product
+* A luxury-property marketing website
+* A broad “AI property intelligence” platform
+
+Do not expand the product into unrelated features.
+
+---
+
+# 2. PRIMARY PRODUCT PROMISE
+
+The main positioning should be:
+
+> See what any property could earn.
+
+Supporting explanation:
+
+> Estimate short-term-rental revenue using comparable listings, local demand, occupancy patterns, seasonality, and nightly pricing.
+
+Primary action:
+
+> Estimate earnings
+
+The product must feel immediate and understandable. The user should not need to understand advanced real-estate terminology before receiving value.
+
+---
+
+# 3. STRATEGIC DESIGN DIRECTION
+
+Create AIRWORTHY as a:
+
+# Property Earnings Instrument
+
+The experience should feel like a refined measurement system for short-term-rental earning potential.
+
+It should combine:
+
+* Editorial clarity
+* Geospatial intelligence
+* High-end data visualization
+* Direct manipulation
+* Calm product UX
+* Strong typography
+* Progressive disclosure
+* Clear evidence and confidence
+* Sophisticated motion used only when it improves understanding
+
+The final product should feel closer to a high-end spatial analysis tool than a conventional SaaS dashboard.
+
+Use the design principles found in work by studios and products such as:
+
+* Work & Co
+* Studio Freight
+* Unseen Studio
+* Locomotive
+* Basement Studio
+* Felt
+* Linear
+* High-end Mapbox implementations
+
+Learn from their methods:
+
+* Product logic generates the visual identity
+* The interface should reveal information progressively
+* Maps should function as interfaces, not decorative backgrounds
+* Motion should explain changes and relationships
+* Data should have a recognizable visual language
+* Complex information should remain calm and legible
+* The product should not look like a template
+
+Do not directly copy any particular website.
+
+---
+
+# 4. REMOVE THE GENERIC DESIGN LANGUAGE
+
+Do not use the following unless there is a strong functional reason:
+
+* Black-and-gold luxury styling
+* Purple gradients
+* Glassmorphism
+* Glowing cards
+* Oversized luxury mansion hero images
+* Generic AI sparkle icons
+* Hexagon logos
+* Airplane wings
+* Cockpit gauges
+* Radar screens
+* Flight-control interfaces
+* Fake testimonials
+* Fake client logos
+* Fake accuracy claims
+* Dozens of rounded cards
+* Floating metric boxes everywhere
+* Generic bar charts
+* Generic pricing bubbles covering the map
+* Dense permanent filter sidebars
+* Dashboard layouts where every item has equal visual weight
+* Copy such as “unlock insights,” “maximize potential,” or “AI-powered intelligence”
+
+Do not make AIRWORTHY look like AirDNA with a different color palette.
+
+---
+
+# 5. VISUAL SYSTEM
+
+## Overall character
+
+The interface should feel:
+
+* Bright
+* Precise
+* Spatial
+* Editorial
+* Confident
+* Modern
+* Calm
+* Technically credible
+
+## Suggested palette
+
+Use this as a starting point, not a mandatory final answer:
+
+* Main background: `#F4F5F1`
+* Primary surface: `#FFFFFF`
+* Main text: `#141514`
+* Secondary text: `#696D68`
+* Forecast blue: `#315CFF`
+* Selection or high-confidence lime: `#D7FF52`
+* Warning or downside coral: `#FF654F`
+* Structural gray: `#DADDD7`
+
+Use accent colors sparingly.
+
+## Typography
+
+Use a coordinated type system:
+
+* Contemporary grotesk for navigation, body, and controls
+* Tighter display typography for large revenue figures
+* Monospaced numerals or technical labels where useful
+* Strong distinction between narrative text and measured data
+
+Avoid using a fashion serif as the main product identity.
+
+## Geometry
+
+* Use lightly rounded corners, approximately 6–10 pixels
+* Prefer structural dividers and spacing over excessive cards
+* Avoid large shadows
+* Avoid excessive pills
+* Use full-width surfaces and strong grid alignment
+* Allow important information to occupy space
+
+---
+
+# 6. SIGNATURE AIRWORTHY VISUALIZATION
+
+Create a proprietary visualization called:
+
+# The Earnings Envelope
+
+AIRWORTHY should not rely on one falsely precise revenue number.
+
+The primary result should be a modeled range:
+
+```text
+ESTIMATED ANNUAL REVENUE
+
+$78,400 — $94,100
+
+Most likely: $86,200
+```
+
+Represent this as a refined probability or forecast field, not a basic progress bar.
+
+It should communicate:
+
+* Downside case
+* Likely range
+* Most likely estimate
+* Upside case
+* Confidence
+* Market benchmark
+
+The Earnings Envelope should become a recurring brand asset across:
+
+* Homepage estimates
+* Property reports
+* Map selections
+* Saved properties
+* Property comparisons
+* Exported reports
+
+It should look unique to AIRWORTHY and not like a generic chart-library component.
+
+---
+
+# 7. CORE USER JOURNEY
+
+The main journey should be:
+
+1. User enters an address, listing URL, or property.
+2. AIRWORTHY identifies the property.
+3. The product confirms property facts.
+4. Comparable rentals are gathered and evaluated.
+5. Market demand and seasonality are modeled.
+6. Revenue, ADR, and occupancy estimates are calculated.
+7. The user sees a clear annual revenue range.
+8. The user can inspect the evidence.
+9. The user can edit property facts and assumptions.
+10. The estimate updates immediately.
+11. The user can save, compare, or export the analysis.
+
+Every screen and interaction should reinforce this journey.
+
+---
+
+# 8. PAGE 1 — HOMEPAGE AND INSTANT ESTIMATE
+
+The homepage should behave like the product itself.
+
+Do not build a conventional marketing page with:
+
+* Hero
+* Feature cards
+* Testimonials
+* Logos
+* Pricing block
+* Generic CTA
+
+The first screen should immediately allow the user to estimate a property.
+
+## Initial state
+
+Suggested hierarchy:
+
+```text
+AIRWORTHY
+
+See what any property could earn.
+
+[ Enter an address or listing URL                         → ]
+
+Estimate revenue across Airbnb, Vrbo, and other
+short-term-rental channels.
+```
+
+Use a restrained map, aerial property field, parcel geometry, or data environment in the background.
+
+Do not allow a mansion photograph to dominate the page.
+
+## After address entry
+
+The homepage should transform into a live estimate sequence.
+
+The sequence can include:
+
+1. Locate the property
+2. Draw the parcel or location
+3. Confirm property facts
+4. Reveal nearby comparables
+5. Resolve the Earnings Envelope
+6. Display monthly seasonality
+7. Present the complete result
+
+## Result preview
+
+The first result should clearly show:
+
+```text
+2209 RIDGEWAY DRIVE
+Austin, Texas
+
+Estimated annual revenue
+
+$78,400 — $94,100
+
+Most likely revenue              $86,200
+Average nightly rate                $237
+Expected occupancy                    67%
+Comparable properties                  31
+Estimate confidence                  High
+```
+
+Primary CTA:
+
+> View complete estimate
+
+Secondary actions:
+
+* Adjust property facts
+* Save property
+* Compare another property
+
+The user must receive useful information before being forced to register or purchase.
+
+---
+
+# 9. PAGE 2 — MARKET MAP
+
+The market map should be a spatial discovery and comparison tool.
+
+The map must be the dominant interface, not a background behind a filter panel.
+
+## Layout
+
+* Map should occupy approximately 75–85% of the viewport
+* Controls should be contextual and compact
+* Avoid a large permanent left sidebar
+* Use a top command rail and contextual bottom panel
+
+## Search and filters
+
+Include only filters that materially affect revenue:
+
+* Location
+* Property type
+* Bedrooms
+* Bathrooms
+* Guest capacity
+* Entire home/private room
+* Pool
+* Hot tub
+* Revenue range
+* Occupancy range
+* Nightly rate
+* Comparable quality
+
+Advanced filters should be progressively disclosed.
+
+## Map layers
+
+Limit primary analytical layers to:
+
+* Annual revenue
+* Average nightly rate
+* Occupancy
+* Seasonality
+* Comparable density
+
+Do not expose every metric as a map layer.
+
+## Visualization
+
+Avoid covering the map with dozens of black price bubbles.
+
+Develop a more sophisticated earnings surface:
+
+* Market-level revenue intensity when zoomed out
+* Neighborhood or grid-level earning patterns
+* Property-level estimates when zoomed in
+* Selected property shown clearly
+* Nearby comparable properties revealed contextually
+* Labels automatically decluttered
+* Smooth transitions across zoom levels
+
+## Property selection
+
+When a property is selected:
+
+* Quiet the surrounding map
+* Reveal nearby comparable rentals
+* Show the selected property clearly
+* Open a bottom inspection panel
+
+Example:
+
+```text
+2209 RIDGEWAY DRIVE
+
+$78.4K–$94.1K annual revenue
+$237 average nightly rate
+67% expected occupancy
+31 comparable rentals
+High estimate confidence
+
+[Open estimate]
+```
+
+The user should remain geographically oriented.
+
+---
+
+# 10. PAGE 3 — PROPERTY EARNINGS REPORT
+
+The property report is the central product experience.
+
+It should read like a refined evidence-based property dossier, not a grid of dashboard cards.
+
+## First viewport
+
+The answer must be visible immediately:
+
+```text
+2209 RIDGEWAY DRIVE
+Austin, Texas
+
+ESTIMATED ANNUAL REVENUE
+
+$78,400 — $94,100
+
+MOST LIKELY
+$86,200
+```
+
+Supporting metrics:
+
+* Average nightly rate
+* Expected occupancy
+* Estimate confidence
+* Comparable count
+* Forecast horizon
+* Last data update
+* Property type
+* Bedrooms
+* Bathrooms
+* Guest capacity
+
+The property photograph should confirm the property but should not overpower the analysis.
+
+---
+
+# 11. MONTHLY FORECAST
+
+Create a monthly earnings visualization that communicates both expected performance and uncertainty.
+
+Each month should support:
+
+* Expected revenue
+* Revenue range
+* Average nightly rate
+* Occupancy
+* Demand level
+* Relevant seasonality
+
+Do not use twelve identical bars without context.
+
+Allow the user to:
+
+* Hover or click each month
+* Compare expected vs conservative vs strong case
+* Understand why certain months perform differently
+* Toggle annual, monthly, and seasonal views
+
+---
+
+# 12. PERFORMANCE DRIVERS
+
+Explain why the property receives its estimate.
+
+Use plain language and estimated financial impact.
+
+Example:
+
+```text
+POSITIVE CONTRIBUTORS
+
+Pool and outdoor area                    +$8,900
+Four-bedroom guest capacity              +$7,200
+Strong summer weekend demand             +$5,100
+
+LIMITING FACTORS
+
+Distance from visitor district           −$4,600
+Growing nearby rental supply             −$3,200
+Weak winter weekday demand               −$2,700
+```
+
+The user should understand the estimate without needing to interpret abstract analytics.
+
+---
+
+# 13. COMPARABLE RENTALS
+
+Comparable properties are the evidence behind the estimate and should be treated as a primary part of the product.
+
+Each comparable should display:
+
+* Property image
+* Match percentage
+* Distance
+* Bedrooms
+* Bathrooms
+* Guest capacity
+* Key amenities
+* Annual revenue
+* Average nightly rate
+* Occupancy
+* Active months
+* Review count where available
+* Reason for inclusion
+* Differences from the subject property
+
+Allow the user to:
+
+* Inspect each comparable
+* Include or exclude a comparable
+* See why AIRWORTHY selected it
+* View the effect of removing it
+* Sort by similarity, revenue, distance, ADR, or occupancy
+* Compare the subject property directly with selected comparables
+
+Do not make comparables a small sidebar widget.
+
+---
+
+# 14. PROPERTY FACTS AND ASSUMPTIONS
+
+Allow the user to correct or modify property details.
+
+Include:
+
+* Property type
+* Bedrooms
+* Bathrooms
+* Guest capacity
+* Entire home/private room
+* Pool
+* Hot tub
+* Parking
+* Outdoor space
+* Views
+* Waterfront
+* Minimum stay
+* Cleaning fee
+* Management model
+* Operating availability
+* Renovation or furnishing quality
+
+Changes should update the estimate immediately.
+
+Show the estimated financial effect of meaningful changes.
+
+Example:
+
+```text
+Add a hot tub
+
+Estimated annual revenue change:
++$3,200 to +$5,100
+```
+
+The product should feel exploratory and responsive.
+
+---
+
+# 15. CONFIDENCE AND TRANSPARENCY
+
+AIRWORTHY must explain how reliable the estimate is.
+
+Do not merely display:
+
+> Confidence: High
+
+Explain the reasons:
+
+```text
+HIGH CONFIDENCE
+
+31 closely matched comparable rentals
+92% property-type similarity
+Recent market observations
+Strong twelve-month listing coverage
+Consistent occupancy records
+Moderate amenity variation
+```
+
+Also disclose weaknesses:
+
+* Limited comparable inventory
+* Sparse recent data
+* Unusual property type
+* Extreme amenity differences
+* Highly seasonal market
+* Regulation uncertainty
+* Incomplete property facts
+
+Avoid unsupported claims such as “98% accurate.”
+
+---
+
+# 16. BRAND USE OF “AIRWORTHY”
+
+Do not turn the name into aviation decoration.
+
+Avoid:
+
+* Airplane icons
+* Wings
+* Flight dashboards
+* Runways
+* Cockpit displays
+* Radar graphics
+* Airline branding
+
+The name should be used conceptually:
+
+> A property estimate is AIRWORTHY when enough reliable evidence exists to support the projected earnings.
+
+Possible estimate-quality states:
+
+* Airworthy
+* Limited evidence
+* Low confidence
+* More property details needed
+
+Do not create a meaningless 0–100 AIRWORTHY score unless the score has a transparent, defensible formula and clearly improves the user’s decision.
+
+Revenue must remain the primary result.
+
+---
+
+# 17. MOTION AND INTERACTION
+
+Use motion to explain what is happening.
+
+Good uses of motion:
+
+* Locating a property
+* Revealing the parcel
+* Connecting comparable rentals
+* Resolving the earnings range
+* Updating the estimate after assumptions change
+* Transitioning between annual and monthly views
+* Showing map layer changes
+* Showing how comparable selection affects confidence
+
+Avoid:
+
+* Constant ambient movement
+* Decorative floating elements
+* Excessive parallax
+* Long cinematic intros
+* Slow animations that delay access to the estimate
+* Motion that harms map usability
+
+All transitions should feel fast, deliberate, and informative.
+
+Respect reduced-motion preferences.
+
+---
+
+# 18. RESPONSIVE DESIGN
+
+The design must work deliberately across:
+
+* Large desktop
+* Standard laptop
+* Tablet
+* Mobile
+
+Do not simply compress the desktop layout.
+
+On mobile:
+
+* Address search remains the primary action
+* Revenue estimate appears immediately
+* Earnings Envelope remains understandable
+* Map uses bottom sheets
+* Comparables become swipeable or stacked
+* Editable assumptions use clear mobile controls
+* Important data is not hidden behind tiny tabs
+* The user can complete the entire estimation workflow
+
+---
+
+# 19. ACCESSIBILITY
+
+Implement:
+
+* Semantic HTML
+* Keyboard navigation
+* Clear focus states
+* WCAG-compliant contrast
+* Accessible form labels
+* Screen-reader-friendly charts and data summaries
+* Reduced-motion support
+* Large enough touch targets
+* Proper error messaging
+* Proper loading and empty states
+
+Do not trade usability for visual experimentation.
+
+---
+
+# 20. TECHNICAL EXECUTION
+
+First inspect the existing codebase before changing anything.
+
+Determine:
+
+* Framework and routing structure
+* Existing components
+* Data model
+* API integrations
+* Current state management
+* Mapping library
+* Charting library
+* Existing design tokens
+* Current responsive behavior
+* Existing bugs or incomplete routes
+* Which parts can be reused
+* Which parts should be rebuilt
+
+Then create a coherent implementation plan.
+
+## Implementation standards
+
+* Build reusable components
+* Create a centralized design-token system
+* Avoid hardcoded styles scattered across files
+* Preserve working business logic unless improvement is required
+* Do not fabricate APIs or data without clearly labeling mock data
+* Keep product logic separate from presentation
+* Use realistic property and revenue data in demos
+* Include complete loading, empty, error, and partial-data states
+* Optimize maps, charts, imagery, and animations
+* Avoid unnecessary dependencies
+* Keep performance high
+* Ensure there are no broken buttons or dead-end routes
+
+Use the project’s current technology stack unless there is a strong technical reason to change it.
+
+Do not rebuild the entire application in a new framework only to achieve a visual redesign.
+
+---
+
+# 21. REQUIRED COMPONENTS
+
+Build or improve the following:
+
+* Global navigation
+* Address and listing URL search
+* Property autocomplete
+* Property confirmation state
+* Earnings Envelope
+* Revenue range summary
+* Monthly forecast visualization
+* ADR and occupancy metrics
+* Confidence explanation
+* Comparable-rental explorer
+* Comparable inclusion/exclusion controls
+* Property assumptions editor
+* Revenue-impact indicators
+* Market map
+* Map layer selector
+* Property inspection bottom panel
+* Saved properties
+* Property comparison view
+* Export/report action
+* Loading sequence
+* Error states
+* No-data state
+* Incomplete-property state
+* Responsive mobile layouts
+
+---
+
+# 22. REQUIRED SCREENS
+
+At minimum, implement these screens as complete, connected experiences:
+
+## A. Homepage / Estimate Entry
+
+* Address or listing URL input
+* Live property location or visual context
+* Instant estimate result
+* Earnings Envelope
+* Key metrics
+* CTA to full report
+
+## B. Market Map
+
+* Full-screen earnings map
+* Search
+* Compact filters
+* Analytical layers
+* Property selection
+* Comparable reveal
+* Bottom inspection panel
+
+## C. Property Earnings Report
+
+* Revenue range
+* Most likely estimate
+* ADR
+* Occupancy
+* Monthly revenue
+* Performance drivers
+* Comparable rentals
+* Editable property facts
+* Confidence explanation
+* Save, compare, and export actions
+
+## D. Property Comparison
+
+Allow two or more properties to be compared by:
+
+* Annual revenue
+* Revenue range
+* ADR
+* Occupancy
+* Seasonality
+* Confidence
+* Comparable quality
+* Property features
+* Monthly earning pattern
+
+---
+
+# 23. CONTENT STYLE
+
+Use short, specific, explanatory copy.
+
+Preferred:
+
+* Estimated annual revenue
+* Most likely revenue
+* Average nightly rate
+* Expected occupancy
+* Comparable rentals
+* Estimate confidence
+* What increases earnings
+* What limits earnings
+* Adjust property details
+* View comparable evidence
+
+Avoid:
+
+* Unlock your potential
+* Leverage AI
+* Maximize performance
+* Make data-driven decisions
+* Revolutionize your investments
+* Intelligent market insights
+* Powerful analytics
+* Seamless experience
+
+Do not use filler content simply to occupy space.
+
+---
+
+# 24. PRODUCT HIERARCHY
+
+The visual hierarchy should always prioritize:
+
+1. Property
+2. Revenue estimate
+3. Revenue range
+4. Monthly earning pattern
+5. ADR and occupancy
+6. Comparable evidence
+7. Confidence
+8. Performance drivers
+9. Adjustable assumptions
+10. Secondary market information
+
+Do not allow navigation, decorative imagery, generic feature claims, or branding to compete with the estimate.
+
+---
+
+# 25. WORKFLOW
+
+Follow this process:
+
+## Phase 1 — Audit
+
+Inspect the current application and document:
+
+* What currently exists
+* What is working
+* What is generic
+* What is confusing
+* What is visually weak
+* What is disconnected
+* What should be preserved
+* What should be removed
+* What should be redesigned
+
+## Phase 2 — Product architecture
+
+Define:
+
+* Primary user journey
+* Route structure
+* Page hierarchy
+* Component architecture
+* Data hierarchy
+* Interaction model
+* Map behavior
+* Responsive behavior
+
+## Phase 3 — Visual system
+
+Create:
+
+* Color tokens
+* Typography scale
+* Spacing system
+* Grid
+* Surface rules
+* Control states
+* Data-visualization rules
+* Motion rules
+* Responsive rules
+
+## Phase 4 — Implementation
+
+Implement the complete redesign in the existing project.
+
+Do not stop after producing an explanation or mockup.
+
+Build the actual interface.
+
+## Phase 5 — Validation
+
+Review the completed application at:
+
+* Desktop width
+* Laptop width
+* Tablet width
+* Mobile width
+
+Test:
+
+* Search
+* Navigation
+* Map interaction
+* Filters
+* Property selection
+* Comparable selection
+* Assumption editing
+* Estimate updates
+* Save actions
+* Compare actions
+* Export action
+* Loading states
+* Error states
+
+Fix visual and functional inconsistencies before declaring the work complete.
+
+---
+
+# 26. ACCEPTANCE CRITERIA
+
+The redesign is successful only if:
+
+* A new user understands AIRWORTHY within five seconds
+* The address input is immediately visible
+* The revenue estimate is the visual focal point
+* The product does not resemble a generic SaaS template
+* The design does not rely on luxury-property imagery
+* The map feels like an analytical workspace
+* The property report explains the estimate clearly
+* Comparable rentals feel like evidence, not decoration
+* Confidence is transparent
+* The estimate can be adjusted interactively
+* The product works across desktop and mobile
+* There are no dead buttons
+* There are no placeholder sections presented as complete
+* All screens share one coherent design system
+* Motion improves comprehension
+* The interface remains fast and usable
+* The final result feels like a real, high-end product rather than a design concept
+
+---
+
+# 27. FINAL INSTRUCTION
+
+Do not give me another generic dashboard.
+
+Do not interpret “high-end” as black, gold, dark mode, glass panels, serif headlines, and luxury-home photography.
+
+High-end means:
+
+* Strong product reasoning
+* Distinctive interaction
+* Precise hierarchy
+* Excellent typography
+* Original data visualization
+* Spatial intelligence
+* Fast comprehension
+* Evidence-based results
+* Coherent implementation
+* Attention to every state and detail
+
+Study the current project, make the necessary product and design decisions, implement the redesign, and then critically audit your own work before presenting the final result.
+
+Do not merely describe what should be built.
+
+Build it.

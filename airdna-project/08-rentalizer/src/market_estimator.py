@@ -1,0 +1,194 @@
+"""Comp-based revenue estimation from the market listings DB.
+
+Generalizable by design: coverage is determined by *data density* (are there
+enough comparable listings near the address?), not a hardcoded region list.
+Any market loaded into the `listings` table is supported automatically — no
+code changes needed to add a new city or state. Estimates use the real
+`estimated_revenue_l365d` figures from InsideAirbnb rather than a model.
+"""
+import math
+from collections import Counter
+from statistics import median
+
+MIN_COMPS = 5           # fewer than this within MAX_RADIUS_KM => no coverage
+TARGET_COMPS = 25       # cap on comps used for the point estimate
+MAX_RADIUS_KM = 30.0    # widest search ring
+RADII_KM = (2.0, 5.0, 10.0, 20.0, 30.0)
+# Winsorize revenue to tame extreme/mis-scaled outliers before averaging.
+REV_MIN, REV_MAX = 1_000.0, 750_000.0
+
+
+def _haversine_km(lat1, lng1, lat2, lng2):
+    R = 6371.0
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlmb = math.radians(lng2 - lng1)
+    a = math.sin(dphi / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dlmb / 2) ** 2
+    return 2 * R * math.asin(math.sqrt(a))
+
+
+def _pretty_city(slug):
+    return slug.replace("-", " ").title() if slug else "Unknown"
+
+
+def _percentile(sorted_vals, pct):
+    if not sorted_vals:
+        return 0.0
+    k = (len(sorted_vals) - 1) * pct
+    lo, hi = math.floor(k), math.ceil(k)
+    if lo == hi:
+        return sorted_vals[int(k)]
+    return sorted_vals[lo] * (hi - k) + sorted_vals[hi] * (k - lo)
+
+
+def covered_markets(conn):
+    """Distinct states present in the DB, for honest 'no coverage' messaging."""
+    rows = conn.execute(
+        "SELECT DISTINCT state FROM listings WHERE state IS NOT NULL ORDER BY state"
+    ).fetchall()
+    return [r[0].upper() for r in rows]
+
+
+def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire home/apt"):
+    """Return a comp-based estimate dict, or None if there's no local coverage.
+
+    The returned dict mirrors the fields the API response needs (annual_revenue,
+    confidence, comps, market, data_freshness, n_comps).
+    """
+    # Over-fetch a bounding box for the widest ring, then filter by true distance.
+    dlat = MAX_RADIUS_KM / 111.0
+    coslat = max(0.1, math.cos(math.radians(lat)))
+    dlng = MAX_RADIUS_KM / (111.0 * coslat)
+
+    rows = conn.execute(
+        """
+        SELECT city, state, bedrooms, accommodates, price_numeric,
+               estimated_revenue_l365d AS rev, latitude, longitude
+        FROM listings
+        WHERE (state, city, snapshot_date) IN (
+                SELECT state, city, MAX(snapshot_date) FROM listings GROUP BY state, city
+              )
+          AND room_type = ?
+          AND estimated_revenue_l365d IS NOT NULL
+          AND estimated_revenue_l365d > 0
+          AND latitude BETWEEN ? AND ?
+          AND longitude BETWEEN ? AND ?
+        """,
+        (room_type, lat - dlat, lat + dlat, lng - dlng, lng + dlng),
+    ).fetchall()
+    if not rows:
+        return None
+
+    cand = []
+    for r in rows:
+        d = _haversine_km(lat, lng, r["latitude"], r["longitude"])
+        if d <= MAX_RADIUS_KM:
+            cand.append((d, r))
+    if len(cand) < MIN_COMPS:
+        return None
+    cand.sort(key=lambda x: x[0])
+
+    # Adaptive radius: smallest ring yielding >= MIN_COMPS, preferring bedroom matches.
+    chosen = None
+    for radius in RADII_KM:
+        within = [(d, r) for d, r in cand if d <= radius]
+        bed_matched = [
+            (d, r) for d, r in within
+            if r["bedrooms"] is not None and abs(r["bedrooms"] - bedrooms) <= 1
+        ]
+        pool = bed_matched if len(bed_matched) >= MIN_COMPS else within
+        if len(pool) >= MIN_COMPS:
+            chosen = pool
+            break
+    if chosen is None:
+        chosen = cand  # already within MAX_RADIUS_KM
+    if len(chosen) < MIN_COMPS:
+        return None
+
+    scored = []
+    for d, r in chosen:
+        bed = r["bedrooms"] if r["bedrooms"] is not None else bedrooms
+        acc = r["accommodates"] if r["accommodates"] is not None else accommodates
+        bed_sim = 1.0 / (1.0 + abs(bed - bedrooms))
+        acc_sim = 1.0 / (1.0 + abs(acc - accommodates) / 2.0)
+        dist_w = 1.0 / (1.0 + d)
+        score = dist_w * (0.6 * bed_sim + 0.4 * acc_sim)
+        rev = min(max(float(r["rev"]), REV_MIN), REV_MAX)
+        scored.append({"dist": d, "score": score, "rev": rev, "row": r})
+
+    scored.sort(key=lambda s: (-s["score"], s["dist"]))
+    used = scored[:TARGET_COMPS]
+
+    # Similarity-weighted point estimate.
+    wsum = sum(s["score"] for s in used) or 1.0
+    point = sum(s["score"] * s["rev"] for s in used) / wsum
+
+    # Data-driven interval from the comp revenue distribution (IQR).
+    revs = sorted(s["rev"] for s in used)
+    lower = _percentile(revs, 0.25)
+    upper = _percentile(revs, 0.75)
+    mean = sum(revs) / len(revs)
+    var = sum((x - mean) ** 2 for x in revs) / len(revs)
+    cv = (var ** 0.5) / mean if mean > 0 else 0.0
+
+    n = len(used)
+    if n >= 15 and cv < 0.6:
+        level = "high"
+    elif n >= 8:
+        level = "medium"
+    else:
+        level = "low"
+
+    # Modal market among the comps used.
+    (city_slug, state), _ = Counter(
+        (s["row"]["city"], s["row"]["state"]) for s in used
+    ).most_common(1)[0]
+    city_label = f"{_pretty_city(city_slug)}, {state.upper()}"
+
+    prices = sorted(
+        float(s["row"]["price_numeric"]) for s in used
+        if s["row"]["price_numeric"] is not None
+    )
+    median_price = median(prices) if prices else 0.0
+
+    active = conn.execute(
+        """SELECT COUNT(*) FROM listings
+           WHERE state = ? AND city = ? AND room_type = ?
+             AND estimated_revenue_l365d IS NOT NULL""",
+        (state, city_slug, room_type),
+    ).fetchone()[0]
+
+    freshness = conn.execute(
+        "SELECT MAX(snapshot_date) FROM listings WHERE state = ? AND city = ?",
+        (state, city_slug),
+    ).fetchone()[0]
+
+    comps_out = [
+        {
+            "distance_km": round(s["dist"], 2),
+            "bedrooms": int(s["row"]["bedrooms"]) if s["row"]["bedrooms"] is not None else 0,
+            "revenue": round(s["rev"], 0),
+            "similarity_score": round(s["score"], 4),
+            "borough": city_label,
+        }
+        for s in used[:5]
+    ]
+
+    return {
+        "annual_revenue": round(point, 0),
+        "confidence": {
+            "level": level,
+            "revenue_lower": round(min(lower, point), 0),
+            "revenue_upper": round(max(upper, point), 0),
+            "cv": round(cv, 4),
+        },
+        "comps": comps_out,
+        "market": {
+            "borough": city_label,
+            "median_revenue": round(median(revs), 0),
+            "median_price": round(median_price, 0),
+            "active_listings": int(active),
+        },
+        "data_freshness": freshness,
+        "n_comps": n,
+    }

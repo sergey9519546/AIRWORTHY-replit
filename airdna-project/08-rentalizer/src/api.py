@@ -1,0 +1,543 @@
+"""FastAPI application — Rentalizer API."""
+import logging
+import os
+import time
+import uuid
+from contextlib import asynccontextmanager
+
+import numpy as np
+from fastapi import FastAPI, Request, Depends, HTTPException
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi.security import APIKeyHeader
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
+from .config import settings
+from .schemas import (
+    EstimateRequest, EstimateResponse, ErrorResponse,
+    ConfidenceResponse, CompResponse, MarketResponse,
+    HealthResponse, ModelInfoResponse, CreditsResponse,
+)
+from .exceptions import (
+    GeocodingError, OutsideCoverageError,
+    ModelNotReadyError, InvalidInputError,
+)
+from .validation import validate_input, in_nyc_bounds
+from .geocoder import geocode
+from .comp_finder import build_index, find_comps, predict_from_comps, get_market_stats
+from .market_estimator import estimate_from_db, covered_markets
+from .features import build_features, get_borough_from_coords
+from .model import load_model, predict, get_model_info, get_feature_columns
+from .confidence import compute_confidence
+
+import pandas as pd
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Map database connection
+import sqlite3
+MAP_DB_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+    'db', 'airbnb.db'
+)
+
+
+def _get_map_db():
+    """Return a connection to the map/listings database."""
+    conn = sqlite3.connect(MAP_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Startup/shutdown lifecycle."""
+    # Startup
+    logger.info("Loading model...")
+    load_model()
+
+    logger.info("Building comp index...")
+    train_df = pd.read_csv(settings.TRAIN_DATA_PATH)
+    build_index(train_df)
+
+    if not API_KEYS:
+        _msg = ("AUTH DISABLED: no API_KEYS configured — /v1/estimate and /v1/batch accept "
+                "unauthenticated requests. Set the API_KEYS secret (comma-separated) to require "
+                "an X-API-Key header before exposing this publicly.")
+        logger.warning(("[PRODUCTION] " + _msg) if os.getenv("REPLIT_DEPLOYMENT") else _msg)
+
+    logger.info("Ready!")
+    yield
+    # Shutdown
+    logger.info("Shutting down...")
+
+
+# Rate limiting
+limiter = Limiter(key_func=get_remote_address)
+
+app = FastAPI(
+    title="Rentalizer",
+    description="Short-term rental revenue estimation tool",
+    version=settings.VERSION,
+    lifespan=lifespan,
+)
+app.state.limiter = limiter
+
+# Auth
+API_KEYS = [k.strip() for k in os.getenv("API_KEYS", "").split(",") if k.strip()]
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+async def verify_api_key(api_key: str = Depends(api_key_header)):
+    """Verify API key. Returns None if no keys configured (dev mode)."""
+    if not API_KEYS:
+        return None  # No auth configured (dev mode)
+    if api_key not in API_KEYS:
+        raise HTTPException(status_code=401, detail="Invalid or missing API key")
+    return api_key
+
+# Static files and templates
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
+
+
+# --- Exception handlers ---
+
+@app.exception_handler(GeocodingError)
+async def geocoding_handler(request, exc):
+    return JSONResponse(status_code=422, content={
+        "error": "geocoding_failed",
+        "detail": str(exc),
+        "suggestion": "Try a more specific address (e.g., '350 5th Ave, New York, NY 10118')",
+    })
+
+@app.exception_handler(OutsideCoverageError)
+async def coverage_handler(request, exc):
+    return JSONResponse(status_code=422, content={
+        "error": "outside_coverage_area",
+        "detail": str(exc),
+        "suggestion": "Try an address in a covered market. The detail lists which markets have data.",
+    })
+
+@app.exception_handler(InvalidInputError)
+async def invalid_input_handler(request, exc):
+    return JSONResponse(status_code=422, content={
+        "error": "invalid_input",
+        "detail": str(exc),
+    })
+
+@app.exception_handler(Exception)
+async def generic_handler(request, exc):
+    logger.exception(f"Unhandled error: {exc}")
+    return JSONResponse(status_code=500, content={
+        "error": "internal_error",
+        "detail": "An unexpected error occurred.",
+    })
+
+
+# --- Routes ---
+
+@app.get("/favicon.ico")
+async def favicon():
+    favicon_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), '..', 'static', 'favicon.svg'
+    )
+    if os.path.exists(favicon_path):
+        return FileResponse(favicon_path, media_type="image/svg+xml")
+    # A 204 must have an empty body — JSONResponse(content=None) serializes
+    # the string "null" as the body, which is inconsistent with the status.
+    return Response(status_code=204)
+
+
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    """Serve the web UI."""
+    return templates.TemplateResponse(request=request, name="index.html")
+
+
+@app.get("/map", response_class=HTMLResponse)
+async def map_page(request: Request):
+    """Serve the map explorer."""
+    return templates.TemplateResponse(request=request, name="map.html")
+
+
+@app.get("/api/cities")
+async def cities(state: str | None = None):
+    """Return available cities with counts and bounding boxes."""
+    if not os.path.exists(MAP_DB_PATH):
+        return {"cities": []}
+    conn = _get_map_db()
+    try:
+        # Mirror /api/listings' "latest snapshot per city" semantics so chip
+        # counts and bounds match what the map actually displays — otherwise
+        # a city with multiple historical snapshots would show an inflated
+        # count here versus the listings the map renders.
+        sql = """
+            SELECT state, city,
+                   COUNT(*) as cnt,
+                   MIN(latitude)  as min_lat,
+                   MAX(latitude)  as max_lat,
+                   MIN(longitude) as min_lng,
+                   MAX(longitude) as max_lng
+            FROM listings
+            WHERE latitude IS NOT NULL AND longitude IS NOT NULL
+              AND (state, city, snapshot_date) IN (
+                  SELECT state, city, MAX(snapshot_date)
+                  FROM listings
+                  GROUP BY state, city
+              )
+        """
+        params = []
+        if state:
+            sql += " AND state = ?"
+            params.append(state)
+        sql += " GROUP BY state, city ORDER BY cnt DESC"
+        rows = conn.execute(sql, params).fetchall()
+        cities_out = []
+        for r in rows:
+            cities_out.append({
+                "state": r[0],
+                "slug":  r[1],
+                "count": r[2],
+                "bounds": [[r[3], r[4]], [r[5], r[6]]],  # [[min_lat,max_lat],[min_lng,max_lng]]
+            })
+        # Real data freshness = latest snapshot date across the returned scope,
+        # so the UI can show an accurate date instead of a hardcoded string.
+        fresh_sql = "SELECT MAX(snapshot_date) FROM listings"
+        fresh_params = []
+        if state:
+            fresh_sql += " WHERE state = ?"
+            fresh_params.append(state)
+        freshness = conn.execute(fresh_sql, fresh_params).fetchone()[0]
+        return {"cities": cities_out, "data_freshness": freshness}
+    finally:
+        conn.close()
+
+
+@app.get("/api/listings")
+async def listings(
+    north: float,
+    south: float,
+    east: float,
+    west: float,
+    limit: int = 1000,
+    state: str | None = None,
+    city: str | None = None,
+    room_type: str | None = None,
+    min_price: float | None = None,
+    max_price: float | None = None,
+    guest_favorites: bool = False,
+    instant_book: bool = False,
+):
+    """Return listings within a bounding box for the map."""
+    if not os.path.exists(MAP_DB_PATH):
+        return {"listings": []}
+
+    # Validate and clamp inputs
+    if not (-90 <= south <= north <= 90) or not (-180 <= west <= east <= 180):
+        return JSONResponse(status_code=400, content={"error": "invalid_bounds"})
+    limit = max(1, min(limit, 5000))
+    if min_price is not None and min_price < 0:
+        return JSONResponse(status_code=400, content={"error": "min_price_must_be_non_negative"})
+    if max_price is not None and max_price < 0:
+        return JSONResponse(status_code=400, content={"error": "max_price_must_be_non_negative"})
+    if min_price is not None and max_price is not None and min_price > max_price:
+        return JSONResponse(status_code=400, content={"error": "min_price_cannot_exceed_max_price"})
+
+    conn = _get_map_db()
+    try:
+        # Only show the latest snapshot per city to avoid duplicates when multiple snapshots exist.
+        sql = """
+            SELECT id, state, city, snapshot_date, name, room_type, bedrooms,
+                   accommodates, price_numeric, number_of_reviews,
+                   estimated_revenue_l365d, latitude, longitude
+            FROM listings
+            WHERE (state, city, snapshot_date) IN (
+                SELECT state, city, MAX(snapshot_date)
+                FROM listings
+                GROUP BY state, city
+            )
+              AND latitude BETWEEN ? AND ?
+              AND longitude BETWEEN ? AND ?
+        """
+        params = [south, north, west, east]
+
+        if state:
+            sql += " AND state = ?"
+            params.append(state)
+        if city:
+            sql += " AND city = ?"
+            params.append(city)
+        if room_type:
+            sql += " AND room_type = ?"
+            params.append(room_type)
+        if min_price is not None:
+            sql += " AND price_numeric >= ?"
+            params.append(min_price)
+        if max_price is not None:
+            sql += " AND price_numeric <= ?"
+            params.append(max_price)
+        if guest_favorites:
+            sql += " AND review_scores_rating >= 4.8 AND number_of_reviews >= 10"
+        if instant_book:
+            sql += " AND instant_bookable = 1"
+
+        sql += " ORDER BY estimated_revenue_l365d DESC NULLS LAST LIMIT ?"
+        params.append(limit)
+
+        rows = conn.execute(sql, params).fetchall()
+        return {"listings": [dict(r) for r in rows]}
+    finally:
+        conn.close()
+
+
+async def _do_estimate(req: EstimateRequest) -> EstimateResponse:
+    """Core estimate logic shared by the route and the batch endpoint.
+
+    Raises typed exceptions (GeocodingError / OutsideCoverageError /
+    InvalidInputError) so both callers can translate them consistently — the
+    route via FastAPI's exception handlers, batch via per-item error objects.
+    """
+    request_id = str(uuid.uuid4())[:8]
+    start = time.time()
+
+    # 1. Validate input
+    validate_input(req.address, req.bedrooms, req.bathrooms, req.accommodates, req.nightly_rate)
+
+    # 2. Geocode
+    t0 = time.time()
+    geo = geocode(req.address)
+    geocode_ms = int((time.time() - t0) * 1000)
+
+    # 3. Route by coverage: NYC uses the trained ML model; every other market
+    #    is served by the comp-based estimate over the shared listings DB.
+    if in_nyc_bounds(geo.lat, geo.lng):
+        return _estimate_nyc_ml(req, geo, request_id, start, geocode_ms)
+    return _estimate_from_market(req, geo, request_id, start, geocode_ms)
+
+
+def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, geocode_ms: int) -> EstimateResponse:
+    """NYC estimate using the trained LightGBM model + NYC comp index."""
+    # 4. Find comps
+    t0 = time.time()
+    comps = find_comps(geo.lat, geo.lng, req.bedrooms, req.accommodates, req.bathrooms)
+    comp_ms = int((time.time() - t0) * 1000)
+
+    # 5. Comp-based prediction
+    comp_pred, comp_cv = predict_from_comps(comps)
+
+    # 6. Determine borough
+    borough = get_borough_from_coords(geo.lat, geo.lng)
+
+    # 7. Build features
+    feature_cols = get_feature_columns()
+    features = build_features(
+        req.nightly_rate, req.bedrooms, req.bathrooms, req.accommodates,
+        geo.lat, geo.lng, comps, borough, feature_cols,
+        minimum_nights=req.minimum_nights,
+        is_superhost=req.is_superhost,
+        host_listings_count=req.host_listings_count,
+    )
+
+    # 8. Model prediction
+    t0 = time.time()
+    log_revenue = predict(features)
+    model_ms = int((time.time() - t0) * 1000)
+
+    # 8b. Market stats (needed for fallback below)
+    market = get_market_stats(borough)
+
+    # 9. Smart blend: use comps when model is clearly wrong
+    # Model is trained on existing listings. For new listings (no reviews),
+    # it under-predicts. Comp-based prediction uses actual revenue from
+    # similar properties, so it's more reliable for new listings.
+    comp_revenue = float(comp_pred) if comp_pred is not None else None
+    model_revenue = float(np.expm1(log_revenue))
+
+    if comp_revenue is not None and comp_revenue > 0 and len(comps) >= 3:
+        comp_median = np.median([c.revenue for c in comps])
+        ratio = model_revenue / comp_median if comp_median > 0 else 1.0
+
+        if 0.5 <= ratio <= 2.0:
+            alpha = 0.7
+        elif 0.25 <= ratio <= 4.0:
+            alpha = 0.5
+        else:
+            alpha = 0.3
+
+        final_log_revenue = alpha * log_revenue + (1 - alpha) * np.log1p(comp_revenue)
+    elif comp_revenue is not None and comp_revenue > 0:
+        # Few comps but some — blend heavily toward comps
+        final_log_revenue = 0.3 * log_revenue + 0.7 * np.log1p(comp_revenue)
+    else:
+        # No comps at all — use market median instead of raw model
+        market_revenue = market.get("median_revenue", 79130)
+        final_log_revenue = 0.5 * log_revenue + 0.5 * np.log1p(market_revenue)
+
+    annual_revenue = float(np.expm1(final_log_revenue))
+
+    # 10. Confidence
+    comp_revenues = [c.revenue for c in comps]
+    confidence = compute_confidence(annual_revenue, comp_revenues, len(comps))
+
+    total_ms = int((time.time() - start) * 1000)
+    logger.info(
+        f"[{request_id}] address={req.address!r} lat={geo.lat:.4f} lng={geo.lng:.4f} "
+        f"comps={len(comps)} revenue=${annual_revenue:,.0f} conf={confidence.level} "
+        f"geocode={geocode_ms}ms comp={comp_ms}ms model={model_ms}ms total={total_ms}ms"
+    )
+
+    # 12. Format response
+    return EstimateResponse(
+        address=req.address,
+        lat=round(geo.lat, 6),
+        lng=round(geo.lng, 6),
+        annual_revenue=round(annual_revenue, 0),
+        confidence=ConfidenceResponse(
+            level=confidence.level,
+            revenue_lower=confidence.revenue_lower,
+            revenue_upper=confidence.revenue_upper,
+            cv=confidence.cv,
+        ),
+        comps=[
+            CompResponse(
+                distance_km=c.distance_km,
+                bedrooms=c.bedrooms,
+                revenue=round(c.revenue, 0),
+                similarity_score=c.score,
+                borough=c.borough,
+            )
+            for c in comps[:5]
+        ],
+        market=MarketResponse(
+            borough=market.get("borough", borough),
+            median_revenue=market.get("median_revenue", 0),
+            median_price=market.get("median_price", 0),
+            active_listings=market.get("active_listings", 0),
+        ),
+        disclaimer=settings.DISCLAIMER,
+        data_source=settings.DATA_SOURCE,
+        model_version=get_model_info().get("version", settings.VERSION),
+        data_freshness=settings.DATA_FRESHNESS,
+    )
+
+
+def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: float, geocode_ms: int) -> EstimateResponse:
+    """Comp-based estimate for any market present in the listings DB.
+
+    Raises OutsideCoverageError (with a data-driven message) when there aren't
+    enough nearby comps — so unsupported areas fail honestly instead of
+    returning a bogus number.
+    """
+    if not os.path.exists(MAP_DB_PATH):
+        raise OutsideCoverageError("Market data is not available.")
+
+    conn = _get_map_db()
+    try:
+        result = estimate_from_db(
+            conn, geo.lat, geo.lng, req.bedrooms, req.accommodates, req.property_type
+        )
+        markets = covered_markets(conn)
+    finally:
+        conn.close()
+
+    if result is None:
+        covered = ", ".join(markets) if markets else "none yet"
+        raise OutsideCoverageError(
+            f"No market data near this address yet. Covered markets: {covered}."
+        )
+
+    total_ms = int((time.time() - start) * 1000)
+    logger.info(
+        f"[{request_id}] address={req.address!r} lat={geo.lat:.4f} lng={geo.lng:.4f} "
+        f"comps={result['n_comps']} revenue=${result['annual_revenue']:,.0f} "
+        f"conf={result['confidence']['level']} source=comps "
+        f"geocode={geocode_ms}ms total={total_ms}ms"
+    )
+
+    return EstimateResponse(
+        address=req.address,
+        lat=round(geo.lat, 6),
+        lng=round(geo.lng, 6),
+        annual_revenue=result["annual_revenue"],
+        confidence=ConfidenceResponse(**result["confidence"]),
+        comps=[CompResponse(**c) for c in result["comps"]],
+        market=MarketResponse(**result["market"]),
+        disclaimer=settings.DISCLAIMER,
+        data_source=settings.DATA_SOURCE,
+        model_version="comps-1.0",
+        data_freshness=result["data_freshness"] or settings.DATA_FRESHNESS,
+    )
+
+
+@app.post("/v1/estimate", response_model=EstimateResponse)
+@limiter.limit("30/minute")
+async def estimate(request: Request, req: EstimateRequest, api_key: str = Depends(verify_api_key)):
+    """Single property revenue estimate."""
+    return await _do_estimate(req)
+
+
+# Typed errors → stable per-item error codes for the batch response.
+_BATCH_ERROR_CODES = {
+    GeocodingError: "geocoding_failed",
+    OutsideCoverageError: "outside_coverage_area",
+    InvalidInputError: "invalid_input",
+}
+
+
+@app.post("/v1/batch")
+@limiter.limit("5/minute")
+async def batch_estimate(request: Request, requests: list[EstimateRequest], api_key: str = Depends(verify_api_key)):
+    """Batch estimates (max 20)."""
+    if len(requests) > settings.MAX_BATCH:
+        return JSONResponse(status_code=413, content={
+            "error": "batch_too_large",
+            "detail": f"Maximum batch size is {settings.MAX_BATCH}",
+        })
+
+    results = []
+    for req_item in requests:
+        try:
+            result = await _do_estimate(req_item)
+            results.append(result.model_dump())
+        except (GeocodingError, OutsideCoverageError, InvalidInputError) as e:
+            # Preserve the specific reason instead of collapsing to a generic error.
+            code = _BATCH_ERROR_CODES.get(type(e), "estimation_failed")
+            results.append({"error": code, "detail": str(e)})
+        except Exception as e:
+            logger.exception(f"Batch item failed: {e}")
+            results.append({"error": "estimation_failed", "detail": "Could not estimate this property"})
+
+    return results
+
+
+@app.get("/v1/health", response_model=HealthResponse)
+async def health():
+    return HealthResponse(status="ok")
+
+
+@app.get("/v1/ready")
+async def ready():
+    from .model import _model as m
+    from .comp_finder import _tree as t
+    return {"model_loaded": m is not None, "index_loaded": t is not None}
+
+
+@app.get("/v1/model/info", response_model=ModelInfoResponse)
+async def model_info():
+    info = get_model_info()
+    return ModelInfoResponse(**info)
+
+
+@app.get("/v1/credits", response_model=CreditsResponse)
+async def credits():
+    return CreditsResponse(
+        data_source="InsideAirbnb",
+        license="CC BY 4.0",
+        license_url=settings.LICENSE_URL,
+        attribution="Data from InsideAirbnb (insideairbnb.com), licensed under CC BY 4.0. "
+                    "Data has been processed and transformed for revenue estimation purposes.",
+    )

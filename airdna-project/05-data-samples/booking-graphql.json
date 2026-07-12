@@ -1,0 +1,164 @@
+[
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 523,
+    "body_preview": "{\"data\": {\"trackAdStatus\": {\"allDirectivesByName\": {}, \"directives\": [], \"coercing\": {}, \"extensionDefinitions\": [], \"appliedDirectives\": [], \"directivesByName\": {}, \"name\": \"JSON\", \"description\": \"A JSON scalar\", \"allAppliedDirectivesByName\": {}, \"childrenWithTypeReferences\": {\"children\": {\"directives\": [], \"appliedDirectives\": []}, \"childrenAsList\": [], \"empty\": false}, \"children\": []}}, \"extensions\": {\"latency_insights\": {\"trackAdStatus\": {\"start_time\": 1782624554585, \"duration_ms\": 5, \"end_time\": 1782624554590}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 523,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"trackAdStatus\": {\"duration_ms\": 7, \"start_time\": 1782624554585, \"end_time\": 1782624554592}}}, \"data\": {\"trackAdStatus\": {\"childrenWithTypeReferences\": {\"childrenAsList\": [], \"children\": {\"directives\": [], \"appliedDirectives\": []}, \"empty\": false}, \"extensionDefinitions\": [], \"children\": [], \"allDirectivesByName\": {}, \"appliedDirectives\": [], \"directivesByName\": {}, \"coercing\": {}, \"allAppliedDirectivesByName\": {}, \"directives\": [], \"name\": \"JSON\", \"description\": \"A JSON scalar\"}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 352,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"CustomerMarketingQuery\": {\"start_time\": 1782624554588, \"end_time\": 1782624554596, \"duration_ms\": 8}}}, \"data\": {\"customerMarketingQuery\": {\"marketingCampaignDetails\": {\"config\": null, \"__typename\": \"MarketingCampaignDetails\", \"isEmpty\": true, \"pageDetails\": null}, \"__typename\": \"MarketingCampaignDetailQueries\"}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 523,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"trackAdStatus\": {\"start_time\": 1782624554597, \"end_time\": 1782624554606, \"duration_ms\": 9}}}, \"data\": {\"trackAdStatus\": {\"allDirectivesByName\": {}, \"children\": [], \"directives\": [], \"name\": \"JSON\", \"childrenWithTypeReferences\": {\"empty\": false, \"childrenAsList\": [], \"children\": {\"appliedDirectives\": [], \"directives\": []}}, \"appliedDirectives\": [], \"description\": \"A JSON scalar\", \"directivesByName\": {}, \"coercing\": {}, \"extensionDefinitions\": [], \"allAppliedDirectivesByName\": {}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 541,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"trackHoldoutExperiment\": {\"end_time\": 1782624554609, \"duration_ms\": 7, \"start_time\": 1782624554602}}}, \"data\": {\"trackHoldoutExperiment\": {\"children\": [], \"description\": \"A JSON scalar\", \"extensionDefinitions\": [], \"allDirectivesByName\": {}, \"childrenWithTypeReferences\": {\"childrenAsList\": [], \"empty\": false, \"children\": {\"appliedDirectives\": [], \"directives\": []}}, \"directives\": [], \"appliedDirectives\": [], \"name\": \"JSON\", \"directivesByName\": {}, \"coercing\": {}, \"allAppliedDirectivesByName\": {}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 523,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"trackAdStatus\": {\"end_time\": 1782624554609, \"duration_ms\": 5, \"start_time\": 1782624554604}}}, \"data\": {\"trackAdStatus\": {\"directivesByName\": {}, \"coercing\": {}, \"extensionDefinitions\": [], \"childrenWithTypeReferences\": {\"children\": {\"directives\": [], \"appliedDirectives\": []}, \"childrenAsList\": [], \"empty\": false}, \"name\": \"JSON\", \"description\": \"A JSON scalar\", \"allAppliedDirectivesByName\": {}, \"directives\": [], \"children\": [], \"appliedDirectives\": [], \"allDirectivesByName\": {}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 18969,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"MerchComponentsData\": {\"end_time\": 1782624554614, \"start_time\": 1782624554593, \"duration_ms\": 21}}}, \"data\": {\"merchComponentsData\": {\"__typename\": \"MerchComponentsDataResult\", \"components\": [{\"heading\": \"Browse by property type\", \"carouselCampaignId\": \"a928d9f8-e4fe-4954-9085-fad1950455f2\", \"designVariant\": {\"carouselCta\": null, \"cardType\": \"CARD_CUSTOM\", \"items\": [{\"__typename\": \"MerchCarouselStackedItem\", \"filters\": null, \"itemId\": \"d9b491e0-f1e8-4c7b-a38e-81b3e4ced352\", \"countryCode\": null, \"image\": {\"url\": \"https://q-xx.bstatic.com/xdata/images/hotel/320x400/595550862.jpeg?k=3514aa4abb76a6d19df104cb307b78b841ac0676967f24f4b860d289d55d3964&o=\", \"alt\": \"Hotels\", \"urlTemplate\": \"https://r-xx.bstatic.com/xdata/images/hotel/<SIZE>/595550862.jpeg?k=3514aa4abb76a6d19df104cb307b78b841ac0676967f24f4b860d289d55d3964&o=\", \"__typename\": \"MerchCarouselItemImage\", \"id\": 595550862}, \"subtitle\": \"\", \"reviewScore\": null, \"price\": null, \"extraSubtitle\": \"\", \"ta"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 541,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"trackHoldoutExperiment\": {\"duration_ms\": 9, \"end_time\": 1782624554619, \"start_time\": 1782624554610}}}, \"data\": {\"trackHoldoutExperiment\": {\"coercing\": {}, \"appliedDirectives\": [], \"allAppliedDirectivesByName\": {}, \"directivesByName\": {}, \"childrenWithTypeReferences\": {\"childrenAsList\": [], \"children\": {\"directives\": [], \"appliedDirectives\": []}, \"empty\": false}, \"description\": \"A JSON scalar\", \"extensionDefinitions\": [], \"directives\": [], \"name\": \"JSON\", \"allDirectivesByName\": {}, \"children\": []}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 540,
+    "body_preview": "{\"data\": {\"recommendationPlatform\": {\"flightCards\": {\"__typename\": \"FlightCardsOutput\", \"recommendations\": []}, \"attractionCards\": {\"__typename\": \"AttractionCardsOutput\", \"recommendations\": []}, \"__typename\": \"RecommendationPlatformQueries\", \"propertyCards\": {\"finalBookingWindow\": null, \"uxLabels\": null, \"finalRooms\": null, \"__typename\": \"PropertyCardsOutput\", \"finalGuests\": null, \"cards\": []}}}, \"extensions\": {\"latency_insights\": {\"RecentlyViewedCarousel\": {\"start_time\": 1782624554587, \"end_time\": 1782624554642, \"duration_ms\": 55}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 615,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"MerchComponentsData\": {\"start_time\": 1782624554605, \"duration_ms\": 36, \"end_time\": 1782624554641}}}, \"data\": {\"merchComponentsData\": {\"__typename\": \"MerchComponentsDataResult\", \"components\": [{\"filtersInfo\": null, \"heading\": \"\", \"designVariant\": {\"heading\": \"\", \"items\": [], \"carouselCta\": null, \"carouselLayout\": \"DESKTOP_SMALL\", \"aspectRatio\": \"5:4\", \"cardType\": \"CARD_CUSTOM\", \"priceText\": null, \"__typename\": \"DesktopCarouselStackedCards\", \"subHeading\": \"\"}, \"carouselCampaignId\": \"1b20dab5-f371-4259-9e9d-18b63e11a3f5\", \"__typename\": \"MerchCarousel\", \"subHeading\": \"\"}]}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 571,
+    "body_preview": "{\"data\": {\"merchComponentsData\": {\"__typename\": \"MerchComponentsDataResult\", \"components\": [{\"designVariant\": {\"heading\": \"\", \"aspectRatio\": \"5:4\", \"subHeading\": \"\", \"carouselCta\": null, \"__typename\": \"DesktopCarouselPropertyCards\", \"carouselLayout\": \"DESKTOP_MEDIUM\", \"items\": []}, \"subHeading\": \"\", \"heading\": \"\", \"filtersInfo\": null, \"carouselCampaignId\": \"2e1d1e44-692c-4e96-98f4-3f02831ee551\", \"__typename\": \"MerchCarousel\"}]}}, \"extensions\": {\"latency_insights\": {\"MerchComponentsData\": {\"end_time\": 1782624554645, \"start_time\": 1782624554610, \"duration_ms\": 35}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 615,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"MerchComponentsData\": {\"duration_ms\": 79, \"start_time\": 1782624554597, \"end_time\": 1782624554676}}}, \"data\": {\"merchComponentsData\": {\"__typename\": \"MerchComponentsDataResult\", \"components\": [{\"carouselCampaignId\": \"abb158bf-e7ac-4c7e-bbcd-46f0a513f7fa\", \"heading\": \"\", \"__typename\": \"MerchCarousel\", \"subHeading\": \"\", \"designVariant\": {\"cardType\": \"CARD_CUSTOM\", \"aspectRatio\": \"5:4\", \"heading\": \"\", \"priceText\": null, \"__typename\": \"DesktopCarouselStackedCards\", \"subHeading\": \"\", \"carouselLayout\": \"DESKTOP_SMALL\", \"carouselCta\": null, \"items\": []}, \"filtersInfo\": null}]}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 325,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"DismissGeniusSignInSheet\": {\"end_time\": 1782624554685, \"duration_ms\": 13, \"start_time\": 1782624554672}}}, \"data\": {\"geniusGuestMutation\": {\"__typename\": \"GeniusGuestMutations\", \"dismissSignInBottomSheet\": {\"__typename\": \"GeniusMutationOutput\", \"errorMessage\": null, \"isSuccess\": true}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 14375,
+    "body_preview": "{\"data\": {\"searchQueries\": {\"__typename\": \"SearchQueries\", \"searchAcidCarousel\": {\"subtitle\": null, \"__typename\": \"AcidCarouselOutput\", \"acidCards\": [{\"landingOptions\": null, \"basicPropertyData\": {\"id\": 260295, \"photos\": {\"main\": {\"highResUrl\": {\"relativeUrl\": \"/xdata/images/hotel/square600/13125860.webp?k=35b70a7e8a17a71896996cd55d84f742cd15724c3aebaed0d9b5ba19c53c430b&o=\", \"__typename\": \"PhotoResource\"}, \"__typename\": \"Photo\", \"lowResJpegUrl\": {\"__typename\": \"PhotoResource\", \"relativeUrl\": \"/xdata/images/hotel/square240/13125860.jpg?k=b5f4783a8a6ecf84738e080755acfebf943253d71f4458fbe2510a356cf3d8c8&o=\"}}, \"__typename\": \"PropertyPhotos\"}, \"location\": {\"__typename\": \"Location\", \"country\": \"Poland\", \"countryCode\": \"pl\"}, \"__typename\": \"BasicPropertyData\", \"name\": \"Aparthotel Stare Miasto\", \"pageName\": \"aparthotel\", \"reviews\": {\"totalScore\": 8.8, \"__typename\": \"Reviews\", \"reviewsCount\": 3090}}, \"districtName\": \"Old Town\", \"__typename\": \"AcidCardOutput\", \"isGenius\": true, \"priceDisplayInf"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 69829,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"MvRexWebRecPlatformPropertyCards\": {\"duration_ms\": 217, \"start_time\": 1782624554587, \"end_time\": 1782624554804}}}, \"data\": {\"recommendationPlatform\": {\"__typename\": \"RecommendationPlatformQueries\", \"propertyCards\": {\"__typename\": \"PropertyCardsOutput\", \"cards\": [{\"priceInfo\": {\"priceBeforeDiscount\": {\"perStay\": {\"roundedValue\": \"S$\\u00a0193\", \"__typename\": \"PropertyDisplayPrice\", \"value\": \"S$\\u00a0193.04\"}, \"__typename\": \"PropertyAggregatedDisplayPrice\"}, \"displayPrice\": {\"__typename\": \"PropertyAggregatedDisplayPrice\", \"perStay\": {\"roundedValue\": \"S$\\u00a0177\", \"value\": \"S$\\u00a0176.94\", \"__typename\": \"PropertyDisplayPrice\"}}, \"__typename\": \"PropertyPriceInfo\"}, \"ufi\": -73635, \"id\": 1075379, \"cc1\": \"sg\", \"translatedPropertyType\": \"Hotel\", \"isGenius\": false, \"numOfWishlists\": 0, \"ratingInfo\": {\"symbol\": 0, \"__typename\": \"PropertyRatingInfo\", \"value\": 3.0}, \"reviewInfo\": {\"reviewTranslatedText\": \"Very good\", \"reviewsCount\": 943, \"reviewScore\": 8.5, \""
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 155616,
+    "body_preview": "{\"data\": {\"recommendationPlatform\": {\"attractionCards\": {\"__typename\": \"AttractionCardsOutput\", \"recommendations\": [{\"linksInfo\": {\"url\": \"https://www.booking.com/attractions/sg/prgfwrx15ugh-singapore-artscience-museum-admission-e-ticket.en-gb.html?selected_currency=SGD&ufi=-73635\", \"deepLink\": \"booking://attractions/product?slug=prgfwrx15ugh-singapore-artscience-museum-admission-e-ticket\", \"__typename\": \"AttractionLinkInfo\"}, \"__typename\": \"AttractionCard\", \"ratingInfo\": {\"starRatingCount\": 19, \"localizedStarRating\": \"3.9\", \"starRating\": 3.85789489746094, \"__typename\": \"AttractionCustomerRatingInfo\"}, \"shortDescription\": \"\", \"freeCancellation\": false, \"name\": \"Singapore ArtScience Museum Admission E-Ticket\", \"locationInfo\": {\"__typename\": \"AttractionLocationInfo\", \"ufi\": -73635, \"locationInName\": \"in Singapore\", \"locationName\": \"Singapore\", \"countryCode\": \"sg\", \"countryName\": \"Singapore\"}, \"uxLabels\": [{\"__typename\": \"UxLabelInfo\", \"name\": \"tickets_from_label\", \"value\": \"Tickets from\""
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 14620,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"WeekendDealsProperties\": {\"end_time\": 1782624554892, \"duration_ms\": 274, \"start_time\": 1782624554618}}}, \"data\": {\"weekendDeals\": {\"subtitle\": \"Save on stays for 3 July - 5 July\", \"weekendDealsProperties\": [{\"isGeniusProperty\": false, \"imageUrl\": \"/xdata/images/hotel/square240/228990562.jpg?k=48d86b24337df1832a4ff0d48c47cf6ee6fae16be89916a037119f8a9829780b&o=\", \"__typename\": \"WeekendDealsProperty\", \"landing\": {\"checkout\": \"2026-07-05\", \"lang\": null, \"__typename\": \"TcsPropertyPageLanding\", \"childrenAges\": [], \"nrAdults\": 2, \"nrChildren\": 0, \"checkin\": \"2026-07-03\", \"countryCode\": \"my\", \"urlParams\": [], \"pageName\": \"crystal-crown-jb\", \"nrRooms\": 1}, \"subtitle\": \"Johor Bahru, Malaysia\", \"price\": {\"priceTextEnd\": \"\", \"formattedCrossedOutPrice\": \"S$\\u00a0215\", \"formattedPrice\": \"S$\\u00a0132\", \"priceText\": \"2 nights\", \"__typename\": \"TcsItemPrice\"}, \"badges\": [{\"ariaLabel\": \"Getaway Deal\", \"__typename\": \"TcsCarouselBadge\", \"badgeVariation\": \"CONSTRUCTIVE\""
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 552,
+    "body_preview": "{\"data\": {\"trackHoldoutExperimentStage\": {\"allAppliedDirectivesByName\": {}, \"directivesByName\": {}, \"directives\": [], \"name\": \"JSON\", \"extensionDefinitions\": [], \"appliedDirectives\": [], \"children\": [], \"allDirectivesByName\": {}, \"coercing\": {}, \"description\": \"A JSON scalar\", \"childrenWithTypeReferences\": {\"childrenAsList\": [], \"children\": {\"directives\": [], \"appliedDirectives\": []}, \"empty\": false}}}, \"extensions\": {\"latency_insights\": {\"trackHoldoutExperimentStage\": {\"duration_ms\": 16, \"start_time\": 1782624555086, \"end_time\": 1782624555102}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 304,
+    "body_preview": "{\"data\": {\"wishlistService\": {\"userWishlist\": {\"wishlists\": [], \"__typename\": \"WishlistMultipleSuccessOutput\"}, \"__typename\": \"WishlistServiceQueries\"}}, \"extensions\": {\"latency_insights\": {\"wishlistsDetailForWishlistWidget\": {\"duration_ms\": 34, \"start_time\": 1782624555748, \"end_time\": 1782624555782}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 524,
+    "body_preview": "{\"data\": {\"trackAdStatus\": {\"directivesByName\": {}, \"childrenWithTypeReferences\": {\"childrenAsList\": [], \"children\": {\"appliedDirectives\": [], \"directives\": []}, \"empty\": false}, \"directives\": [], \"allDirectivesByName\": {}, \"coercing\": {}, \"description\": \"A JSON scalar\", \"children\": [], \"allAppliedDirectivesByName\": {}, \"extensionDefinitions\": [], \"name\": \"JSON\", \"appliedDirectives\": []}}, \"extensions\": {\"latency_insights\": {\"trackAdStatus\": {\"duration_ms\": 12, \"start_time\": 1782624555840, \"end_time\": 1782624555852}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 523,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"trackAdStatus\": {\"duration_ms\": 9, \"start_time\": 1782624555856, \"end_time\": 1782624555865}}}, \"data\": {\"trackAdStatus\": {\"allAppliedDirectivesByName\": {}, \"childrenWithTypeReferences\": {\"children\": {\"appliedDirectives\": [], \"directives\": []}, \"empty\": false, \"childrenAsList\": []}, \"children\": [], \"name\": \"JSON\", \"description\": \"A JSON scalar\", \"directivesByName\": {}, \"directives\": [], \"allDirectivesByName\": {}, \"appliedDirectives\": [], \"extensionDefinitions\": [], \"coercing\": {}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 523,
+    "body_preview": "{\"data\": {\"trackAdStatus\": {\"allAppliedDirectivesByName\": {}, \"children\": [], \"allDirectivesByName\": {}, \"extensionDefinitions\": [], \"directivesByName\": {}, \"coercing\": {}, \"description\": \"A JSON scalar\", \"childrenWithTypeReferences\": {\"childrenAsList\": [], \"children\": {\"appliedDirectives\": [], \"directives\": []}, \"empty\": false}, \"directives\": [], \"name\": \"JSON\", \"appliedDirectives\": []}}, \"extensions\": {\"latency_insights\": {\"trackAdStatus\": {\"start_time\": 1782624555930, \"duration_ms\": 8, \"end_time\": 1782624555938}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 523,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"trackAdStatus\": {\"end_time\": 1782624555943, \"start_time\": 1782624555937, \"duration_ms\": 6}}}, \"data\": {\"trackAdStatus\": {\"description\": \"A JSON scalar\", \"allDirectivesByName\": {}, \"appliedDirectives\": [], \"directives\": [], \"extensionDefinitions\": [], \"childrenWithTypeReferences\": {\"children\": {\"appliedDirectives\": [], \"directives\": []}, \"childrenAsList\": [], \"empty\": false}, \"directivesByName\": {}, \"allAppliedDirectivesByName\": {}, \"name\": \"JSON\", \"coercing\": {}, \"children\": []}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 524,
+    "body_preview": "{\"data\": {\"trackAdStatus\": {\"childrenWithTypeReferences\": {\"childrenAsList\": [], \"children\": {\"directives\": [], \"appliedDirectives\": []}, \"empty\": false}, \"children\": [], \"description\": \"A JSON scalar\", \"appliedDirectives\": [], \"coercing\": {}, \"extensionDefinitions\": [], \"allAppliedDirectivesByName\": {}, \"directives\": [], \"name\": \"JSON\", \"directivesByName\": {}, \"allDirectivesByName\": {}}}, \"extensions\": {\"latency_insights\": {\"trackAdStatus\": {\"duration_ms\": 11, \"start_time\": 1782624556004, \"end_time\": 1782624556015}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 523,
+    "body_preview": "{\"extensions\": {\"latency_insights\": {\"trackAdStatus\": {\"end_time\": 1782624556016, \"start_time\": 1782624556009, \"duration_ms\": 7}}}, \"data\": {\"trackAdStatus\": {\"description\": \"A JSON scalar\", \"directives\": [], \"directivesByName\": {}, \"children\": [], \"extensionDefinitions\": [], \"childrenWithTypeReferences\": {\"empty\": false, \"children\": {\"appliedDirectives\": [], \"directives\": []}, \"childrenAsList\": []}, \"coercing\": {}, \"appliedDirectives\": [], \"allDirectivesByName\": {}, \"name\": \"JSON\", \"allAppliedDirectivesByName\": {}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 523,
+    "body_preview": "{\"data\": {\"trackAdStatus\": {\"directivesByName\": {}, \"description\": \"A JSON scalar\", \"allAppliedDirectivesByName\": {}, \"name\": \"JSON\", \"appliedDirectives\": [], \"extensionDefinitions\": [], \"coercing\": {}, \"directives\": [], \"allDirectivesByName\": {}, \"children\": [], \"childrenWithTypeReferences\": {\"children\": {\"appliedDirectives\": [], \"directives\": []}, \"empty\": false, \"childrenAsList\": []}}}, \"extensions\": {\"latency_insights\": {\"trackAdStatus\": {\"start_time\": 1782624556014, \"duration_ms\": 7, \"end_time\": 1782624556021}}}}"
+  },
+  {
+    "url": "https://www.booking.com/dml/graphql",
+    "status": 200,
+    "size": 523,
+    "body_preview": "{\"data\": {\"trackAdStatus\": {\"allDirectivesByName\": {}, \"allAppliedDirectivesByName\": {}, \"directivesByName\": {}, \"appliedDirectives\": [], \"description\": \"A JSON scalar\", \"childrenWithTypeReferences\": {\"empty\": false, \"children\": {\"appliedDirectives\": [], \"directives\": []}, \"childrenAsList\": []}, \"coercing\": {}, \"directives\": [], \"children\": [], \"extensionDefinitions\": [], \"name\": \"JSON\"}}, \"extensions\": {\"latency_insights\": {\"trackAdStatus\": {\"duration_ms\": 6, \"end_time\": 1782624556030, \"start_time\": 1782624556024}}}}"
+  }
+]

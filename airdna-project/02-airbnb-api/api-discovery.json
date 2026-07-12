@@ -1,0 +1,1044 @@
+{
+  "timestamp": "2026-06-28T04:29:30.994140+00:00",
+  "summary": {
+    "total_captured": 322,
+    "total_responses": 100,
+    "graphql_operations": [
+      "SearchInputQuery",
+      "StaysPdpSections"
+    ],
+    "graphql_urls": [
+      "https://www.airbnb.com.sg/api/v3/SearchInputQuery/75d45a5e1c1158a9bde302c43871af604aec399b9344c9acef2ef87b9f974969",
+      "https://www.airbnb.com.sg/api/v3/StaysPdpSections/3b0949d0ae3b4a4e6a1719f00901e031b7cdc13f4263e35b92d517856df2dd4d"
+    ],
+    "rest_endpoints": [
+      "GET blob:https://www.airbnb.com.sg/5a77e236-32ad-4c9b-80ac-0d530f8c5251",
+      "GET blob:https://www.airbnb.com.sg/6561a0d1-e3bb-45cf-9c87-23acd92360d6",
+      "GET blob:https://www.airbnb.com.sg/85bc17bc-8ad1-4af2-a430-7925b65270f2",
+      "GET blob:https://www.airbnb.com.sg/87905aec-d823-4845-b206-014207cb2c2e",
+      "GET blob:https://www.airbnb.com.sg/a4519b32-c580-45f3-b218-4d825482630d",
+      "GET blob:https://www.airbnb.com.sg/af27161b-d857-493e-b2a6-7b4ac710df49",
+      "GET blob:https://www.airbnb.com.sg/b0088b17-442a-4deb-81ee-8b3afe720577",
+      "GET blob:https://www.airbnb.com.sg/ca306245-fa0d-46ea-9571-c1055d6a1970",
+      "GET blob:https://www.airbnb.com.sg/ce074a94-69e7-4574-9065-24c8854c6494",
+      "GET blob:https://www.airbnb.com.sg/d7db13ce-c82f-4f50-8352-bc1cb4b14064",
+      "GET blob:https://www.airbnb.com.sg/e1e187fb-4ee8-4cb1-bf64-61c355e97bfb",
+      "GET blob:https://www.airbnb.com.sg/ecf7bb16-4942-4c45-a3c8-a588b852f5ae",
+      "GET blob:https://www.airbnb.com.sg/fb1f445c-fc72-4df5-bd4d-3b90cf9f162a",
+      "GET https://a0.muscache.com/im/pictures/BnbProperty/BnbProperty-1527053214902713005/original/1cec69d3-0ead-4f4f-941d-c3d3a96c835f.jpeg",
+      "GET https://a0.muscache.com/im/pictures/BnbProperty/BnbProperty-1527053215976454852/original/e1df4848-d783-4213-ae4a-7cca77785c2a.jpeg",
+      "GET https://a0.muscache.com/im/pictures/BnbProperty/BnbProperty-1527053220531469010/original/944c95e4-e530-4452-8c75-92422be1b8fd.jpeg",
+      "GET https://a0.muscache.com/im/pictures/BnbProperty/BnbProperty-1527053220716018389/original/69947dd4-120b-4e26-8fcc-565ab0da3d8c.jpeg",
+      "GET https://a0.muscache.com/im/pictures/BnbProperty/BnbProperty-1527053220867013337/original/4dc5bdb2-f79d-4daa-833c-bfb5957fcda6.jpeg",
+      "GET https://a0.muscache.com/im/pictures/BnbProperty/BnbProperty-1563133920564974287/original/1b948149-f0b2-4d74-a145-92dd0c09fef1.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-1475605471575344640/original/b41bc363-7f27-441b-b2c3-7179413aca97.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-1496456215702140002/original/9c9e7087-9862-4d14-ad27-0e9da53f1cc4.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-1496474668256121537/original/0a3bf7d2-135f-4835-8e46-7640d9e176d1.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-1542215545952198805/original/40beb15b-094d-434d-a871-fbec3b04dee6.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-1608193290112444326/original/dfa57da3-e1c2-4344-bd9c-45c2d6aabe48.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-1620542372244644039/original/f6079912-6902-45ad-b123-e48073c77089.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-1649433090707508464/original/6547739a-9cd6-4abc-b060-d8d47385386f.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-1653435243623530221/original/4b8ad273-1f90-48a2-9d96-5f37b44aaf4d.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-1654476502242976426/original/782982b3-e52a-424e-afda-7e099a0e215e.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-1668554784008400786/original/869304a7-0bd3-4773-ad74-6b7842737dda.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-1700202023073656187/original/28d20722-6911-444e-b4f9-f5d21aac26c8.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-1701760422051980370/original/471b7c88-0da1-41f6-84aa-e51205df872a.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-37879131/original/aec27bf3-1d24-4c12-801f-6ac12e69f057.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-38602825/original/10fa9b93-a3a8-4209-91f0-a2bce7706b0a.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-51223821/original/9f655350-2b0d-451c-9dc8-0dd0de91f044.jpeg",
+      "GET https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6OTc2MDMxMDgwNjUxNDI4MTgz/original/6f4ee86b-3eaa-4c56-903f-eb275eb4ff30.jpeg",
+      "GET https://a0.muscache.com/im/pictures/miso/Hosting-1028481423284464261/original/e2e1c939-9473-4303-9b47-cdec07b02694.jpeg",
+      "GET https://a0.muscache.com/im/pictures/miso/Hosting-1121269503707432736/original/0010c68f-ab17-4286-8cdc-5a69a3060e43.jpeg",
+      "GET https://a0.muscache.com/im/pictures/miso/Hosting-1229081942836605227/original/66844c7c-e6c3-4c71-a82f-4d72f42e3ccd.jpeg",
+      "GET https://a0.muscache.com/im/pictures/miso/Hosting-1407344736645729737/original/ec92a068-edaa-44d8-b0ed-abe0218834f2.jpeg",
+      "GET https://a0.muscache.com/im/pictures/miso/Hosting-699813418833373186/original/294a4cef-4121-4e27-9bfc-17851585fd2e.jpeg",
+      "GET https://a0.muscache.com/im/pictures/miso/Hosting-828421336717860761/original/86e4d2bf-420b-4a10-9109-86092a3adda6.jpeg",
+      "GET https://a0.muscache.com/im/pictures/miso/Hosting-945555322863296116/original/acf7d56e-4217-4860-8ca9-54b0c51b5362.jpeg",
+      "GET https://a0.muscache.com/im/pictures/prohost-api/Hosting-1486407707332155573/original/48091979-0c1b-413b-a113-823632b058a6.jpeg",
+      "GET https://a0.muscache.com/im/pictures/prohost-api/Hosting-49029268/original/9021a69b-c640-40a3-8fe3-b7d58b76404c.jpeg",
+      "GET https://a0.muscache.com/im/pictures/prohost-api/Hosting-52612003/original/ff81f779-512f-4763-a3de-a3a4c272622f.jpeg",
+      "GET https://a0.muscache.com/im/pictures/prohost-api/Hosting-53416443/original/626f46f9-b1a3-468e-994f-6b4dde42e884.jpeg",
+      "GET https://a0.muscache.com/precache-images",
+      "GET https://a0.muscache.com/videos/search-bar-icons/webm/balloon-selected.webm",
+      "GET https://a0.muscache.com/videos/search-bar-icons/webm/balloon-twirl.webm",
+      "GET https://a0.muscache.com/videos/search-bar-icons/webm/consierge-selected.webm"
+    ]
+  },
+  "graphql_details": [
+    {
+      "url": "https://www.airbnb.com.sg/api/v3/StaysPdpSections/3b0949d0ae3b4a4e6a1719f00901e031b7cdc13f4263e35b92d517856df2dd4d?operationName=StaysPdpSections&locale=en-SG&currency=SGD",
+      "method": "POST",
+      "post_data": "{\"operationName\":\"StaysPdpSections\",\"variables\":{\"id\":\"U3RheUxpc3Rpbmc6MTI5OTIyMjc5Mjc3OTAwNTE3MQ==\",\"demandStayListingId\":\"RGVtYW5kU3RheUxpc3Rpbmc6MTI5OTIyMjc5Mjc3OTAwNTE3MQ==\",\"pdpSectionsRequest\":{\"adults\":\"1\",\"amenityFilters\":null,\"bypassTargetings\":false,\"categoryTag\":null,\"causeId\":null,\"children\":\"0\",\"disasterId\":null,\"discountedGuestFeeVersion\":null,\"federatedSearchId\":\"eb81de6f-1ea2-4dff-a9a3-d7f108390717\",\"forceBoostPriorityMessageType\":null,\"hostPreview\":false,\"infants\":\"0\",\"interactionType\":null,\"layouts\":[\"SIDEBAR\",\"SINGLE_COLUMN\"],\"pets\":0,\"pdpTypeOverride\":null,\"photoId\":null,\"preview\":false,\"previousStateCheckIn\":null,\"previousStateCheckOut\":null,\"priceDropSource\":null,\"partner\":null,\"partnerProgram\":null,\"privateBooking\":false,\"promotionUuid\":null,\"relaxedAmenityIds\":null,\"searchId\":null,\"selectedCancellationPolicyId\":null,\"selectedRatePlanId\":null,\"splitStays\":null,\"staysBookingMigrationEnabled\":false,\"translateUgc\":null,\"useNewSectionWrapperApi\":false,\"sectionIds\":[\"CANCELLATION_POLICY_PICKER_MODAL\",\"BOOK_IT_FLOATING_FOOTER\",\"POLICIES_DEFAULT\",\"BOOK_IT_CALENDAR_SHEET\",\"BOOK_IT_SIDEBAR\",\"BOOK_IT_NAV\"],\"checkIn\":\"2026-07-04\",\"checkOut\":\"2026-07-09\",\"p3ImpressionId\":\"p3_1782620946_P3fO4n7tDEcid7Kg\"},\"categoryTag\":null,\"federatedSearchId\":\"eb81de6f-1ea2-4dff-a9a3-d7f108390717\",\"federatedSearchSessionId\":null,\"p3ImpressionId\":\"p3_1782620946_P3fO4n7tDEcid7Kg\",\"photoId\":null,\"amenityIds\":null,\"dateRange\":{\"startDate\":\"2026-07-04\",\"endDate\":\"2026-07-09\"},\"guestCounts\":{\"numberOfAdults\":1,\"numberOfChildren\":0,\"numberOfInfants\":0,\"numberOfPets\":0},\"numberOfChildren\":0,\"numberOfInfants\":0,\"numberOfPets\":0,\"includePdpMigrationAccessibilityFeaturesModalFragment\":false,\"includeGpAccessibilityFeaturesFragment\":true,\"includePdpMigrationAccessibilityFeaturesPreviewCarouselFragment\":false,\"includePdpMigrationLuxeServicesFragment\":false,\"includeGpLuxeServicesFragment\":true,\"includeGpAdminBannerFragment\":true,\"includePdpMigrationBookItNavFragment\":false,\"includeGpBookItFragment\":true,\"includePdpMigrationAmenitiesFragment\":false,\"includeGpAmenitiesFragment\":true,\"includeGpCancellationPolicyPickerModalFragment\":true,\"includePdpMigrationAvailabilityCalendarInlineFragment\":false,\"includeGpAvailabilityCalendarInlineFragment\":true,\"includePdpMigrationAvailabilityCalendarFragment\":false,\"includeGpAvailabilityCalendarFragment\":true,\"includePdpMigrationDescriptionFragment\":false,\"includeGpDescriptionFragment\":true,\"includePdpMigrationHeroFragment\":false,\"includeGpHeroFragment\":true,\"includePdpMigrationHighlightsCompactFragment\":false,\"includeGpHighlightsCompactFragment\":true,\"includePdpMigrationHighlightsFragment\":false,\"includeGpHighlightsFragment\":true,\"includePdpMigrationLocationPdpFragment\":false,\"includeGpLocationPdpFragment\":true,\"includePdpMigrationMeetYourHostFragment\":false,\"includeGpMeetYourHostFragment\":true,\"includePdpMigrationMessageBannerFragment\":false,\"includeGpMessageBannerFragment\":true,\"includePdpMigrationNavFragment\":false,\"includeGpNavFragment\":true,\"includePdpMigrationNavMobileFragment\":false,\"includeGpNavMobileFragment\":true,\"includePdpMigrationBookItFloatingFooterFragment\":false,\"includePdpMigrationBookItSidebarFragment\":false,\"includePdpMigrationBookItCalendarSheetFragment\":false,\"includePdpMigrationBookItNonExperiencedGuestFragment\":false,\"includeGpBookItNonExperiencedGuestFragment\":true,\"includePdpMigrationBathroomFragment\":false,\"includeGpBathroomFragment\":true,\"includePdpMigrationOverviewV2Fragment\":false,\"includeGpOverviewV2Fragment\":true,\"includePdpMigrationPropertyAvailableRoomsFragment\":false,\"includeGpPropertyAvailableRoomsFragment\":true,\"includePdpMigrationReviewsHighlightBannerFragment\":false,\"includeGpReviewsHighlightBannerFragment\":true,\"includePdpMigrationHostOverviewDefaultFragment\":false,\"includeGpHostOverviewDefaultFragment\":true,\"includePdpMigrationNonExperiencedGuestLearnMoreModalFragment\":false,\"includeGpNonExperiencedGuestLearnMoreModalFragment\":true,\"includePdpMigrationReportToAirbnbFragment\":false,\"includeGpReportToAirbnbFragment\":true,\"includePdpMigrationReviewsFragment\":false,\"includeGpReviewsFragment\":true,\"includePdpMigrationReviewsEmptyFragment\":false,\"includeGpReviewsEmptyFragment\":true,\"includePdpMigrationSeoLinksFragment\":false,\"includeGpSeoLinksFragment\":true,\"includePdpMigrationSleepingArrangementFragment\":false,\"includeGpSleepingArrangementFragment\":true,\"includePdpMigrationSleepingArrangementImagesFragment\":false,\"includeGpSleepingArrangementImagesFragment\":true,\"includePdpMigrationTitleFragment\":false,\"includeGpTitleFragment\":true,\"includeGpUgcTranslationFragment\":true,\"includePdpMigrationPoliciesFragment\":false,\"includeGpPoliciesFragment\":true,\"includePdpMigrationMarqueeBookItFloatingFooterFragment\":false,\"includeGpMarqueeBookItFloatingFooterFragment\":true,\"includePdpMigrationMarqueeBookItNavFragment\":false,\"includeGpMarqueeBookItNavFragment\":true,\"includePdpMigrationMarqueeBookItSidebarFragment\":false,\"includeGpMarqueeBookItSidebarFragment\":true,\"includePdpMigrationOnlyOnBookItFragment\":false,\"includePdpMigrationOnlyOnBookItNavFragment\":false,\"includePdpMigrationPdpEducationFragment\":false},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"3b0949d0ae3b4a4e6a1719f00901e031b7cdc13f4263e35b92d517856df2dd4d\"}}}",
+      "graphql": {
+        "operationName": "StaysPdpSections",
+        "variables": [
+          "id",
+          "demandStayListingId",
+          "pdpSectionsRequest",
+          "categoryTag",
+          "federatedSearchId",
+          "federatedSearchSessionId",
+          "p3ImpressionId",
+          "photoId",
+          "amenityIds",
+          "dateRange",
+          "guestCounts",
+          "numberOfChildren",
+          "numberOfInfants",
+          "numberOfPets",
+          "includePdpMigrationAccessibilityFeaturesModalFragment",
+          "includeGpAccessibilityFeaturesFragment",
+          "includePdpMigrationAccessibilityFeaturesPreviewCarouselFragment",
+          "includePdpMigrationLuxeServicesFragment",
+          "includeGpLuxeServicesFragment",
+          "includeGpAdminBannerFragment",
+          "includePdpMigrationBookItNavFragment",
+          "includeGpBookItFragment",
+          "includePdpMigrationAmenitiesFragment",
+          "includeGpAmenitiesFragment",
+          "includeGpCancellationPolicyPickerModalFragment",
+          "includePdpMigrationAvailabilityCalendarInlineFragment",
+          "includeGpAvailabilityCalendarInlineFragment",
+          "includePdpMigrationAvailabilityCalendarFragment",
+          "includeGpAvailabilityCalendarFragment",
+          "includePdpMigrationDescriptionFragment",
+          "includeGpDescriptionFragment",
+          "includePdpMigrationHeroFragment",
+          "includeGpHeroFragment",
+          "includePdpMigrationHighlightsCompactFragment",
+          "includeGpHighlightsCompactFragment",
+          "includePdpMigrationHighlightsFragment",
+          "includeGpHighlightsFragment",
+          "includePdpMigrationLocationPdpFragment",
+          "includeGpLocationPdpFragment",
+          "includePdpMigrationMeetYourHostFragment",
+          "includeGpMeetYourHostFragment",
+          "includePdpMigrationMessageBannerFragment",
+          "includeGpMessageBannerFragment",
+          "includePdpMigrationNavFragment",
+          "includeGpNavFragment",
+          "includePdpMigrationNavMobileFragment",
+          "includeGpNavMobileFragment",
+          "includePdpMigrationBookItFloatingFooterFragment",
+          "includePdpMigrationBookItSidebarFragment",
+          "includePdpMigrationBookItCalendarSheetFragment",
+          "includePdpMigrationBookItNonExperiencedGuestFragment",
+          "includeGpBookItNonExperiencedGuestFragment",
+          "includePdpMigrationBathroomFragment",
+          "includeGpBathroomFragment",
+          "includePdpMigrationOverviewV2Fragment",
+          "includeGpOverviewV2Fragment",
+          "includePdpMigrationPropertyAvailableRoomsFragment",
+          "includeGpPropertyAvailableRoomsFragment",
+          "includePdpMigrationReviewsHighlightBannerFragment",
+          "includeGpReviewsHighlightBannerFragment",
+          "includePdpMigrationHostOverviewDefaultFragment",
+          "includeGpHostOverviewDefaultFragment",
+          "includePdpMigrationNonExperiencedGuestLearnMoreModalFragment",
+          "includeGpNonExperiencedGuestLearnMoreModalFragment",
+          "includePdpMigrationReportToAirbnbFragment",
+          "includeGpReportToAirbnbFragment",
+          "includePdpMigrationReviewsFragment",
+          "includeGpReviewsFragment",
+          "includePdpMigrationReviewsEmptyFragment",
+          "includeGpReviewsEmptyFragment",
+          "includePdpMigrationSeoLinksFragment",
+          "includeGpSeoLinksFragment",
+          "includePdpMigrationSleepingArrangementFragment",
+          "includeGpSleepingArrangementFragment",
+          "includePdpMigrationSleepingArrangementImagesFragment",
+          "includeGpSleepingArrangementImagesFragment",
+          "includePdpMigrationTitleFragment",
+          "includeGpTitleFragment",
+          "includeGpUgcTranslationFragment",
+          "includePdpMigrationPoliciesFragment",
+          "includeGpPoliciesFragment",
+          "includePdpMigrationMarqueeBookItFloatingFooterFragment",
+          "includeGpMarqueeBookItFloatingFooterFragment",
+          "includePdpMigrationMarqueeBookItNavFragment",
+          "includeGpMarqueeBookItNavFragment",
+          "includePdpMigrationMarqueeBookItSidebarFragment",
+          "includeGpMarqueeBookItSidebarFragment",
+          "includePdpMigrationOnlyOnBookItFragment",
+          "includePdpMigrationOnlyOnBookItNavFragment",
+          "includePdpMigrationPdpEducationFragment"
+        ]
+      }
+    },
+    {
+      "url": "https://www.airbnb.com.sg/api/v3/SearchInputQuery/75d45a5e1c1158a9bde302c43871af604aec399b9344c9acef2ef87b9f974969?operationName=SearchInputQuery&locale=en-SG&currency=SGD",
+      "method": "POST",
+      "post_data": "{\"operationName\":\"SearchInputQuery\",\"variables\":{\"treatmentFlags\":[]},\"extensions\":{\"persistedQuery\":{\"version\":1,\"sha256Hash\":\"75d45a5e1c1158a9bde302c43871af604aec399b9344c9acef2ef87b9f974969\"}}}",
+      "graphql": {
+        "operationName": "SearchInputQuery",
+        "variables": [
+          "treatmentFlags"
+        ]
+      }
+    }
+  ],
+  "responses": [
+    {
+      "url": "https://d0a7e.airbnb.com/js/",
+      "status": 200,
+      "top_keys": [
+        "status",
+        "cookie"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/api/v2/get-data-layer-variables?locale=en-SG&currency=SGD",
+      "status": 200,
+      "top_keys": [
+        "userData",
+        "stayListingData",
+        "stayReservationData",
+        "experienceListingData",
+        "experienceReservationData",
+        "activityListingData",
+        "activityReservationData"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/api/v2/client_configs?locale=en-SG&currency=SGD",
+      "status": 200,
+      "top_keys": [
+        "time_stamp"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/api/v3/Header/bb590cf8c21b62e4b5122e1cd19969f1f1df72832040a335fd45af52597440e4?operationName=Header&locale=en-SG&currency=SGD&variables=%7B%22cdnCacheSafe%22%3Afalse%2C%22hasLoggedIn%22%3Afalse%2C%22isInitialLoad%22%3Afalse%2C%22source%22%3A%22EXPLORE%22%2C%22supportsM13ListingsSetupFlow%22%3Atrue%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%22bb590cf8c21b62e4b5122e1cd19969f1f1df72832040a335fd45af52597440e4%22%7D%7D",
+      "status": 200,
+      "top_keys": [
+        "data",
+        "extensions"
+      ],
+      "data_keys": [
+        "viewer",
+        "presentation"
+      ],
+      "data.presentation_keys": [
+        "__typename",
+        "header",
+        "supplyTypeSelector"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/api/v3/NaviServerAnnouncementsQuery/e37951ae03af6a7d0ee7c059c0b9bf17ac3181b3a86cff069babe361ae84108a?operationName=NaviServerAnnouncementsQuery&locale=en-SG&currency=SGD&variables=%7B%22appTarget%22%3A%22GUEST%22%2C%22shouldSkipTaskFooter%22%3Afalse%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%22e37951ae03af6a7d0ee7c059c0b9bf17ac3181b3a86cff069babe361ae84108a%22%7D%7D",
+      "status": 200,
+      "top_keys": [
+        "data",
+        "extensions"
+      ],
+      "data_keys": [
+        "presentation"
+      ],
+      "data.presentation_keys": [
+        "__typename",
+        "naviAnnouncements"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/api/v3/GetConsentForUserQuery/a3a01cb92f67abf3565887799a72523309c26de8f351553e7976b2fb0b2d074d?operationName=GetConsentForUserQuery&locale=en-SG&currency=SGD&variables=%7B%22deviceId%22%3A%221782620943.EAMWE4ZGRkODFjYmY3OG.Ui6rWNGV65I2rS3K2a7zI-t6AuKsb0SJVQWdWwzIW5c%22%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%22a3a01cb92f67abf3565887799a72523309c26de8f351553e7976b2fb0b2d074d%22%7D%7D",
+      "status": 200,
+      "top_keys": [
+        "data",
+        "extensions"
+      ],
+      "data_keys": [
+        "presentation"
+      ],
+      "data.presentation_keys": [
+        "__typename",
+        "showConsent"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/api/v3/AutoSuggestionsQuery/0d3d196304ca7be3b077e90e5962ec64b82026b3e9d2f9b7422b58ac02feed9c?operationName=AutoSuggestionsQuery&locale=en-SG&currency=SGD&variables=%7B%22autoSuggestionsRequest%22%3A%7B%22rawParams%22%3A%5B%5D%2C%22source%22%3A%22P2%22%2C%22treatmentFlags%22%3A%5B%5D%7D%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%220d3d196304ca7be3b077e90e5962ec64b82026b3e9d2f9b7422b58ac02feed9c%22%7D%7D",
+      "status": 200,
+      "top_keys": [
+        "data",
+        "extensions"
+      ],
+      "data_keys": [
+        "presentation"
+      ],
+      "data.presentation_keys": [
+        "__typename",
+        "autoSuggestions"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/api/v2/client_configs?locale=en-SG&currency=SGD",
+      "status": 200,
+      "top_keys": [
+        "currency_settings",
+        "time_stamp"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/api/v3/PlaceListingPolygonQuery/0371242584102831acce5ae21f6c68547fba8c0f13ae5643f1fd9b8205d4ba6f?operationName=PlaceListingPolygonQuery&locale=en-SG&currency=SGD&variables=%7B%22id%22%3A%22QWlyYm5iQ2Fub25pY2FsUGxhY2VMaXN0aW5nOjYzMzNiY2NiLWVkODgtNDYwZi05NTBhLWVkOTc4ODkxM2Y0ZA%3D%3D%22%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%220371242584102831acce5ae21f6c68547fba8c0f13ae5643f1fd9b8205d4ba6f%22%7D%7D",
+      "status": 200,
+      "top_keys": [
+        "data",
+        "extensions"
+      ],
+      "data_keys": [
+        "node"
+      ],
+      "data.node_keys": [
+        "__typename",
+        "geoShape"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/api/v3/MapViewportInfoQuery/aae2b4447f90adfd800a006f1afc80e2df9f98ddc8cd932628da179ebae10c79?operationName=MapViewportInfoQuery&locale=en-SG&currency=SGD&variables=%7B%22request%22%3A%7B%22boundingBox%22%3A%7B%22southwest%22%3A%7B%22lat%22%3A40.70250471166452%2C%22lng%22%3A-74.0928965806961%7D%2C%22northeast%22%3A%7B%22lat%22%3A40.82420199848991%2C%22lng%22%3A-73.93963515758514%7D%7D%2C%22zoomLevel%22%3A13%7D%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%22aae2b4447f90adfd800a006f1afc80e2df9f98ddc8cd932628da179ebae10c79%22%7D%7D",
+      "status": 200,
+      "top_keys": [
+        "data",
+        "extensions"
+      ],
+      "data_keys": [
+        "maps"
+      ],
+      "data.maps_keys": [
+        "__typename",
+        "getMapViewportInfo"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/api/v3/PlacesMapTileLayersQuery/2801f85616c647da897107111266a31b9eb408f109250b54f442b9c6ca781b93?operationName=PlacesMapTileLayersQuery&locale=en-SG&currency=SGD&variables=%7B%22ids%22%3A%5B%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTBfMzA3Nl9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTBfMzA3N19ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTBfMzA3OF9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTBfMzA3OV9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTBfMzA4MF9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTFfMzA3Nl9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTFfMzA3N19ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTFfMzA3OF9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTFfMzA3OV9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTFfMzA4MF9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTJfMzA3Nl9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTJfMzA3N19ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTJfMzA3OF9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTJfMzA3OV9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTJfMzA4MF9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTNfMzA3Nl9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTNfMzA3N19ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTNfMzA3OF9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTNfMzA3OV9ldmVudHM%3D%22%2C%22UGxhY2VzTWFwVGlsZUxheWVyOjEzXzI0MTNfMzA4MF9ldmVudHM%3D%22%5D%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%222801f85616c647da897107111266a31b9eb408f109250b54f442b9c6ca781b93%22%7D%7D",
+      "status": 200,
+      "top_keys": [
+        "data",
+        "extensions"
+      ],
+      "data_keys": [
+        "nodes"
+      ],
+      "data.nodes[0]_keys": [
+        "__typename",
+        "id",
+        "mapItems"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/api/v3/MapViewportInfoQuery/aae2b4447f90adfd800a006f1afc80e2df9f98ddc8cd932628da179ebae10c79?operationName=MapViewportInfoQuery&locale=en-SG&currency=SGD&variables=%7B%22request%22%3A%7B%22boundingBox%22%3A%7B%22southwest%22%3A%7B%22lat%22%3A40.7071894965545%2C%22lng%22%3A-74.0928965806961%7D%2C%22northeast%22%3A%7B%22lat%22%3A40.81952545442641%2C%22lng%22%3A-73.93963515758514%7D%7D%2C%22zoomLevel%22%3A13%7D%7D&extensions=%7B%22persistedQuery%22%3A%7B%22version%22%3A1%2C%22sha256Hash%22%3A%22aae2b4447f90adfd800a006f1afc80e2df9f98ddc8cd932628da179ebae10c79%22%7D%7D",
+      "status": 200,
+      "top_keys": [
+        "data",
+        "extensions"
+      ],
+      "data_keys": [
+        "maps"
+      ],
+      "data.maps_keys": [
+        "__typename",
+        "getMapViewportInfo"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/api/v2/marketing_event_tracking?locale=en-SG&currency=SGD",
+      "status": 200,
+      "top_keys": [
+        "success"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/api/v2/get-data-layer-variables?locale=en-SG&currency=SGD",
+      "status": 200,
+      "top_keys": [
+        "userData",
+        "stayListingData",
+        "stayReservationData",
+        "experienceListingData",
+        "experienceReservationData",
+        "activityListingData",
+        "activityReservationData"
+      ]
+    },
+    {
+      "url": "https://d0a7e.airbnb.com/js/",
+      "status": 200,
+      "top_keys": [
+        "status",
+        "cookie"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    },
+    {
+      "url": "https://www.airbnb.com.sg/~partytown/0.9.1/proxytown",
+      "status": 200,
+      "top_keys": [
+        "F",
+        "M"
+      ]
+    }
+  ]
+}
