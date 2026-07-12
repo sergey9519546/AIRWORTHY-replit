@@ -1,7 +1,11 @@
 ---
 name: Rentalizer startup quirks
-description: What's needed to run the 08-rentalizer FastAPI app on Replit (libgomp, TemplateResponse API, auth fix)
+description: What's needed to run the 08-rentalizer FastAPI app on Replit (libgomp, TemplateResponse API, auth fix, uv deps)
 ---
+
+## Dependency management (IMPORTANT)
+
+App deps are managed by the **workspace-root uv project** (`pyproject.toml` `[project.dependencies]` + `uv.lock`), NOT the stale `airdna-project/08-rentalizer/requirements.txt` (its pins drift *below* the installed versions, e.g. it pins uvicorn 0.49 while the env runs 0.51). Reconcile the env with `uv sync` (fast, idempotent, installs into `.pythonlibs`). Do **NOT** `uv pip install -r requirements.txt` — it downgrades live packages. The post-merge script (`scripts/post-merge.sh`, wired into `.replit` `[postMerge]`) runs `uv sync`.
 
 ## Rules
 
