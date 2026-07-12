@@ -2,6 +2,14 @@
 
 Airbnb data analysis project with three connected parts: a revenue estimator, a data analysis pipeline, and a map explorer.
 
+> **AIRWORTHY design direction:** All new UI work (homepage/cover, map, property
+> report, comparison) must follow the authoritative spec in
+> [`airdna-project/08-rentalizer/AIRWORTHY-DESIGN-BRIEF.md`](airdna-project/08-rentalizer/AIRWORTHY-DESIGN-BRIEF.md).
+> Positioning = property-readiness/certification (verdicts CLEARED/CONDITIONAL/EXPOSED/GROUNDED
+> + score /100); mineral-white canvas, scarce chartreuse accent, editorial×instrument
+> style; signature "Earnings Envelope" motif. The uploaded mockup image is approximate —
+> the brief text wins where they conflict.
+
 ## 1. Rentalizer Web App (`airdna-project/08-rentalizer/`)
 
 A FastAPI web app with a pre-trained ML model (XGBoost + LightGBM) that estimates annual short-term rental revenue for any NYC address.
