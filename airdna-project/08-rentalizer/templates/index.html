@@ -3,122 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIRWORTHY — Airbnb Revenue Estimator</title>
-    <meta name="description" content="AIRWORTHY estimates short-term rental revenue for any address, with a modeled earnings range instead of a single falsely-precise number.">
+    <title>AIRWORTHY — See what any property could earn</title>
+    <meta name="description" content="AIRWORTHY estimates short-term rental revenue for any address in seconds, with a modeled earnings range instead of a single falsely-precise number.">
     <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
     <link rel="stylesheet" href="/static/tokens.css">
     <link rel="stylesheet" href="/static/nav.css">
+    <link rel="stylesheet" href="/static/earnings-envelope.css">
     <link rel="stylesheet" href="/static/style.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
     {% include "_nav.html" %}
+
     <div class="page-shell">
-        <header class="page-header">
-            <p class="header-sub">Estimate Airbnb revenue by address</p>
-            <a href="/map" class="header-map-link">
-                Explore the market map
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-        </header>
 
-        <main>
-            <form id="estimate-form" class="estimate-form" novalidate>
-                <div class="form-group">
-                    <label class="form-label" for="address">Address</label>
+        <!-- ===== Entry state: the AIRWORTHY promise + a single input ===== -->
+        <section id="entry" class="entry">
+            <h1 class="entry-title">See what any property could earn.</h1>
+            <p class="entry-sub">Enter an address. We'll locate it, find comparable listings nearby, and show a modeled earnings range in seconds — no signup, no card.</p>
+
+            <form id="estimate-form" class="entry-form" novalidate>
+                <div class="entry-input-row">
+                    <label class="sr-only" for="address">Property address</label>
                     <input type="text" id="address" name="address"
-                           class="form-input" placeholder="350 5th Ave, New York, NY" required>
+                           class="entry-input" placeholder="350 5th Ave, New York, NY" required
+                           autocomplete="off">
+                    <button type="submit" id="submit-btn" class="btn-primary entry-submit">
+                        <span class="btn-label">Estimate revenue</span>
+                    </button>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label" for="bedrooms">Bedrooms</label>
-                        <div class="form-select-wrap">
-                            <select id="bedrooms" name="bedrooms" class="form-select">
-                                <option value="0">Studio</option>
-                                <option value="1" selected>1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5+</option>
-                            </select>
-                            <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+
+                <button type="button" id="details-toggle" class="details-toggle" aria-expanded="false" aria-controls="details-panel">
+                    Adjust property details
+                    <svg class="details-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+
+                <div id="details-panel" class="details-panel hidden">
+                    <div class="details-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="bedrooms">Bedrooms</label>
+                            <div class="form-select-wrap">
+                                <select id="bedrooms" name="bedrooms" class="form-select">
+                                    <option value="0">Studio</option>
+                                    <option value="1" selected>1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5+</option>
+                                </select>
+                                <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="bathrooms">Bathrooms</label>
-                        <div class="form-select-wrap">
-                            <select id="bathrooms" name="bathrooms" class="form-select">
-                                <option value="1" selected>1</option>
-                                <option value="2">2</option>
-                                <option value="3">3+</option>
-                            </select>
-                            <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        <div class="form-group">
+                            <label class="form-label" for="bathrooms">Bathrooms</label>
+                            <div class="form-select-wrap">
+                                <select id="bathrooms" name="bathrooms" class="form-select">
+                                    <option value="1" selected>1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3+</option>
+                                </select>
+                                <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="accommodates">Guests</label>
-                        <div class="form-select-wrap">
-                            <select id="accommodates" name="accommodates" class="form-select">
-                                <option value="1">1</option>
-                                <option value="2" selected>2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="6">6</option>
-                                <option value="8">8</option>
-                                <option value="10">10+</option>
-                            </select>
-                            <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        <div class="form-group">
+                            <label class="form-label" for="accommodates">Guests</label>
+                            <div class="form-select-wrap">
+                                <select id="accommodates" name="accommodates" class="form-select">
+                                    <option value="1">1</option>
+                                    <option value="2" selected>2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="6">6</option>
+                                    <option value="8">8</option>
+                                    <option value="10">10+</option>
+                                </select>
+                                <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="nightly_rate">Nightly Rate ($)</label>
-                        <input type="number" id="nightly_rate" name="nightly_rate"
-                               class="form-input" value="150" min="25" max="5000">
+                        <div class="form-group">
+                            <label class="form-label" for="nightly_rate">Nightly rate ($)</label>
+                            <input type="number" id="nightly_rate" name="nightly_rate"
+                                   class="form-input" value="150" min="25" max="5000">
+                        </div>
                     </div>
                 </div>
-                <button type="submit" id="submit-btn" class="btn-primary">Estimate Revenue</button>
             </form>
+        </section>
 
-            <div id="loading" class="loading hidden" role="status" aria-live="polite">
-                <div class="loading-spinner" aria-hidden="true"></div>
-                <p>Analyzing property…</p>
+        <!-- ===== Live sequence: locate → comparables → resolve ===== -->
+        <section id="sequence" class="sequence hidden" role="status" aria-live="polite">
+            <ol class="sequence-steps">
+                <li class="sequence-step" data-step="locate">
+                    <span class="sequence-dot" aria-hidden="true"></span>
+                    <span class="sequence-text" data-step-text="locate">Locating the property…</span>
+                </li>
+                <li class="sequence-step" data-step="comps">
+                    <span class="sequence-dot" aria-hidden="true"></span>
+                    <span class="sequence-text" data-step-text="comps">Gathering comparable listings…</span>
+                </li>
+                <li class="sequence-step" data-step="resolve">
+                    <span class="sequence-dot" aria-hidden="true"></span>
+                    <span class="sequence-text" data-step-text="resolve">Resolving the earnings range…</span>
+                </li>
+            </ol>
+        </section>
+
+        <!-- ===== Error / no-coverage state ===== -->
+        <section id="error" class="error-box hidden" role="alert" aria-live="assertive" tabindex="-1">
+            <p id="error-title" class="error-title"></p>
+            <p id="error-message" class="error-message"></p>
+            <p id="error-suggestion" class="error-suggestion"></p>
+        </section>
+
+        <!-- ===== Result state ===== -->
+        <section id="results" class="results hidden" aria-live="polite" tabindex="-1">
+            <div class="result-card result-card-primary">
+                <div id="envelope-slot"></div>
             </div>
 
-            <div id="error" class="error-box hidden" role="alert" aria-live="assertive">
-                <p id="error-message"></p>
-            </div>
-
-            <div id="results" class="hidden" aria-live="polite" tabindex="-1">
-                <div class="result-hero">
-                    <span class="result-hero-label">Estimated Annual Revenue</span>
-                    <span id="revenue-range" class="result-hero-range"></span>
-                    <span id="confidence-badge" class="confidence-badge"></span>
+            <div class="result-metrics">
+                <div class="metric-card">
+                    <span class="metric-label">Average nightly rate</span>
+                    <span id="metric-adr" class="metric-value">—</span>
                 </div>
-
-                <div class="result-grid">
-                    <div class="result-card">
-                        <h3 class="result-card-title">Confidence</h3>
-                        <div id="confidence-details"></div>
-                    </div>
-                    <div class="result-card">
-                        <h3 class="result-card-title">Market</h3>
-                        <div id="market-details"></div>
-                    </div>
+                <div class="metric-card">
+                    <span class="metric-label">Expected occupancy</span>
+                    <span id="metric-occupancy" class="metric-value">—</span>
                 </div>
-
-                <div class="result-card">
-                    <h3 class="result-card-title">Comparable Properties</h3>
-                    <div id="comps-list"></div>
+                <div class="metric-card">
+                    <span class="metric-label">Comparable properties</span>
+                    <span id="metric-comps" class="metric-value">—</span>
                 </div>
-
-                <div class="result-card">
-                    <h3 class="result-card-title">Location</h3>
-                    <div id="map" class="mini-map"></div>
+                <div class="metric-card">
+                    <span class="metric-label">Estimate confidence</span>
+                    <span id="metric-confidence" class="metric-value">—</span>
                 </div>
             </div>
-        </main>
+
+            <div class="result-actions">
+                <a id="view-report-link" href="#" class="btn-primary result-primary-action">View complete estimate</a>
+                <div class="result-secondary-actions">
+                    <button type="button" id="adjust-btn" class="btn-secondary">Adjust details &amp; re-run</button>
+                    <button type="button" id="save-btn" class="btn-secondary">Save property</button>
+                    <a id="compare-link" href="#" class="btn-secondary">Start a comparison</a>
+                </div>
+            </div>
+        </section>
 
         <footer class="page-footer">
             <p id="disclaimer" class="footer-disclaimer"></p>
@@ -129,7 +160,8 @@
         </footer>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+    <script src="/static/earnings-envelope.js" defer></script>
+    <script src="/static/saved-properties.js" defer></script>
     <script src="/static/app.js" defer></script>
 </body>
 </html>
