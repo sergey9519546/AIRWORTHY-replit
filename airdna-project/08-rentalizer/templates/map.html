@@ -3,219 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIRWORTHY — California &amp; Florida Market Map</title>
-    <meta name="description" content="Explore short-term rental listings and revenue across California and Florida markets.">
+    <title>AIRWORTHY — Market Map</title>
+    <meta name="description" content="Explore modeled short-term rental revenue, ADR, occupancy, demand and comparable density across California and Florida markets.">
     <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="/static/tokens.css" />
+    <link rel="stylesheet" href="/static/nav.css" />
+    <link rel="stylesheet" href="/static/earnings-envelope.css" />
     <link rel="stylesheet" href="/static/map.css" />
 </head>
 <body class="map-body">
 
+    {% include "_nav.html" %}
+
     <!-- Full-screen map -->
     <div id="map"></div>
 
-    <!-- Floating search bar (top center) -->
-    <div class="map-searchbar" id="map-searchbar">
-        <div class="map-searchbar-inner">
-            <div class="map-searchbar-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <!-- ===== Top command rail ===== -->
+    <div class="rail" id="rail">
+        <div class="rail-row">
+            <!-- Location -->
+            <div class="rail-field rail-location">
+                <svg class="rail-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <div class="rail-location-text">
+                    <span class="rail-location-title" id="rail-title">California &amp; Florida</span>
+                    <span class="rail-location-sub" id="rail-sub">Loading listings&hellip;</span>
+                </div>
             </div>
-            <div class="map-searchbar-text">
-                <span class="map-searchbar-title" id="searchbar-title">California &amp; Florida</span>
-                <span class="map-searchbar-sub" id="searchbar-sub">Loading listings…</span>
+
+            <div class="rail-divider"></div>
+
+            <!-- Primary filters -->
+            <div class="rail-field rail-select-wrap">
+                <select id="state-filter" class="rail-select" aria-label="Filter by state">
+                    <option value="">All states</option>
+                    <option value="ca">California</option>
+                    <option value="fl">Florida</option>
+                </select>
             </div>
-            <div class="map-searchbar-divider"></div>
-            <button class="map-searchbar-filters" id="toggle-sidebar"
-                    aria-label="Toggle filter sidebar" aria-expanded="true" aria-controls="map-sidebar">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-                <span class="filter-badge" id="filter-badge" aria-label="active filters" hidden>0</span>
+            <div class="rail-field rail-select-wrap">
+                <select id="city-filter" class="rail-select" aria-label="Filter by city or region">
+                    <option value="">All cities</option>
+                </select>
+            </div>
+            <div class="rail-field rail-select-wrap">
+                <select id="room-filter" class="rail-select" aria-label="Property type">
+                    <option value="">Any type</option>
+                    <option value="Entire home/apt">Entire home</option>
+                    <option value="Private room">Private room</option>
+                    <option value="Hotel room">Hotel room</option>
+                    <option value="Shared room">Shared room</option>
+                </select>
+            </div>
+
+            <button class="rail-more" id="toggle-more-filters" aria-expanded="false" aria-controls="more-filters">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+                <span>More filters</span>
+                <span class="filter-badge" id="filter-badge" hidden>0</span>
             </button>
         </div>
+
+        <!-- City chips -->
+        <div class="rail-chips" id="map-chips"></div>
     </div>
 
-    <!-- City chips — populated dynamically by map.js -->
-    <div class="map-chips" id="map-chips"></div>
-
-    <!-- Floating sidebar -->
-    <aside class="map-sidebar" id="map-sidebar">
-        <!-- Header -->
-        <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <svg viewBox="0 0 32 32" class="sidebar-logo-icon" aria-hidden="true">
-                    <rect x="1" y="1" width="30" height="30" rx="8" fill="#14151A"/>
-                    <rect x="8"  y="18" width="4" height="9"  rx="1.5" fill="#FF6350"/>
-                    <rect x="14" y="12" width="4" height="15" rx="1.5" fill="#C6F135"/>
-                    <rect x="20" y="6"  width="4" height="21" rx="1.5" fill="#2A55FF"/>
-                </svg>
-                <span class="sidebar-logo-text">AIRWORTHY</span>
+    <!-- Progressive disclosure: secondary filters -->
+    <div class="more-filters" id="more-filters" hidden>
+        <div class="more-filters-inner">
+            <div class="mf-group">
+                <label class="mf-label" for="bedrooms-filter">Bedrooms</label>
+                <select id="bedrooms-filter" class="mf-select">
+                    <option value="">Any</option>
+                    <option value="0">Studio</option>
+                    <option value="1">1+</option>
+                    <option value="2">2+</option>
+                    <option value="3">3+</option>
+                    <option value="4">4+</option>
+                </select>
             </div>
-            <a href="/" class="sidebar-back">← AIRWORTHY</a>
-        </div>
-
-        <!-- Listing count -->
-        <div class="sidebar-count">
-            <span class="sidebar-count-pulse"><span class="pulse-ring"></span><span class="pulse-dot"></span></span>
-            <div>
-                <div class="sidebar-count-num" id="visible-count">Loading…</div>
-                <div class="sidebar-count-sub">Latest snapshot per city</div>
+            <div class="mf-group">
+                <label class="mf-label" for="guests-filter">Guests</label>
+                <select id="guests-filter" class="mf-select">
+                    <option value="">Any</option>
+                    <option value="2">2+</option>
+                    <option value="4">4+</option>
+                    <option value="6">6+</option>
+                    <option value="8">8+</option>
+                </select>
             </div>
-        </div>
-
-        <!-- Scrollable filters -->
-        <div class="sidebar-scroll">
-
-            <!-- State -->
-            <div class="filter-group">
-                <label class="sr-only" for="state-filter">State</label>
-                <div class="filter-select-wrap">
-                    <select id="state-filter" class="filter-select" aria-label="Filter by state">
-                        <option value="">All States</option>
-                        <option value="ca">California</option>
-                        <option value="fl">Florida</option>
-                    </select>
-                    <svg class="filter-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            <div class="mf-group mf-range">
+                <label class="mf-label">ADR / night</label>
+                <div class="mf-range-inputs">
+                    <input type="number" id="min-price" class="mf-input" placeholder="$0" min="0" aria-label="Minimum nightly rate">
+                    <span class="mf-dash">&ndash;</span>
+                    <input type="number" id="max-price" class="mf-input" placeholder="Any" min="0" aria-label="Maximum nightly rate">
                 </div>
             </div>
-
-            <!-- City -->
-            <div class="filter-group">
-                <label class="sr-only" for="city-filter">City / Region</label>
-                <div class="filter-select-wrap">
-                    <select id="city-filter" class="filter-select" aria-label="Filter by city or region">
-                        <option value="">All Cities</option>
-                    </select>
-                    <svg class="filter-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            <div class="mf-group mf-range">
+                <label class="mf-label">Annual revenue</label>
+                <div class="mf-range-inputs">
+                    <input type="number" id="min-revenue" class="mf-input" placeholder="$0" min="0" aria-label="Minimum annual revenue">
+                    <span class="mf-dash">&ndash;</span>
+                    <input type="number" id="max-revenue" class="mf-input" placeholder="Any" min="0" aria-label="Maximum annual revenue">
                 </div>
             </div>
-
-            <hr class="sidebar-hr">
-
-            <!-- Room type pills -->
-            <div class="sidebar-section-label" id="room-type-label" style="margin-bottom: 14px;">Type of place</div>
-            <div class="room-pills" id="room-pills" role="group" aria-labelledby="room-type-label">
-                <button class="room-pill active" data-value="">All</button>
-                <button class="room-pill" data-value="Entire home/apt">Entire home</button>
-                <button class="room-pill" data-value="Private room">Private room</button>
-                <button class="room-pill" data-value="Hotel room">Hotel</button>
-                <button class="room-pill" data-value="Shared room">Shared</button>
-            </div>
-            <!-- Hidden select for JS compatibility -->
-            <select id="room-filter" class="hidden-select" aria-hidden="true">
-                <option value="">All</option>
-                <option value="Entire home/apt">Entire home/apt</option>
-                <option value="Private room">Private room</option>
-                <option value="Hotel room">Hotel room</option>
-                <option value="Shared room">Shared room</option>
-            </select>
-
-            <hr class="sidebar-hr">
-
-            <!-- Price range -->
-            <div class="sidebar-section-label" id="price-range-label" style="margin-bottom: 16px;">Price range</div>
-            <div class="price-histogram" aria-hidden="true">
-                <div class="price-histogram-bar" style="height:4%"></div>
-                <div class="price-histogram-bar" style="height:8%"></div>
-                <div class="price-histogram-bar" style="height:15%"></div>
-                <div class="price-histogram-bar active" style="height:28%"></div>
-                <div class="price-histogram-bar active" style="height:42%"></div>
-                <div class="price-histogram-bar active" style="height:60%"></div>
-                <div class="price-histogram-bar active" style="height:78%"></div>
-                <div class="price-histogram-bar active" style="height:95%"></div>
-                <div class="price-histogram-bar active" style="height:100%"></div>
-                <div class="price-histogram-bar active" style="height:85%"></div>
-                <div class="price-histogram-bar active" style="height:68%"></div>
-                <div class="price-histogram-bar active" style="height:50%"></div>
-                <div class="price-histogram-bar active" style="height:35%"></div>
-                <div class="price-histogram-bar active" style="height:22%"></div>
-                <div class="price-histogram-bar" style="height:12%"></div>
-                <div class="price-histogram-bar" style="height:7%"></div>
-                <div class="price-histogram-bar" style="height:4%"></div>
-                <div class="price-histogram-bar" style="height:2%"></div>
-            </div>
-            <div class="price-inputs" role="group" aria-labelledby="price-range-label">
-                <div class="price-input-wrap">
-                    <label class="price-input-label" for="min-price">Minimum</label>
-                    <div class="price-input-inner">
-                        <span class="price-symbol" aria-hidden="true">$</span>
-                        <input type="number" id="min-price" class="price-input" placeholder="0" min="0" aria-label="Minimum price in dollars">
-                    </div>
-                </div>
-                <span class="price-dash" aria-hidden="true">—</span>
-                <div class="price-input-wrap">
-                    <label class="price-input-label" for="max-price">Maximum</label>
-                    <div class="price-input-inner">
-                        <span class="price-symbol" aria-hidden="true">$</span>
-                        <input type="number" id="max-price" class="price-input" placeholder="Any" min="0" aria-label="Maximum price in dollars">
-                    </div>
-                </div>
-            </div>
-
-            <hr class="sidebar-hr">
-
-            <!-- Toggles -->
-            <div class="toggle-list">
-                <label class="toggle-row">
-                    <div class="toggle-text">
-                        <span class="toggle-title">Guest favorites</span>
-                        <span class="toggle-sub">Most loved homes, according to guests</span>
-                    </div>
-                    <div class="toggle-switch">
-                        <input type="checkbox" class="toggle-input" id="toggle-guest-fav">
-                        <span class="toggle-track"></span>
-                    </div>
+            <div class="mf-group mf-toggles">
+                <label class="mf-toggle-row">
+                    <input type="checkbox" id="toggle-guest-fav">
+                    <span>Guest favorites</span>
                 </label>
-                <label class="toggle-row">
-                    <div class="toggle-text">
-                        <span class="toggle-title">Instant Book</span>
-                        <span class="toggle-sub">Book without waiting for host approval</span>
-                    </div>
-                    <div class="toggle-switch">
-                        <input type="checkbox" class="toggle-input" id="toggle-instant">
-                        <span class="toggle-track"></span>
-                    </div>
+                <label class="mf-toggle-row">
+                    <input type="checkbox" id="toggle-instant">
+                    <span>Instant Book</span>
                 </label>
             </div>
+            <div class="mf-actions">
+                <button class="mf-clear" id="reset-filters">Clear all</button>
+            </div>
         </div>
+    </div>
 
-        <!-- Sticky footer actions -->
-        <div class="sidebar-footer">
-            <button class="sidebar-clear" id="reset-filters">Clear all</button>
-            <button class="sidebar-apply" id="apply-filters">Show results</button>
-        </div>
-        <!-- Live result count updated by JS -->
-        <span id="apply-count" class="sr-only" aria-live="polite"></span>
-    </aside>
+    <!-- ===== Layer selector ===== -->
+    <div class="layer-rail" id="layer-rail" role="tablist" aria-label="Map analytical layer">
+        <button class="layer-btn active" data-layer="revenue" role="tab" aria-selected="true">
+            <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
+            Revenue
+        </button>
+        <button class="layer-btn" data-layer="adr" role="tab" aria-selected="false">
+            <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
+            ADR
+        </button>
+        <button class="layer-btn" data-layer="occupancy" role="tab" aria-selected="false">
+            <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
+            Occupancy
+        </button>
+        <button class="layer-btn" data-layer="demand" role="tab" aria-selected="false">
+            <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
+            Demand
+        </button>
+        <button class="layer-btn" data-layer="density" role="tab" aria-selected="false">
+            <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
+            Comp density
+        </button>
+    </div>
 
-    <!-- Map legend (bottom-right) -->
-    <div class="map-legend">
-        <div class="map-legend-title">Map Legend</div>
-        <div class="legend-row">
-            <span class="legend-dot" style="background:#2A55FF"></span>
-            <span class="legend-label">Entire home/apt</span>
-        </div>
-        <div class="legend-row">
-            <span class="legend-dot" style="background:#059669"></span>
-            <span class="legend-label">Private room</span>
-        </div>
-        <div class="legend-row">
-            <span class="legend-dot" style="background:#f59e0b"></span>
-            <span class="legend-label">Hotel room</span>
-        </div>
-        <div class="legend-row">
-            <span class="legend-dot" style="background:#6b7280"></span>
-            <span class="legend-label">Shared room</span>
+    <!-- Legend -->
+    <div class="map-legend" id="map-legend">
+        <div class="map-legend-title" id="legend-title">Revenue</div>
+        <div class="legend-gradient"><span></span></div>
+        <div class="legend-scale">
+            <span id="legend-low">Low</span>
+            <span id="legend-high">High</span>
         </div>
         <div class="legend-attribution">
-            Data: <a href="https://insideairbnb.com" target="_blank">InsideAirbnb</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
+            Data: <a href="https://insideairbnb.com" target="_blank">InsideAirbnb</a> &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
         </div>
     </div>
 
+    <div class="visible-count" id="visible-count-pill">
+        <span class="pulse-ring"></span><span class="pulse-dot"></span>
+        <span id="visible-count">Loading&hellip;</span>
+    </div>
+
+    <!-- ===== Property inspection panel (bottom dock) ===== -->
+    <aside class="inspector" id="inspector" hidden>
+        <div class="inspector-handle" id="inspector-handle" aria-hidden="true"></div>
+        <button class="inspector-close" id="inspector-close" aria-label="Close inspection panel">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="inspector-body">
+            <div class="inspector-header">
+                <div class="inspector-type-dot" id="inspector-dot"></div>
+                <div class="inspector-heading">
+                    <div class="inspector-name" id="inspector-name">&mdash;</div>
+                    <div class="inspector-meta" id="inspector-meta">&mdash;</div>
+                </div>
+            </div>
+
+            <div class="inspector-envelope" id="inspector-envelope"></div>
+
+            <div class="inspector-stats">
+                <div class="inspector-stat">
+                    <div class="inspector-stat-label">ADR</div>
+                    <div class="inspector-stat-value" id="inspector-adr">&mdash;</div>
+                </div>
+                <div class="inspector-stat">
+                    <div class="inspector-stat-label">Occupancy</div>
+                    <div class="inspector-stat-value" id="inspector-occupancy">&mdash;</div>
+                </div>
+                <div class="inspector-stat">
+                    <div class="inspector-stat-label">Comparables</div>
+                    <div class="inspector-stat-value" id="inspector-comps">&mdash;</div>
+                </div>
+            </div>
+
+            <a class="inspector-cta" id="inspector-cta" href="/property">
+                Open estimate
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+        </div>
+    </aside>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="/static/earnings-envelope.js"></script>
     <script src="/static/map.js" defer></script>
 </body>
 </html>

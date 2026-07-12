@@ -1,10 +1,9 @@
-// Airbnb Map — Coral Coast design
-// California & Florida listings explorer
+// AIRWORTHY — Market Map
+// The map is the interface: a compact top rail replaces the old sidebar,
+// one analytical layer is active at a time, and markers are colored on a
+// continuous coral→blue→lime scale instead of clustered black bubbles.
 
-// ─── Map setup ────────────────────────────────────────────────────────────────
-// Start centered on California coast — most listings live here.
-// maxBounds keeps users from panning into invalid lat/lng territory (which the
-// API correctly rejects with 400) or off into empty ocean/space.
+// ─── Map setup ────────────────────────────────────────────────────────────
 const WORLD_BOUNDS = [[-85, -220], [85, 220]];
 const map = L.map('map', {
     zoomControl: false,
@@ -13,12 +12,10 @@ const map = L.map('map', {
     minZoom: 3,
 }).setView([36.5, -119.5], 6);
 
-// Zoom controls — top-right to not clash with sidebar
 L.control.zoom({ position: 'topright' }).addTo(map);
 
-// CartoDB light tile — cleaner than OSM default
 L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
     {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
@@ -26,50 +23,106 @@ L.tileLayer(
     }
 ).addTo(map);
 
-// ─── Cluster group with coral icon ────────────────────────────────────────────
-const markers = L.markerClusterGroup({
-    maxClusterRadius: 70,
-    spiderfyOnMaxZoom: true,
-    showCoverageOnHover: false,
-    zoomToBoundsOnClick: true,
-    iconCreateFunction(cluster) {
-        const count = cluster.getChildCount();
-        const label = count >= 1000 ? Math.round(count / 1000) + 'k' : count;
-        const size = count > 500 ? 52 : count > 100 ? 44 : 36;
-        return L.divIcon({
-            html: `<div class="coral-cluster" style="width:${size}px;height:${size}px;font-size:${size < 44 ? 12 : 13}px">${label}</div>`,
-            className: '',
-            iconSize: [size, size],
-            iconAnchor: [size / 2, size / 2],
-        });
-    },
-});
-map.addLayer(markers);
+// A plain LayerGroup — no clustering. At low zoom we render aggregated
+// "market field" cells; at high zoom we render individual property dots.
+const markerLayer = L.layerGroup().addTo(map);
+const markerById = new Map(); // listing id -> {marker, listing}
 
-// ─── State ────────────────────────────────────────────────────────────────────
+// ─── State ────────────────────────────────────────────────────────────────
 let debounceTimer = null;
 let currentController = null;
 let lastRequestId = 0;
-let activeRoomType = '';
+let currentListings = [];
+let activeLayer = 'revenue';
+let selectedId = null;
 
-// ─── Room type colors ─────────────────────────────────────────────────────────
-const roomColors = {
-    'Entire home/apt': '#FF385C',
-    'Private room':    '#059669',
-    'Hotel room':      '#f59e0b',
-    'Shared room':     '#6b7280',
+// ─── Color scale: coral (low) → blue (mid) → lime (high) ──────────────────
+function hexToRgb(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+const CORAL = hexToRgb('#FF6350');
+const BLUE  = hexToRgb('#2A55FF');
+const LIME  = hexToRgb('#C6F135');
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function colorForT(t) {
+    t = Math.max(0, Math.min(1, t));
+    const [c1, c2] = t < 0.5 ? [CORAL, BLUE] : [BLUE, LIME];
+    const localT = t < 0.5 ? t / 0.5 : (t - 0.5) / 0.5;
+    const r = Math.round(lerp(c1[0], c2[0], localT));
+    const g = Math.round(lerp(c1[1], c2[1], localT));
+    const b = Math.round(lerp(c1[2], c2[2], localT));
+    return `rgb(${r},${g},${b})`;
+}
+
+// ─── Derived per-listing metrics ───────────────────────────────────────────
+// The /api/listings payload carries price_numeric (nightly rate — used
+// directly as the ADR figure) and estimated_revenue_l365d. Occupancy and
+// demand are derived from those existing fields rather than requiring a
+// new API contract.
+function metricRevenue(l) { return l.estimated_revenue_l365d || 0; }
+function metricAdr(l) { return l.price_numeric || 0; }
+function metricOccupancy(l) {
+    if (!l.price_numeric || !l.estimated_revenue_l365d) return 0;
+    return Math.max(0, Math.min(1, l.estimated_revenue_l365d / (l.price_numeric * 365)));
+}
+function metricDemand(l) { return l.number_of_reviews || 0; }
+
+const LAYER_DEFS = {
+    revenue:   { get: metricRevenue,   label: 'Revenue',      fmt: v => '$' + Math.round(v).toLocaleString(), low: 'Low', high: 'High' },
+    adr:       { get: metricAdr,       label: 'ADR',          fmt: v => '$' + Math.round(v).toLocaleString(), low: 'Low', high: 'High' },
+    occupancy: { get: metricOccupancy, label: 'Occupancy',    fmt: v => Math.round(v * 100) + '%', low: 'Low', high: 'High' },
+    demand:    { get: metricDemand,    label: 'Demand (review velocity proxy)', fmt: v => Math.round(v) + ' reviews', low: 'Quiet', high: 'Active' },
+    density:   { get: null,            label: 'Comparable density', fmt: v => Math.round(v) + ' nearby', low: 'Sparse', high: 'Dense' },
 };
 
-function getColor(roomType) {
-    return roomColors[roomType] || '#FF385C';
+// Compute a robust [p10, p90] scale for the active layer across the
+// currently loaded listings, so color intensity is relative to what's on
+// screen rather than a hardcoded global range.
+function computeScale(listings, layerKey) {
+    const def = LAYER_DEFS[layerKey];
+    let values;
+    if (layerKey === 'density') {
+        values = listings.map(l => densityAt(l, listings));
+    } else {
+        values = listings.map(def.get).filter(v => v > 0);
+    }
+    if (values.length === 0) return { lo: 0, hi: 1 };
+    values.sort((a, b) => a - b);
+    const p = (q) => values[Math.min(values.length - 1, Math.floor(q * (values.length - 1)))];
+    const lo = p(0.1);
+    const hi = Math.max(p(0.9), lo + 1);
+    return { lo, hi };
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function formatCurrency(n) {
-    if (!n) return 'N/A';
-    return '$' + Math.round(n).toLocaleString();
+// Comparable density: how many other listings of the same room type sit
+// within a small radius. Reused both for the "density" layer and for
+// finding comps when a property is selected.
+function haversine(lat1, lon1, lat2, lon2) {
+    const R = 3958.8; // miles
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
 }
 
+function findComps(listing, listings, radiusMiles = 1.5) {
+    return listings.filter(l =>
+        l.id !== listing.id &&
+        l.room_type === listing.room_type &&
+        l.latitude && l.longitude &&
+        haversine(listing.latitude, listing.longitude, l.latitude, l.longitude) <= radiusMiles
+    );
+}
+
+function densityAt(listing, listings) {
+    return findComps(listing, listings, 1.5).length;
+}
+
+// ─── Helpers ────────────────────────────────────────────────────────────
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
@@ -77,86 +130,25 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-function buildPopup(props) {
-    // All data-derived text is escaped before interpolation — city/state/name
-    // and room_type ultimately come from the DB (sourced from InsideAirbnb CSVs),
-    // and must be treated as untrusted when injected into innerHTML.
-    const cityRaw = (props.city || '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-    const city = escapeHtml(cityRaw);
-    const state = escapeHtml((props.state || '').toUpperCase());
-    const color = getColor(props.room_type);
-    const roomLabel = props.room_type || 'Listing';
-    const beds = props.bedrooms || 0;
-    const guests = props.accommodates || 0;
-    const baths = props.bathrooms ? parseFloat(props.bathrooms).toFixed(1).replace(/\.0$/, '') : '–';
-    const reviews = props.number_of_reviews || 0;
-    const price = formatCurrency(props.price_numeric);
-    const revenue = props.estimated_revenue_l365d
-        ? formatCurrency(props.estimated_revenue_l365d)
-        : null;
-    return `
-        <div class="popup-header">
-            <div class="popup-type-dot" style="background:${color}"></div>
-            <div class="popup-name">${escapeHtml(props.name || 'Unnamed listing')}</div>
-        </div>
-        <div class="popup-content">
-            <div class="popup-meta">
-                <span class="popup-meta-item"><strong>${escapeHtml(roomLabel)}</strong></span>
-                <span class="popup-meta-item">${city}, ${state}</span>
-                <span class="popup-meta-item">${beds} bed · ${baths} bath · ${guests} guests</span>
-                ${reviews > 0 ? `<span class="popup-meta-item">★ ${reviews} review${reviews !== 1 ? 's' : ''}</span>` : ''}
-            </div>
-            <div class="popup-stats">
-                <div class="popup-stat">
-                    <div class="popup-stat-label">Nightly rate</div>
-                    <div class="popup-stat-value">${price}</div>
-                </div>
-                <div class="popup-stat ${revenue ? 'highlight' : ''}">
-                    <div class="popup-stat-label">Est. annual rev</div>
-                    <div class="popup-stat-value">${revenue || '–'}</div>
-                </div>
-            </div>
-        </div>
-    `;
+function titleCase(s) {
+    return (s || '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }
 
-// ─── Price-label markers ──────────────────────────────────────────────────────
-function priceIcon(listing) {
-    const price = listing.price_numeric ? '$' + Math.round(listing.price_numeric) : '?';
-    const color = getColor(listing.room_type);
-    return L.divIcon({
-        html: `<div class="price-marker" style="border-color:${color}20">${price}</div>`,
-        className: '',
-        iconSize: null,
-        iconAnchor: [0, 0],
-    });
-}
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
-// ─── Load listings from API ───────────────────────────────────────────────────
-function clamp(v, lo, hi) {
-    return Math.max(lo, Math.min(hi, v));
-}
-
+// ─── Load listings from API ────────────────────────────────────────────
 async function loadListings() {
     const bounds = map.getBounds();
-    // Defensive clamp — belt-and-suspenders alongside maxBounds above.
-    // Leaflet can still report out-of-range values transiently during
-    // fitBounds/inertial pan animations before maxBounds settles.
     const north = clamp(bounds.getNorth(), -90, 90);
     const south = clamp(bounds.getSouth(), -90, 90);
     const east  = clamp(bounds.getEast(), -180, 180);
     const west  = clamp(bounds.getWest(), -180, 180);
 
-    const params = new URLSearchParams({
-        north: north,
-        south: south,
-        east:  east,
-        west:  west,
-        limit: '1000',
-    });
+    const params = new URLSearchParams({ north, south, east, west, limit: '1500' });
 
     const state    = document.getElementById('state-filter').value;
     const city     = document.getElementById('city-filter').value;
+    const roomType = document.getElementById('room-filter').value;
     const minPrice = document.getElementById('min-price').value;
     const maxPrice = document.getElementById('max-price').value;
     const guestFavorites = document.getElementById('toggle-guest-fav').checked;
@@ -164,13 +156,12 @@ async function loadListings() {
 
     if (state)       params.set('state', state);
     if (city)        params.set('city', city);
-    if (activeRoomType) params.set('room_type', activeRoomType);
+    if (roomType)     params.set('room_type', roomType);
     if (minPrice)    params.set('min_price', minPrice);
     if (maxPrice)    params.set('max_price', maxPrice);
     if (guestFavorites) params.set('guest_favorites', 'true');
     if (instantBook)    params.set('instant_book', 'true');
 
-    // Cancel stale request
     if (currentController) currentController.abort();
     const controller = new AbortController();
     currentController = controller;
@@ -181,14 +172,14 @@ async function loadListings() {
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const data = await resp.json();
         if (requestId !== lastRequestId) return;
-        renderMarkers(data.listings);
-        const countEl = document.getElementById('visible-count');
-        const n = data.listings.length;
-        if (countEl) countEl.textContent = n.toLocaleString() + ' listings shown';
 
-        // Update "Show results" button
-        const applyBtn = document.getElementById('apply-filters');
-        if (applyBtn) applyBtn.textContent = `Show ${n.toLocaleString()} results`;
+        currentListings = applyClientFilters(data.listings);
+        renderLayer();
+
+        const countEl = document.getElementById('visible-count');
+        const n = currentListings.length;
+        if (countEl) countEl.textContent = n.toLocaleString() + ' listings shown';
+        document.getElementById('visible-count-pill').style.display = 'flex';
         updateFilterBadge();
     } catch (err) {
         if (err.name === 'AbortError') return;
@@ -200,16 +191,32 @@ async function loadListings() {
     }
 }
 
-// ─── Filter badge count ───────────────────────────────────────────────────────
+// Bedrooms / guests / revenue-range filters are not part of the
+// /api/listings query contract, so they're applied client-side against the
+// already-fetched bounding-box result. This keeps the API surface unchanged
+// while still exposing the filters the product brief calls for.
+function applyClientFilters(listings) {
+    const bedrooms = document.getElementById('bedrooms-filter').value;
+    const guests   = document.getElementById('guests-filter').value;
+    const minRev   = document.getElementById('min-revenue').value;
+    const maxRev   = document.getElementById('max-revenue').value;
+
+    return listings.filter(l => {
+        if (bedrooms !== '' && (l.bedrooms || 0) < Number(bedrooms)) return false;
+        if (guests !== '' && (l.accommodates || 0) < Number(guests)) return false;
+        if (minRev !== '' && (l.estimated_revenue_l365d || 0) < Number(minRev)) return false;
+        if (maxRev !== '' && (l.estimated_revenue_l365d || 0) > Number(maxRev)) return false;
+        return true;
+    });
+}
+
+// ─── Filter badge count ────────────────────────────────────────────────
 function updateFilterBadge() {
-    let count = 0;
-    if (document.getElementById('state-filter').value)   count++;
-    if (document.getElementById('city-filter').value)    count++;
-    if (activeRoomType)                                  count++;
-    if (document.getElementById('min-price').value)      count++;
-    if (document.getElementById('max-price').value)      count++;
+    const ids = ['state-filter', 'city-filter', 'room-filter', 'min-price', 'max-price',
+                 'bedrooms-filter', 'guests-filter', 'min-revenue', 'max-revenue'];
+    let count = ids.filter(id => document.getElementById(id).value).length;
     if (document.getElementById('toggle-guest-fav').checked) count++;
-    if (document.getElementById('toggle-instant').checked)   count++;
+    if (document.getElementById('toggle-instant').checked) count++;
 
     const badge = document.getElementById('filter-badge');
     if (count > 0) {
@@ -220,81 +227,232 @@ function updateFilterBadge() {
     }
 }
 
-// ─── Price histogram from data ────────────────────────────────────────────────
-function updateHistogram(listings) {
-    const bars = document.querySelectorAll('.price-histogram-bar');
-    const prices = listings.map(l => l.price_numeric).filter(p => p && p > 0 && p < 2000);
-
-    // No valid price data — explicitly flatten bars rather than leaving stale state
-    if (prices.length === 0) {
-        bars.forEach(bar => {
-            bar.style.height = '2%';
-            bar.classList.remove('active');
-        });
-        return;
+// ─── Grid binning for market-level aggregation (zoomed out) ────────────
+function gridBin(listings, cellDeg) {
+    const cells = new Map();
+    for (const l of listings) {
+        if (!l.latitude || !l.longitude) continue;
+        const key = Math.round(l.latitude / cellDeg) + ':' + Math.round(l.longitude / cellDeg);
+        if (!cells.has(key)) cells.set(key, []);
+        cells.get(key).push(l);
     }
-
-    const bins = bars.length || 18;
-    const min = Math.min(...prices);
-    const max = Math.max(...prices);
-    const counts = Array(bins).fill(0);
-
-    if (max === min) {
-        // All listings share one price — put everything in the middle bin
-        counts[Math.floor(bins / 2)] = prices.length;
-    } else {
-        const step = (max - min) / bins;
-        for (const p of prices) {
-            const i = Math.min(Math.floor((p - min) / step), bins - 1);
-            counts[i]++;
-        }
-    }
-
-    const peak = Math.max(...counts);
-    bars.forEach((bar, i) => {
-        const pct = peak > 0 ? Math.round((counts[i] / peak) * 100) : 2;
-        bar.style.height = Math.max(pct, 2) + '%';
-        bar.classList.toggle('active', counts[i] > 0);
-    });
+    return cells;
 }
 
-function renderMarkers(listings) {
-    markers.clearLayers();
-    updateHistogram(listings);
-    const zoom = map.getZoom();
-    const usePriceLabels = zoom >= 12;
-    const batch = [];
+function cellDegForZoom(zoom) {
+    // Coarser cells when zoomed further out.
+    if (zoom <= 6) return 0.9;
+    if (zoom <= 8) return 0.4;
+    if (zoom <= 10) return 0.15;
+    return 0.06;
+}
 
+// ─── Rendering ───────────────────────────────────────────────────────────
+function renderLayer() {
+    markerLayer.clearLayers();
+    markerById.clear();
+    const zoom = map.getZoom();
+    const detailZoom = zoom >= 11;
+    const def = LAYER_DEFS[activeLayer];
+
+    if (activeLayer === 'density') {
+        // Precompute density once per render — expensive but bounded by the
+        // per-request listing cap.
+        currentListings.forEach(l => { l.__density = densityAt(l, currentListings); });
+    }
+
+    const getValue = activeLayer === 'density' ? (l => l.__density) : def.get;
+    const scale = computeScale(currentListings, activeLayer);
+    updateLegend(def, scale);
+
+    if (!detailZoom) {
+        renderMarketField(currentListings, getValue, scale, zoom);
+    } else {
+        renderPropertyDots(currentListings, getValue, scale);
+    }
+}
+
+function renderMarketField(listings, getValue, scale, zoom) {
+    const cellDeg = cellDegForZoom(zoom);
+    const cells = gridBin(listings, cellDeg);
+    for (const group of cells.values()) {
+        if (group.length === 0) continue;
+        let sum = 0, lat = 0, lng = 0;
+        for (const l of group) {
+            sum += getValue(l) || 0;
+            lat += l.latitude;
+            lng += l.longitude;
+        }
+        const avg = sum / group.length;
+        lat /= group.length;
+        lng /= group.length;
+        const t = (avg - scale.lo) / (scale.hi - scale.lo || 1);
+        const radius = 10 + Math.min(26, Math.sqrt(group.length) * 4);
+        const marker = L.circleMarker([lat, lng], {
+            radius,
+            className: 'aw-market-cell',
+            color: 'transparent',
+            fillColor: colorForT(t),
+            fillOpacity: 0.42,
+            weight: 0,
+        });
+        marker.bindTooltip(
+            `${group.length.toLocaleString()} listings &middot; ${LAYER_DEFS[activeLayer].fmt(avg)} avg`,
+            { className: 'aw-tooltip', sticky: true }
+        );
+        marker.on('click', () => map.setView([lat, lng], Math.min(map.getZoom() + 3, 13)));
+        markerLayer.addLayer(marker);
+    }
+}
+
+function renderPropertyDots(listings, getValue, scale) {
     for (const listing of listings) {
         if (!listing.latitude || !listing.longitude) continue;
+        const value = getValue(listing) || 0;
+        const t = (value - scale.lo) / (scale.hi - scale.lo || 1);
+        const color = colorForT(t);
+        const icon = L.divIcon({
+            html: `<div class="aw-marker-dot" style="width:14px;height:14px;background:${color}"></div>`,
+            className: '',
+            iconSize: [14, 14],
+            iconAnchor: [7, 7],
+        });
+        const marker = L.marker([listing.latitude, listing.longitude], { icon });
+        marker.on('click', () => selectListing(listing));
+        markerLayer.addLayer(marker);
+        markerById.set(listing.id, { marker, listing });
+    }
+    if (selectedId != null) applySelectionVisuals();
+}
 
-        let marker;
-        if (usePriceLabels) {
-            marker = L.marker([listing.latitude, listing.longitude], { icon: priceIcon(listing) });
+function updateLegend(def, scale) {
+    document.getElementById('legend-title').textContent = def.label;
+    document.getElementById('legend-low').textContent = def.low + ' ' + (def.fmt ? def.fmt(scale.lo) : '');
+    document.getElementById('legend-high').textContent = def.high + ' ' + (def.fmt ? def.fmt(scale.hi) : '');
+}
+
+// ─── Property selection + inspection panel ─────────────────────────────
+function selectListing(listing) {
+    selectedId = listing.id;
+    applySelectionVisuals();
+    showInspector(listing);
+}
+
+function applySelectionVisuals() {
+    const selected = markerById.get(selectedId);
+    if (!selected) return;
+    const comps = findComps(selected.listing, currentListings, 1.5);
+    const compIds = new Set(comps.map(c => c.id));
+
+    for (const [id, entry] of markerById) {
+        const el = entry.marker.getElement();
+        if (!el) continue;
+        const dot = el.querySelector('.aw-marker-dot') || el;
+        dot.classList.remove('aw-dimmed', 'aw-comp', 'aw-selected');
+        if (id === selectedId) {
+            dot.classList.add('aw-selected');
+        } else if (compIds.has(id)) {
+            dot.classList.add('aw-comp');
         } else {
-            const color = getColor(listing.room_type);
-            const icon = L.divIcon({
-                html: `<div style="width:12px;height:12px;border-radius:50%;background:${color};border:2.5px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,0.35);cursor:pointer;transition:transform .15s;"></div>`,
-                className: '',
-                iconSize: [12, 12],
-                iconAnchor: [6, 6],
-            });
-            marker = L.marker([listing.latitude, listing.longitude], { icon });
+            dot.classList.add('aw-dimmed');
         }
+    }
+}
 
-        marker.bindPopup(buildPopup(listing), { maxWidth: 300, className: 'coral-popup' });
-        batch.push(marker);
+function clearSelectionVisuals() {
+    for (const [, entry] of markerById) {
+        const el = entry.marker.getElement();
+        if (!el) continue;
+        const dot = el.querySelector('.aw-marker-dot') || el;
+        dot.classList.remove('aw-dimmed', 'aw-comp', 'aw-selected');
+    }
+}
+
+function percentile(sorted, q) {
+    if (sorted.length === 0) return 0;
+    return sorted[Math.min(sorted.length - 1, Math.floor(q * (sorted.length - 1)))];
+}
+
+function showInspector(listing) {
+    const comps = findComps(listing, currentListings, 1.5);
+    const revenues = comps.map(c => c.estimated_revenue_l365d).filter(v => v > 0).sort((a, b) => a - b);
+    const ownRevenue = listing.estimated_revenue_l365d || (revenues.length ? revenues[Math.floor(revenues.length / 2)] : 0);
+
+    let downside, upside, mostLikely, confidence;
+    if (revenues.length >= 4) {
+        downside = percentile(revenues, 0.1);
+        upside = percentile(revenues, 0.9);
+        mostLikely = ownRevenue || percentile(revenues, 0.5);
+        confidence = comps.length >= 20 ? 'high' : comps.length >= 8 ? 'medium' : 'low';
+    } else {
+        // Too few nearby comps for a data-driven band — fall back to a
+        // narrow band around the listing's own modeled revenue rather than
+        // fabricating precision the data doesn't support.
+        mostLikely = ownRevenue || 0;
+        downside = mostLikely * 0.8;
+        upside = mostLikely * 1.2;
+        confidence = 'low';
     }
 
-    markers.addLayers(batch);
+    const cityLabel = titleCase(listing.city);
+    const stateLabel = (listing.state || '').toUpperCase();
+
+    document.getElementById('inspector-name').textContent = listing.name || 'Unnamed listing';
+    document.getElementById('inspector-meta').textContent =
+        `${listing.room_type || 'Listing'} \u00b7 ${cityLabel}, ${stateLabel} \u00b7 ${listing.bedrooms || 0} bed \u00b7 ${listing.accommodates || 0} guests`;
+    document.getElementById('inspector-dot').style.background = colorForT(0.5);
+
+    const envelopeSlot = document.getElementById('inspector-envelope');
+    envelopeSlot.innerHTML = '';
+    if (mostLikely > 0) {
+        AirworthyEnvelope.render(envelopeSlot, {
+            downside: Math.max(0, downside),
+            upside: Math.max(upside, downside + 1),
+            mostLikely,
+            confidenceLevel: confidence,
+            label: 'Modeled annual revenue',
+        });
+    } else {
+        envelopeSlot.textContent = 'No modeled revenue available for this listing.';
+    }
+
+    document.getElementById('inspector-adr').textContent = listing.price_numeric ? '$' + Math.round(listing.price_numeric) + '/night' : '\u2014';
+    const occ = metricOccupancy(listing);
+    document.getElementById('inspector-occupancy').textContent = occ > 0 ? Math.round(occ * 100) + '%' : '\u2014';
+    document.getElementById('inspector-comps').textContent = comps.length.toLocaleString();
+
+    const cta = document.getElementById('inspector-cta');
+    const ctaParams = new URLSearchParams();
+    if (listing.name) ctaParams.set('address', listing.name);
+    if (listing.bedrooms != null) ctaParams.set('bedrooms', listing.bedrooms);
+    if (listing.accommodates != null) ctaParams.set('accommodates', listing.accommodates);
+    if (listing.price_numeric != null) ctaParams.set('nightly_rate', listing.price_numeric);
+    cta.href = `/property?${ctaParams.toString()}`;
+
+    document.getElementById('inspector').hidden = false;
 }
 
-function scheduleLoad() {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(loadListings, 280);
-}
+document.getElementById('inspector-close').addEventListener('click', () => {
+    document.getElementById('inspector').hidden = true;
+    selectedId = null;
+    clearSelectionVisuals();
+});
 
-// ─── Short display labels for city slugs ──────────────────────────────────────
+// ─── Layer selector ──────────────────────────────────────────────────────
+document.querySelectorAll('.layer-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.layer-btn').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        activeLayer = btn.dataset.layer;
+        renderLayer();
+    });
+});
+
+// ─── City labels ──────────────────────────────────────────────────────────
 const CITY_LABELS = {
     'los-angeles':        'LA',
     'san-diego':          'San Diego',
@@ -307,13 +465,9 @@ const CITY_LABELS = {
     'broward-county':     'Broward',
 };
 
-// City bounding boxes stored from last API fetch
 let cityData = [];
 let activeChipSlug = null;
-// Grand total across all cities (latest snapshot) — computed once on first
-// full load so the default searchbar subtitle never hardcodes/drifts.
 let totalListings = 0;
-// Real data freshness (latest snapshot date) reported by /api/cities.
 let dataFreshness = null;
 
 function formatFreshness(iso) {
@@ -323,20 +477,17 @@ function formatFreshness(iso) {
     return 'Data through ' + d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-// ─── City chips ───────────────────────────────────────────────────────────────
+// ─── City chips ────────────────────────────────────────────────────────────
 function renderChips(cities) {
     const container = document.getElementById('map-chips');
     container.innerHTML = '';
-    // Show top 6 by count
     cities.slice(0, 6).forEach(city => {
-        const label = CITY_LABELS[city.slug] || city.slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        const label = CITY_LABELS[city.slug] || titleCase(city.slug);
         const count = city.count >= 1000 ? (city.count / 1000).toFixed(0) + 'k' : city.count;
         const chip = document.createElement('button');
         chip.className = 'map-chip';
         chip.dataset.slug = city.slug;
         chip.setAttribute('aria-pressed', 'false');
-        // Built with DOM nodes (not innerHTML) — city.slug/label ultimately
-        // come from the DB and must not be trusted as safe HTML.
         const dot = document.createElement('span');
         dot.className = 'chip-dot';
         dot.setAttribute('aria-hidden', 'true');
@@ -349,70 +500,52 @@ function renderChips(cities) {
 
 async function onChipClick(city, chipEl) {
     const isActive = chipEl.classList.contains('active');
-
-    // Deselect all chips
     document.querySelectorAll('.map-chip').forEach(c => {
         c.classList.remove('active');
         c.setAttribute('aria-pressed', 'false');
     });
 
     if (isActive) {
-        // Toggle off — reset city filter, title, and repopulate the dropdown
-        // with the full (all-states) city list so the UI stays in sync.
         activeChipSlug = null;
         document.getElementById('state-filter').value = '';
         await loadCityDropdown('');
         document.getElementById('city-filter').value = '';
-        updateSearchbarTitle(null);
+        updateRailTitle(null);
         loadListings();
         return;
     }
 
-    // Activate chip
     chipEl.classList.add('active');
     chipEl.setAttribute('aria-pressed', 'true');
     activeChipSlug = city.slug;
 
-    // Sync dropdown filters — await dropdown population BEFORE selecting the
-    // city value and firing the single authoritative loadListings() call.
-    // (Previously this raced: loadListings() ran before the city value was set,
-    // so the first fetch after a chip click was state-only, not city-scoped.)
     document.getElementById('state-filter').value = city.state;
     await loadCityDropdown(city.state);
     document.getElementById('city-filter').value = city.slug;
 
-    // Fly to city bounds
-    // bounds from API: [[min_lat, max_lat], [min_lng, max_lng]]
     const [[minLat, maxLat], [minLng, maxLng]] = city.bounds;
-    map.fitBounds([[minLat, minLng], [maxLat, maxLng]], { padding: [60, 60], maxZoom: 13 });
+    map.fitBounds([[minLat, minLng], [maxLat, maxLng]], { padding: [80, 80], maxZoom: 13 });
 
-    // Update searchbar title
-    const label = CITY_LABELS[city.slug] || city.slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-    updateSearchbarTitle(label, city.count);
+    const label = CITY_LABELS[city.slug] || titleCase(city.slug);
+    updateRailTitle(label, city.count);
     loadListings();
 }
 
-function updateSearchbarTitle(cityLabel, count) {
-    const titleEl = document.getElementById('searchbar-title');
-    const subEl   = document.getElementById('searchbar-sub');
+function updateRailTitle(cityLabel, count) {
+    const titleEl = document.getElementById('rail-title');
+    const subEl   = document.getElementById('rail-sub');
     if (cityLabel) {
         titleEl.textContent = cityLabel;
-        subEl.textContent   = `${(count || 0).toLocaleString()} listings · Latest snapshot`;
+        subEl.textContent   = `${(count || 0).toLocaleString()} listings \u00b7 Latest snapshot`;
     } else {
         titleEl.textContent = 'California & Florida';
-        // No hardcoded total — show the computed grand total once it's loaded,
-        // otherwise a neutral placeholder (never a stale/bogus number).
         subEl.textContent = totalListings
-            ? `${totalListings.toLocaleString()} listings · ${formatFreshness(dataFreshness)}`
+            ? `${totalListings.toLocaleString()} listings \u00b7 ${formatFreshness(dataFreshness)}`
             : formatFreshness(dataFreshness);
     }
 }
 
-// ─── City dropdown ────────────────────────────────────────────────────────────
-// Never throws — callers (onChipClick, the state-filter handler) `await`
-// this and must be able to continue safely even if the network request
-// fails, or an unhandled rejection would abort mid-flow and leave chip/filter
-// state half-applied (e.g. chip marked active but city-filter never set).
+// ─── City dropdown ─────────────────────────────────────────────────────────
 async function loadCityDropdown(stateFilter) {
     const select = document.getElementById('city-filter');
     try {
@@ -421,9 +554,9 @@ async function loadCityDropdown(stateFilter) {
         const resp = await fetch(`/api/cities?${params.toString()}`);
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const data = await resp.json();
-        select.innerHTML = '<option value="">All Cities</option>';
+        select.innerHTML = '<option value="">All cities</option>';
         for (const city of data.cities) {
-            const label = CITY_LABELS[city.slug] || city.slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            const label = CITY_LABELS[city.slug] || titleCase(city.slug);
             const opt = document.createElement('option');
             opt.value = city.slug;
             opt.textContent = label;
@@ -444,22 +577,19 @@ async function loadCities() {
         const data = await resp.json();
         cityData = data.cities;
 
-        // Render chips + cache the grand total only on the full (all-states) load
         if (!state) {
             renderChips(cityData);
             totalListings = cityData.reduce((sum, c) => sum + (c.count || 0), 0);
             dataFreshness = data.data_freshness || null;
-            // Refresh the default subtitle if nothing is currently selected
             if (!activeChipSlug && !document.getElementById('city-filter').value) {
-                updateSearchbarTitle(null);
+                updateRailTitle(null);
             }
         }
 
-        // Populate dropdown
         const select = document.getElementById('city-filter');
-        select.innerHTML = '<option value="">All Cities</option>';
+        select.innerHTML = '<option value="">All cities</option>';
         for (const city of data.cities) {
-            const label = CITY_LABELS[city.slug] || city.slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            const label = CITY_LABELS[city.slug] || titleCase(city.slug);
             const opt = document.createElement('option');
             opt.value = city.slug;
             opt.textContent = label;
@@ -470,45 +600,27 @@ async function loadCities() {
     }
 }
 
-// ─── Room type pills ──────────────────────────────────────────────────────────
-document.querySelectorAll('.room-pill').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.room-pill').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        activeRoomType = btn.dataset.value || '';
-        // Sync hidden select (not needed for API but for reset logic)
-        document.getElementById('room-filter').value = activeRoomType;
-        loadListings();
-    });
-});
+// ─── Filter events ─────────────────────────────────────────────────────────
+function scheduleLoad() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(loadListings, 280);
+}
 
-// ─── Filter events ────────────────────────────────────────────────────────────
+document.getElementById('room-filter').addEventListener('change', loadListings);
+
 document.getElementById('state-filter').addEventListener('change', async () => {
-    // Changing state manually deactivates any active chip
     activeChipSlug = null;
     document.querySelectorAll('.map-chip').forEach(c => {
         c.classList.remove('active');
         c.setAttribute('aria-pressed', 'false');
     });
-    updateSearchbarTitle(null);
-    // Await the city dropdown reset before loading listings — otherwise the
-    // city-filter select still holds a value from the previous state and the
-    // first listings fetch after switching states can be filtered incorrectly.
+    updateRailTitle(null);
     document.getElementById('city-filter').value = '';
     await loadCities();
     loadListings();
 });
 
-['toggle-guest-fav', 'toggle-instant'].forEach(id => {
-    document.getElementById(id).addEventListener('change', () => {
-        updateFilterBadge();
-        loadListings();
-    });
-});
-
 document.getElementById('city-filter').addEventListener('change', () => {
-    // If the manually selected city no longer matches the active chip,
-    // deactivate the chip so the UI doesn't show a stale "active" state.
     const val = document.getElementById('city-filter').value;
     if (val !== activeChipSlug) {
         activeChipSlug = null;
@@ -517,62 +629,62 @@ document.getElementById('city-filter').addEventListener('change', () => {
             c.setAttribute('aria-pressed', 'false');
         });
     }
-    // Keep the searchbar title in sync with the manually chosen city (or reset
-    // to the regional default when "All Cities" is selected) — matches the
-    // behavior of clicking a city chip.
     if (val) {
         const city = cityData.find(c => c.slug === val);
-        const label = CITY_LABELS[val] || val.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-        updateSearchbarTitle(label, city ? city.count : 0);
+        const label = CITY_LABELS[val] || titleCase(val);
+        updateRailTitle(label, city ? city.count : 0);
     } else {
-        updateSearchbarTitle(null);
+        updateRailTitle(null);
     }
     loadListings();
 });
 
-document.getElementById('apply-filters').addEventListener('click', loadListings);
+['min-price', 'max-price', 'bedrooms-filter', 'guests-filter', 'min-revenue', 'max-revenue'].forEach(id => {
+    document.getElementById(id).addEventListener('change', loadListings);
+});
+['toggle-guest-fav', 'toggle-instant'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => {
+        updateFilterBadge();
+        loadListings();
+    });
+});
 
 document.getElementById('reset-filters').addEventListener('click', () => {
     document.getElementById('state-filter').value = '';
     document.getElementById('city-filter').value = '';
+    document.getElementById('room-filter').value = '';
     document.getElementById('min-price').value = '';
     document.getElementById('max-price').value = '';
+    document.getElementById('bedrooms-filter').value = '';
+    document.getElementById('guests-filter').value = '';
+    document.getElementById('min-revenue').value = '';
+    document.getElementById('max-revenue').value = '';
     document.getElementById('toggle-guest-fav').checked = false;
     document.getElementById('toggle-instant').checked = false;
-    updateFilterBadge();
-    activeRoomType = '';
     activeChipSlug = null;
-    document.getElementById('room-filter').value = '';
-    document.querySelectorAll('.room-pill').forEach(b => b.classList.remove('active'));
-    document.querySelector('.room-pill[data-value=""]').classList.add('active');
     document.querySelectorAll('.map-chip').forEach(c => {
         c.classList.remove('active');
         c.setAttribute('aria-pressed', 'false');
     });
-    updateSearchbarTitle(null);
+    updateRailTitle(null);
+    updateFilterBadge();
     loadCities();
     loadListings();
 });
 
-// ─── Sidebar toggle (search bar filter button) ────────────────────────────────
-const sidebar = document.getElementById('map-sidebar');
-const chips   = document.getElementById('map-chips');
-const searchbar = document.getElementById('map-searchbar');
-
-document.getElementById('toggle-sidebar').addEventListener('click', () => {
-    const collapsed = sidebar.classList.toggle('collapsed');
-    const btn = document.getElementById('toggle-sidebar');
-    btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-    chips.style.left = collapsed ? '24px' : `calc(var(--sidebar-w) + 24px)`;
-    searchbar.style.marginLeft = collapsed ? '0' : `calc(var(--sidebar-w) / 2)`;
-    // Let Leaflet recalculate after transition
-    setTimeout(() => map.invalidateSize(), 320);
+// ─── More filters disclosure ────────────────────────────────────────────
+const moreFiltersPanel = document.getElementById('more-filters');
+const toggleMoreBtn = document.getElementById('toggle-more-filters');
+toggleMoreBtn.addEventListener('click', () => {
+    const isHidden = moreFiltersPanel.hidden;
+    moreFiltersPanel.hidden = !isHidden;
+    toggleMoreBtn.setAttribute('aria-expanded', String(isHidden));
 });
 
-// ─── Map events ───────────────────────────────────────────────────────────────
+// ─── Map events ────────────────────────────────────────────────────────────
 map.on('moveend zoomend', scheduleLoad);
 
-// ─── Boot ─────────────────────────────────────────────────────────────────────
+// ─── Boot ──────────────────────────────────────────────────────────────────
 (async function init() {
     await loadCities();
     loadListings();
