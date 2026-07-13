@@ -155,6 +155,19 @@ _PLACEHOLDER_MARKERS = (
     "no-photo", "nophoto", "default-image", "og-default",
 )
 
+# Some sites (notably Zillow) fall back to a static satellite/roadmap
+# screenshot as their og:image when the specific listing has no real photos
+# indexed. These are real, loadable images but not photos of the home, so
+# they're treated the same as placeholders: skip and fall through to the
+# next candidate image or search result.
+_STATIC_MAP_MARKERS = (
+    "maps.googleapis.com/maps/api/staticmap",
+    "maps.google.com/maps/api/staticmap",
+    "/staticmap", "staticmap?", "static-map",
+    "maps.googleapis.com/maps/api/streetview",
+    "tile.openstreetmap.org", "api.mapbox.com/styles",
+)
+
 
 def _extract_image(item: dict) -> str | None:
     """Pull an og:image (or equivalent) out of a Firecrawl scrape result."""
@@ -171,7 +184,10 @@ def _extract_image(item: dict) -> str | None:
         resolved = urljoin(page_url, val) if page_url else val
         if not resolved.startswith("http"):
             continue
-        if any(marker in resolved.lower() for marker in _PLACEHOLDER_MARKERS):
+        lowered = resolved.lower()
+        if any(marker in lowered for marker in _PLACEHOLDER_MARKERS):
+            continue
+        if any(marker in lowered for marker in _STATIC_MAP_MARKERS):
             continue
         return resolved
     return None
