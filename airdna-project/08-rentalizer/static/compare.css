@@ -42,12 +42,12 @@ body.compare-body {
 /* ===== Buttons / form primitives (shared look) ===== */
 .btn-primary {
     display: inline-flex; align-items: center; justify-content: center;
-    padding: 13px 20px; background: var(--aw-blue); color: #fff; border: none;
+    padding: 13px 20px; background: var(--aw-black); color: #fff; border: none;
     border-radius: var(--aw-radius-md); font-family: var(--aw-font-ui); font-size: 14px;
     font-weight: 700; text-decoration: none; cursor: pointer;
     transition: background 0.15s, transform 0.1s;
 }
-.btn-primary:hover { background: var(--aw-blue-ink); }
+.btn-primary:hover { background: var(--aw-black-soft); }
 .btn-primary:active { transform: scale(0.99); }
 .btn-primary:disabled { background: #d8d5c8; cursor: not-allowed; }
 

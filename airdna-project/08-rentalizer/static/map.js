@@ -14,8 +14,10 @@ const map = L.map('map', {
 
 L.control.zoom({ position: 'topright' }).addTo(map);
 
+// Dark basemap -- the reference product shot is a dark map with light
+// price badges, not a light tourist map with pastel blobs.
 L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
+    'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
     {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
@@ -111,12 +113,18 @@ function metricDemand(l) {
     return typeof v === 'number' ? v : 0;
 }
 
+function compactCurrency(v) {
+    const n = Math.round(v);
+    if (Math.abs(n) >= 1000) { return '$' + Math.round(n / 1000) + 'K'; }
+    return '$' + n;
+}
+
 const LAYER_DEFS = {
-    revenue:   { get: metricRevenue,   label: 'Revenue',      fmt: v => '$' + Math.round(v).toLocaleString(), low: 'Low', high: 'High' },
-    adr:       { get: metricAdr,       label: 'ADR',          fmt: v => '$' + Math.round(v).toLocaleString(), low: 'Low', high: 'High' },
-    occupancy: { get: metricOccupancy, label: 'Occupancy',    fmt: v => Math.round(v * 100) + '%', low: 'Low', high: 'High' },
-    demand:    { get: metricDemand,    label: 'Demand · forward bookings', fmt: v => Math.round(v * 100) + '% booked', low: 'Quiet', high: 'Booked' },
-    density:   { get: null,            label: 'Comparable density', fmt: v => Math.round(v) + ' nearby', low: 'Sparse', high: 'Dense' },
+    revenue:   { get: metricRevenue,   label: 'Revenue',      fmt: v => '$' + Math.round(v).toLocaleString(), badge: compactCurrency, low: 'Low', high: 'High' },
+    adr:       { get: metricAdr,       label: 'ADR',          fmt: v => '$' + Math.round(v).toLocaleString(), badge: compactCurrency, low: 'Low', high: 'High' },
+    occupancy: { get: metricOccupancy, label: 'Occupancy',    fmt: v => Math.round(v * 100) + '%', badge: v => Math.round(v * 100) + '%', low: 'Low', high: 'High' },
+    demand:    { get: metricDemand,    label: 'Demand · forward bookings', fmt: v => Math.round(v * 100) + '% booked', badge: v => Math.round(v * 100) + '%', low: 'Quiet', high: 'Booked' },
+    density:   { get: null,            label: 'Comparable density', fmt: v => Math.round(v) + ' nearby', badge: v => Math.round(v), low: 'Sparse', high: 'Dense' },
 };
 
 // Compute a robust [p10, p90] scale for the active layer across the
@@ -349,17 +357,29 @@ function renderMarketField(listings, getValue, scale, zoom) {
 }
 
 function renderPropertyDots(listings, getValue, scale) {
+    const def = LAYER_DEFS[activeLayer];
+    const showBadges = listings.length <= 60;
     for (const listing of listings) {
         if (!listing.latitude || !listing.longitude) continue;
         const value = getValue(listing) || 0;
         const t = (value - scale.lo) / (scale.hi - scale.lo || 1);
         const color = colorForT(t);
-        const icon = L.divIcon({
-            html: `<div class="aw-marker-dot" style="width:14px;height:14px;background:${color}"></div>`,
-            className: '',
-            iconSize: [14, 14],
-            iconAnchor: [7, 7],
-        });
+        let icon;
+        if (showBadges && def.badge) {
+            icon = L.divIcon({
+                html: `<div class="aw-marker-badge" style="background:${color}">${def.badge(value)}</div>`,
+                className: '',
+                iconSize: null,
+                iconAnchor: [24, 14],
+            });
+        } else {
+            icon = L.divIcon({
+                html: `<div class="aw-marker-dot" style="width:14px;height:14px;background:${color}"></div>`,
+                className: '',
+                iconSize: [14, 14],
+                iconAnchor: [7, 7],
+            });
+        }
         const marker = L.marker([listing.latitude, listing.longitude], { icon });
         marker.on('click', () => selectListing(listing));
         markerLayer.addLayer(marker);
@@ -399,7 +419,7 @@ function applySelectionVisuals() {
     for (const [id, entry] of markerById) {
         const el = entry.marker.getElement();
         if (!el) continue;
-        const dot = el.querySelector('.aw-marker-dot') || el;
+        const dot = el.querySelector('.aw-marker-dot, .aw-marker-badge') || el;
         dot.classList.remove('aw-dimmed', 'aw-comp', 'aw-selected');
         if (id === selectedId) {
             dot.classList.add('aw-selected');
@@ -415,7 +435,7 @@ function clearSelectionVisuals() {
     for (const [, entry] of markerById) {
         const el = entry.marker.getElement();
         if (!el) continue;
-        const dot = el.querySelector('.aw-marker-dot') || el;
+        const dot = el.querySelector('.aw-marker-dot, .aw-marker-badge') || el;
         dot.classList.remove('aw-dimmed', 'aw-comp', 'aw-selected');
     }
 }

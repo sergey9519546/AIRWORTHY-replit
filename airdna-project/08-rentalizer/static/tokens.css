@@ -33,6 +33,17 @@
     --aw-coral-ink: #7A2A12;
     --aw-coral-tint: #FFEDE7;
 
+    /* --- Dark surfaces (hero, nav CTAs, product-shot chrome) ---
+       Reference direction: near-black chrome + white type + a single lime
+       accent line, over a real photographic backdrop — not a flat color
+       field. Used for the homepage cover and any "black pill" control. */
+    --aw-black: #0B0B0C;
+    --aw-black-soft: #17181A;
+    --aw-on-black-muted: #B7B8B3;
+    --aw-hero-overlay:
+        linear-gradient(180deg, rgba(9,10,9,0.55) 0%, rgba(9,10,9,0.78) 55%, rgba(9,10,9,0.94) 100%),
+        linear-gradient(90deg, rgba(9,10,9,0.96) 0%, rgba(9,10,9,0.55) 55%, rgba(9,10,9,0.30) 100%);
+
     /* --- AIRWORTHY verdict colors (CLEARED/CONDITIONAL/EXPOSED/GROUNDED) —
        one role each from the palette above, no new colors invented. --- */
     --aw-verdict-cleared: var(--aw-lime);

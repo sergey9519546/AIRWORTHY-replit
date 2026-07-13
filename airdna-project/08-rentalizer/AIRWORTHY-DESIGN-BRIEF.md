@@ -1,15 +1,33 @@
 # AIRWORTHY — Design Brief (single source of truth)
 
-> This is the authoritative design + product-positioning spec for AIRWORTHY. Every
-> surface (homepage/cover, map, property report, comparison) and every task agent
-> must build to **this document**. It synthesizes the two written creative-direction
-> docs. Where the reference **mockup image disagrees with this text, the text wins**
-> (see "Reference image caveat" at the end).
+> **SUPERSEDED 2026-07-13.** The previous version of this document instructed every
+> builder to override the user's reference mockup image ("text wins over the
+> image"). The user has now confirmed, more than once, that the reference image
+> IS the intended direction — not an approximate mood board. **The image now wins.**
+> Build every surface (homepage/cover, map, property report, comparison) to match
+> `attached_assets/0_Generated_image_1_1783931971613.png` directly: dark split hero
+> with a real photographic backdrop, bold editorial type, black pill buttons, the
+> electric-chartreuse accent, the two-panel map+property product layout, the
+> score/confidence gauge panel, the numbered "how it works" steps, and the stat
+> cards. Only two things from the image are intentionally NOT reproduced literally,
+> for honesty reasons (see "Honesty adaptations" below) — everything else in the
+> image is the spec.
 >
 > Source references (uploaded):
-> - `attached_assets/Pasted--A-Quick-Guide-to-Short-Term-Rental-Financing-*.txt` — creative critique + page specs
-> - `attached_assets/Pasted--Lewa-House-Unseen-Studio-*.txt` — references synthesis ("Predictive Property Atlas")
-> - `attached_assets/image_1783858005252.png` — approximate mockup (NOT to be reproduced literally)
+> - `attached_assets/Pasted--A-Quick-Guide-to-Short-Term-Rental-Financing-*.txt` — creative critique + page specs (historical; superseded on layout/positioning where it conflicts with the reference image)
+> - `attached_assets/Pasted--Lewa-House-Unseen-Studio-*.txt` — references synthesis ("Predictive Property Atlas") (historical)
+> - `attached_assets/0_Generated_image_1_1783931971613.png` (== `attached_assets/image_1783858005252.png`) — **the design spec.** Reproduce it faithfully across every page.
+
+## Honesty adaptations (the only two departures from the image)
+
+1. **No fake partner-trust logos.** The image's "Trusted by investors, hosts, and
+   operators worldwide" row with Airbnb/Vrbo/Booking.com/Expedia/Zillow logos implies
+   partnerships that don't exist. Keep the same visual treatment (a muted logo-style
+   row in the same position) but label it honestly as a data-source attribution
+   (e.g. "Built on real data from InsideAirbnb"), not a trust/partnership claim.
+2. **No unqualified accuracy claim.** The image's "94% Model accuracy* (back-tested)"
+   stat must be backed by a real, computed figure from this app's own backtest —
+   or omitted — never an invented percentage.
 
 ---
 
@@ -185,12 +203,7 @@ generic "premium dark mode" · purple heatmaps/gradients.
 
 ---
 
-## Reference image caveat
+## Reference image caveat (historical — see superseded notice at top of file)
 
-`attached_assets/image_1783858005252.png` is an **approximate** mockup. It still
-contains multiple things this brief explicitly forbids: scattered `$78K/$92K/$67K`
-map price bubbles, a KPI card per stat, the airbnb/vrbo/booking/expedia/zillow
-partner-logo row, the four-step "How AIRWORTHY works" cards, "Trusted by investors,"
-and a "94% accuracy" claim. **Follow this text, not the image**, wherever they
-conflict. Use the image only for general layout intuition (mineral canvas, chartreuse
-accent, editorial headline, map + report composition).
+The section below is kept for history only; it no longer governs. The reference
+image is now the spec, with the two honesty adaptations listed above.
