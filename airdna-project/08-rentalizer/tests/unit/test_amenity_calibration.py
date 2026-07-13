@@ -155,3 +155,74 @@ def test_same_snapshot_date_does_not_invalidate_despite_new_rows(tmp_path, monke
     # not show up until a new snapshot_date triggers a recompute.
     assert second is first
     assert "ny" not in second["states"]
+
+
+def test_lookup_prefers_city_when_city_has_enough_listings(tmp_path, monkeypatch):
+    """When the city itself has enough listings on both sides of the
+    with/without split, lookup() must return the city-level entry, not
+    silently fall back to the state-level one."""
+    rows = _pool_rows(40, 40, rev_with=5000.0, rev_without=2000.0)
+    # Pad in some other-city ca listings with a different (state-level)
+    # pool impact, so the state and city entries are distinguishable.
+    rows += [
+        ("ca", "sacramento", 2, 3000.0, "Pool, Wifi") for _ in range(40)
+    ] + [
+        ("ca", "sacramento", 2, 2500.0, "Wifi") for _ in range(40)
+    ]
+    db_path = _make_db(tmp_path, rows)
+    monkeypatch.setattr(ac, "_db_path", lambda: str(db_path))
+
+    ac.get_calibration()
+
+    entry = ac.lookup("ca", "pool", city_slug="los-angeles")
+
+    assert entry is not None
+    assert entry["is_data_backed"] is True
+    calibration = ac.get_calibration()
+    city_entry = calibration["cities"][("ca", "los-angeles")]["pool"]
+    state_entry = calibration["states"]["ca"]["pool"]
+    assert entry == city_entry
+    assert entry != state_entry
+
+
+def test_lookup_falls_back_to_state_when_city_undersupported(tmp_path, monkeypatch):
+    """When the city doesn't have enough listings on both sides, but the
+    state as a whole does, lookup() must fall back to the state-level
+    entry rather than returning None or an undercalibrated city figure."""
+    # Only a handful of los-angeles listings (below MIN_BUCKET_N), but
+    # plenty of other ca listings to support a state-level calibration.
+    rows = _pool_rows(5, 5)
+    rows += [
+        ("ca", "sacramento", 2, 4000.0, "Pool, Wifi") for _ in range(40)
+    ] + [
+        ("ca", "sacramento", 2, 2000.0, "Wifi") for _ in range(40)
+    ]
+    db_path = _make_db(tmp_path, rows)
+    monkeypatch.setattr(ac, "_db_path", lambda: str(db_path))
+
+    ac.get_calibration()
+
+    entry = ac.lookup("ca", "pool", city_slug="los-angeles")
+
+    assert entry is not None
+    calibration = ac.get_calibration()
+    state_entry = calibration["states"]["ca"]["pool"]
+    assert entry == state_entry
+    assert state_entry["is_data_backed"] is True
+    city_entry = calibration["cities"].get(("ca", "los-angeles"), {}).get("pool")
+    assert city_entry is None or city_entry["is_data_backed"] is False
+
+
+def test_lookup_returns_none_when_neither_city_nor_state_supported(tmp_path, monkeypatch):
+    """When neither the city nor the state has enough listings to support
+    a calibration, lookup() must return None so callers fall back to the
+    fixed heuristic instead of fabricating a figure."""
+    rows = _pool_rows(5, 5)
+    db_path = _make_db(tmp_path, rows)
+    monkeypatch.setattr(ac, "_db_path", lambda: str(db_path))
+
+    ac.get_calibration()
+
+    entry = ac.lookup("ca", "pool", city_slug="los-angeles")
+
+    assert entry is None
