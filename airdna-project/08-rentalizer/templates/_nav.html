@@ -7,13 +7,7 @@
 #}
 <header class="aw-nav">
     <a href="/" class="aw-nav-mark" aria-label="AIRWORTHY home">
-        <svg viewBox="0 0 32 32" class="aw-nav-mark-icon" aria-hidden="true">
-            <rect x="1" y="1" width="30" height="30" rx="8" fill="var(--aw-ink)"/>
-            <rect x="8"  y="18" width="4" height="9"  rx="1.5" fill="var(--aw-coral)"/>
-            <rect x="14" y="12" width="4" height="15" rx="1.5" fill="var(--aw-lime)"/>
-            <rect x="20" y="6"  width="4" height="21" rx="1.5" fill="var(--aw-blue)"/>
-        </svg>
-        <span class="aw-nav-wordmark">AIRWORTHY</span>
+        <img src="/static/logo.png" alt="AIRWORTHY" class="aw-nav-logo">
     </a>
     <nav class="aw-nav-links" aria-label="Primary">
         <a href="/" class="aw-nav-link{{ ' active' if request.url.path == '/' else '' }}">Estimate</a>
