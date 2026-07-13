@@ -323,3 +323,131 @@ def test_resolve_group_at_min_market_weight_boundary():
     entry_below = ac._resolve_group(accum_below_threshold, "pool")
     assert entry_below["is_data_backed"] is False
     assert entry_below["impact_pct"] is None
+
+
+# --- AMENITY_MATCHERS: keyword heuristics against free-text amenities -------
+#
+# Each matcher runs against a lowercased raw `amenities` string. These tests
+# cover a true positive, a true negative, and the known false-positive traps
+# called out in the source comments (e.g. "whirlpool" is not a pool, "paid
+# parking" is not free parking) for every entry in AMENITY_MATCHERS.
+
+
+class TestPoolMatcher:
+    matcher = staticmethod(lambda t: ac.AMENITY_MATCHERS["pool"](t))
+
+    def test_true_positive(self):
+        assert self.matcher("pool, wifi, kitchen") is True
+
+    def test_true_negative(self):
+        assert self.matcher("wifi, kitchen, air conditioning") is False
+
+    def test_whirlpool_is_not_a_pool(self):
+        assert self.matcher("whirlpool tub, wifi") is False
+
+    def test_pool_table_is_not_a_pool(self):
+        assert self.matcher("pool table, wifi") is False
+
+    def test_pool_alongside_whirlpool_is_a_known_false_negative(self):
+        # Known limitation: the "whirlpool" exclusion is a blanket substring
+        # check on the whole text, so a listing that genuinely has both a
+        # pool and a whirlpool tub is misclassified as "without" a pool.
+        # This test documents the current (imperfect) behavior rather than
+        # asserting it's correct -- see task "Catch amenity keyword matchers
+        # misfiring on similar-but-different listing text" for context.
+        assert self.matcher("pool, whirlpool tub, wifi") is False
+
+
+class TestHotTubMatcher:
+    matcher = staticmethod(lambda t: ac.AMENITY_MATCHERS["hot_tub"](t))
+
+    def test_true_positive(self):
+        assert self.matcher("hot tub, wifi, kitchen") is True
+
+    def test_true_negative(self):
+        assert self.matcher("pool, wifi, kitchen") is False
+
+    def test_hot_water_is_not_a_hot_tub(self):
+        assert self.matcher("hot water, wifi") is False
+
+
+class TestParkingMatcher:
+    matcher = staticmethod(lambda t: ac.AMENITY_MATCHERS["parking"](t))
+
+    def test_true_positive_free_parking(self):
+        assert self.matcher("free parking on premises") is True
+
+    def test_true_positive_free_street_parking(self):
+        assert self.matcher("free street parking") is True
+
+    def test_true_negative_no_parking_mentioned(self):
+        assert self.matcher("wifi, kitchen, air conditioning") is False
+
+    def test_paid_parking_is_not_free_parking(self):
+        assert self.matcher("paid parking on premises") is False
+
+    def test_parking_without_free_qualifier_does_not_match(self):
+        assert self.matcher("parking available") is False
+
+
+class TestEvChargerMatcher:
+    matcher = staticmethod(lambda t: ac.AMENITY_MATCHERS["ev_charger"](t))
+
+    def test_true_positive(self):
+        assert self.matcher("ev charger, wifi") is True
+
+    def test_true_negative(self):
+        assert self.matcher("free parking, wifi") is False
+
+    def test_generic_charger_is_not_an_ev_charger(self):
+        assert self.matcher("phone charger, wifi") is False
+
+
+class TestGymMatcher:
+    matcher = staticmethod(lambda t: ac.AMENITY_MATCHERS["gym"](t))
+
+    def test_true_positive_gym_keyword(self):
+        assert self.matcher("gym, wifi, kitchen") is True
+
+    def test_true_positive_exercise_equipment_keyword(self):
+        assert self.matcher("exercise equipment, wifi") is True
+
+    def test_true_negative(self):
+        assert self.matcher("wifi, kitchen, pool") is False
+
+
+class TestPetFriendlyMatcher:
+    matcher = staticmethod(lambda t: ac.AMENITY_MATCHERS["pet_friendly"](t))
+
+    def test_true_positive(self):
+        assert self.matcher("pets allowed, wifi") is True
+
+    def test_true_negative(self):
+        assert self.matcher("wifi, kitchen") is False
+
+    def test_pet_friendly_wording_alone_does_not_match(self):
+        # Only the exact "pets allowed" InsideAirbnb phrasing is matched;
+        # a differently-worded mention should not false-positive.
+        assert self.matcher("pet friendly building") is False
+
+
+class TestWorkspaceMatcher:
+    matcher = staticmethod(lambda t: ac.AMENITY_MATCHERS["workspace"](t))
+
+    def test_true_positive(self):
+        assert self.matcher("dedicated workspace, wifi") is True
+
+    def test_true_negative(self):
+        assert self.matcher("wifi, kitchen") is False
+
+    def test_generic_desk_is_not_a_dedicated_workspace(self):
+        assert self.matcher("desk, wifi") is False
+
+
+@pytest.mark.parametrize("key", list(ac.AMENITY_MATCHERS.keys()))
+def test_every_matcher_key_is_callable_and_boolean(key):
+    """Guard against a future matcher returning a non-bool (e.g. a Match
+    object from a bare `re.search` instead of `bool(...)`), which would
+    silently corrupt the "with"/"without" split via truthiness quirks."""
+    matcher = ac.AMENITY_MATCHERS[key]
+    assert isinstance(matcher("some plain text with no amenities"), bool)
