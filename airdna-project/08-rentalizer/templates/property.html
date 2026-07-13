@@ -55,7 +55,13 @@
                     <p id="report-updated" class="report-updated"></p>
 
                     <figure id="report-photo-figure" class="report-photo-figure" hidden>
-                        <img id="report-photo" class="report-photo" alt="" loading="lazy" decoding="async">
+                        <div class="report-photo-stage">
+                            <img id="report-photo" class="report-photo" alt="" loading="lazy" decoding="async">
+                            <button type="button" id="report-photo-prev" class="report-photo-nav report-photo-prev no-print" aria-label="Previous photo" hidden>&lsaquo;</button>
+                            <button type="button" id="report-photo-next" class="report-photo-nav report-photo-next no-print" aria-label="Next photo" hidden>&rsaquo;</button>
+                            <span id="report-photo-count" class="report-photo-count no-print" hidden></span>
+                        </div>
+                        <div id="report-photo-thumbs" class="report-photo-thumbs no-print" hidden></div>
                         <figcaption class="report-photo-caption">
                             Photo source:
                             <a id="report-photo-source" href="#" target="_blank" rel="noopener noreferrer">source</a>

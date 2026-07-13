@@ -178,9 +178,14 @@
         renderFooterVerdict(data);
     }
 
-    // ---- Hero photo: a real scraped photo of the searched property ----
-    // Degrades gracefully: hidden when no photo was found, and hidden again if
-    // the source image URL fails to load (no broken-image icon).
+    // ---- Hero photo gallery: real scraped photos of the searched property ----
+    // Degrades gracefully at every level: hidden entirely when no photo was
+    // found; a broken individual image is dropped from the gallery in place
+    // (no broken-image icon); if every image ends up broken, the whole
+    // figure hides itself.
+    let galleryUrls = [];
+    let galleryIndex = 0;
+
     function renderPhoto(data) {
         const figure = document.getElementById('report-photo-figure');
         const img = document.getElementById('report-photo');
@@ -191,9 +196,13 @@
             img.removeAttribute('src');
             return;
         }
-        img.onerror = () => { figure.hidden = true; };
-        img.alt = `Photo of ${data.address}`;
-        img.src = photo.photo_url;
+        // De-dupe defensively — the backend already excludes the primary
+        // URL from `gallery`, but this stays correct even if that changes.
+        galleryUrls = [photo.photo_url, ...(photo.gallery || [])].filter(
+            (url, i, arr) => url && arr.indexOf(url) === i
+        );
+        galleryIndex = 0;
+
         if (photo.source_url) {
             sourceLink.href = photo.source_url;
             sourceLink.textContent = photo.source_site || 'source';
@@ -201,8 +210,77 @@
             sourceLink.removeAttribute('href');
             sourceLink.textContent = photo.source_site || 'source';
         }
+
+        img.alt = `Photo of ${data.address}`;
+        renderGalleryThumbs(data.address);
+        showGalleryPhoto(0, figure, data.address);
+    }
+
+    function renderGalleryThumbs(address) {
+        const thumbs = document.getElementById('report-photo-thumbs');
+        thumbs.innerHTML = '';
+        if (galleryUrls.length < 2) {
+            thumbs.hidden = true;
+            return;
+        }
+        galleryUrls.forEach((url, i) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'report-photo-thumb';
+            btn.setAttribute('aria-label', `Show photo ${i + 1} of ${galleryUrls.length}`);
+            const thumbImg = document.createElement('img');
+            thumbImg.src = url;
+            thumbImg.alt = '';
+            thumbImg.loading = 'lazy';
+            thumbImg.decoding = 'async';
+            thumbImg.onerror = () => { btn.remove(); };
+            btn.appendChild(thumbImg);
+            btn.addEventListener('click', () => showGalleryPhoto(i, document.getElementById('report-photo-figure'), address));
+            thumbs.appendChild(btn);
+        });
+        thumbs.hidden = false;
+    }
+
+    function showGalleryPhoto(index, figure, address) {
+        if (!galleryUrls.length) {
+            figure.hidden = true;
+            return;
+        }
+        galleryIndex = ((index % galleryUrls.length) + galleryUrls.length) % galleryUrls.length;
+        const img = document.getElementById('report-photo');
+        const prevBtn = document.getElementById('report-photo-prev');
+        const nextBtn = document.getElementById('report-photo-next');
+        const countEl = document.getElementById('report-photo-count');
+        const multi = galleryUrls.length > 1;
+
+        img.onerror = () => {
+            // Drop the broken URL and its thumb, then try the next one.
+            galleryUrls.splice(galleryIndex, 1);
+            renderGalleryThumbs(address);
+            if (!galleryUrls.length) {
+                figure.hidden = true;
+                return;
+            }
+            showGalleryPhoto(galleryIndex, figure, address);
+        };
+        img.src = galleryUrls[galleryIndex];
+
+        prevBtn.hidden = !multi;
+        nextBtn.hidden = !multi;
+        countEl.hidden = !multi;
+        if (multi) countEl.textContent = `${galleryIndex + 1} / ${galleryUrls.length}`;
+        document.querySelectorAll('.report-photo-thumb').forEach((el, i) => {
+            el.classList.toggle('active', i === galleryIndex);
+        });
         figure.hidden = false;
     }
+
+    document.getElementById('report-photo-prev').addEventListener('click', () => {
+        showGalleryPhoto(galleryIndex - 1, document.getElementById('report-photo-figure'), currentData && currentData.address);
+    });
+    document.getElementById('report-photo-next').addEventListener('click', () => {
+        showGalleryPhoto(galleryIndex + 1, document.getElementById('report-photo-figure'), currentData && currentData.address);
+    });
 
     // ---- Public-records property facts (Realie) ----
     function renderParcel(data) {

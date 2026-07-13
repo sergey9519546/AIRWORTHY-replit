@@ -12,6 +12,7 @@ times out, rate-limits, or nothing is found, `get_property_photo` returns None
 and callers proceed unaffected.
 """
 import logging
+import re
 import threading
 from dataclasses import dataclass
 from urllib.parse import urljoin, urlparse
@@ -50,10 +51,20 @@ def _get_session():
 
 @dataclass
 class PropertyPhoto:
-    """A real photo of a property plus where it came from."""
+    """A real photo of a property plus where it came from.
+
+    `gallery` holds additional real photos of the same listing (also from
+    `source_url`, same page), for a multi-photo carousel instead of a single
+    hero image. It's always a list (possibly empty) — never None — so
+    callers can iterate it unconditionally."""
     photo_url: str
     source_url: str
     source_site: str
+    gallery: list[str] = None  # type: ignore[assignment]
+
+    def __post_init__(self):
+        if self.gallery is None:
+            self.gallery = []
 
 
 def _normalize(address: str) -> str:
@@ -140,11 +151,61 @@ def _pick_photo(results: list[dict]) -> PropertyPhoto | None:
                 photo_url=image,
                 source_url=page_url,
                 source_site=_site_name(host),
+                gallery=_extract_gallery(item, image),
             )
             best_rank = rank
             if rank == 0:
                 break  # top-priority site — can't do better
     return best
+
+
+# Cap on additional gallery photos (beyond the hero) — keeps the response
+# small and avoids flooding the carousel with unrelated site-chrome images.
+_MAX_GALLERY_PHOTOS = 7
+
+# A markdown image reference: ![alt](url). Firecrawl's markdown format
+# renders every <img> on the (JS-rendered) page this way, so a listing's
+# photo carousel — even one populated by client-side JS — shows up here
+# without any extra scrape request.
+_MD_IMAGE_RE = re.compile(r'!\[[^\]]*\]\((https?://[^\s)]+)\)')
+
+
+def _extract_gallery(item: dict, primary_image: str) -> list[str]:
+    """Pull additional real photos of the same listing out of the page's
+    already-scraped markdown — no extra network call. Restricted to the
+    same host as the primary photo, so we don't pick up unrelated images
+    (ads, other listings' thumbnails, site logos) from the same page."""
+    markdown = item.get("markdown")
+    page_url = item.get("url") or ""
+    if not isinstance(markdown, str) or not markdown:
+        return []
+
+    primary_host = (urlparse(primary_image).hostname or "").lower()
+    seen = {primary_image}
+    gallery: list[str] = []
+    for match in _MD_IMAGE_RE.finditer(markdown):
+        if len(gallery) >= _MAX_GALLERY_PHOTOS:
+            break
+        raw = match.group(1)
+        resolved = urljoin(page_url, raw) if page_url else raw
+        if resolved in seen:
+            continue
+        host = (urlparse(resolved).hostname or "").lower()
+        if primary_host and host != primary_host:
+            continue
+        lowered = resolved.lower()
+        if any(marker in lowered for marker in _PLACEHOLDER_MARKERS):
+            continue
+        if any(marker in lowered for marker in _STATIC_MAP_MARKERS):
+            continue
+        # Cheap heuristic to skip small chrome (icons/logos/avatars) that
+        # some sites also render as markdown images: real listing photos on
+        # these hosts are served from photo/media CDN paths, not icon dirs.
+        if any(marker in lowered for marker in _CHROME_MARKERS):
+            continue
+        seen.add(resolved)
+        gallery.append(resolved)
+    return gallery
 
 
 # Filenames real-estate/search sites fall back to when there's no actual
@@ -153,6 +214,11 @@ def _pick_photo(results: list[dict]) -> PropertyPhoto | None:
 _PLACEHOLDER_MARKERS = (
     "missingphotography", "apple-touch-icon", "favicon", "placeholder",
     "no-photo", "nophoto", "default-image", "og-default",
+    # Generic social-share thumbnails some sites (notably Zillow, when it
+    # serves a bot/no-JS shell instead of the real listing page) fall back
+    # to as their og:image — same site-wide image regardless of listing, so
+    # not a real photo of this property.
+    "share_thumbnail", "social_share", "sharethumbnail",
 )
 
 # Some sites (notably Zillow) fall back to a static satellite/roadmap
@@ -166,6 +232,16 @@ _STATIC_MAP_MARKERS = (
     "/staticmap", "staticmap?", "static-map",
     "maps.googleapis.com/maps/api/streetview",
     "tile.openstreetmap.org", "api.mapbox.com/styles",
+)
+
+# Site-chrome images (icons, logos, agent headshots) that show up as plain
+# markdown images alongside real listing photos when scraping a rendered
+# page. Only used when mining a page's full markdown for extra gallery
+# photos (`_extract_gallery`) — the single-hero path (`_extract_image`)
+# only ever reads the dedicated og:image field, so it doesn't need this.
+_CHROME_MARKERS = (
+    "logo", "icon", "avatar", "headshot", "sprite", "badge",
+    "/agent/", "agent-photo", "profile-pic",
 )
 
 

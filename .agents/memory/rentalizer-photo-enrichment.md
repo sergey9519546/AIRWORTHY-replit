@@ -1,41 +1,9 @@
 ---
 name: Rentalizer real photos & sources
-description: Durable lessons for real listing/property photo enrichment (InsideAirbnb + Firecrawl) in the rentalizer estimate flow.
+description: Where listing/property photos come from, and how the hero photo gallery is mined without extra scrape calls.
 ---
 
-## Photo data already exists in the raw sources
-InsideAirbnb's raw CSVs (both the NYC training set and the general comp
-database) carry real `picture_url`/`listing_url` columns — this is existing
-data that just wasn't being read, not something to synthesize. When a
-"show real X" ask sounds like it needs new data, check the raw source first.
-
-## Enrichment calls in the estimate critical path must be timeout-bounded
-against the FRONTEND's abort timeout, not just individually "fail-open"
-tuned in isolation. `/v1/estimate` already makes one enrichment call
-(Realie); a second one (Firecrawl) was added inline. Each call being
-individually fail-open (catches its own exceptions, returns None) is
-necessary but not sufficient — if a *slow-but-not-erroring* provider's
-timeout is close to or exceeds the client's fetch-abort timeout, the whole
-estimate can appear to "fail" from the user's perspective even though the
-backend eventually would have returned fine.
-
-**Why:** a code reviewer caught this after implementation — the initial
-Firecrawl timeout (25s) exceeded the frontend's 15s abort, and it was
-stacked sequentially after another 6s-timeout enrichment call.
-
-**How to apply:** when adding any inline enrichment call to a request path
-that has a client-side timeout, (1) keep the backend timeout well under the
-client timeout, and (2) if multiple independent enrichment calls exist on
-the same path, run them concurrently (e.g. `asyncio.gather` +
-`asyncio.to_thread` for blocking `requests` calls) so their timeouts don't
-sum — worst case should be `max()` of the enrichment timeouts, not their sum.
-
-## Real photo sources sometimes return non-photo placeholder images
-A real-estate site's og:image can be a generic "no photography available"
-stock image or a referrer-locked static-map screenshot rather than an actual
-listing photo — still a technically valid, loadable-by-curl image URL. Two
-independent failure modes to expect: (1) known placeholder filename patterns
-(filter by substring), and (2) images that 403/fail specifically when loaded
-from a browser context with a different referrer/domain than expected (curl
-succeeds, browser `img.onerror` fires) — the client-side `onerror` fail-open
-handler is the real safety net for this second case, not the backend filter.
+- Comp photos: `picture_url` only, sourced from InsideAirbnb CSV/DB (`data/train.csv` + comp DB). No gallery field exists upstream (`xl_picture_url`/similar are not present) — a comp gallery needs a per-comp scrape of each comp's own Airbnb `listing_url`, which is unbounded/slow across dozens of comps, so it's intentionally out of scope for the hero-photo gallery.
+- Searched-property hero gallery: mined for free from the same Firecrawl `/v1/search` call already used for the single photo — request `scrapeOptions.formats: ["markdown"]`, then regex-scan the winning result's `markdown` field for `![alt](url)` images on the *same host* as the primary photo. No second network call needed; Firecrawl renders JS so client-side-loaded carousel images still show up in markdown.
+- Some sites (Zillow) serve a bot/no-JS shell with a generic `share_thumbnail.png` og:image instead of the real listing when scraped — treat as a placeholder (added to `_PLACEHOLDER_MARKERS`) so `_pick_photo` falls through to the next site instead of keeping site-wide junk.
+- Some CDNs (e.g. PropertyShark) send `Cross-Origin-Resource-Policy` headers that block direct `<img>` hotlinking in the browser (`ERR_BLOCKED_BY_RESPONSE.NotSameOrigin`) even though the URL is fetchable server-side. Not fixable via `crossorigin`/`referrerpolicy`; only a server-side image proxy fixes it. Existing `onerror` fail-open handling is the mitigation until that's built.

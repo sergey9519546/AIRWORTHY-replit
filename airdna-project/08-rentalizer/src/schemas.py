@@ -76,6 +76,10 @@ class PropertyPhotoResponse(BaseModel):
     photo_url: str | None = None
     source_url: str | None = None
     source_site: str | None = None
+    # Additional real photos of the same listing, mined from the same
+    # already-scraped source page — for a multi-photo carousel instead of a
+    # single hero image. Always a list (possibly empty), never null.
+    gallery: list[str] = Field(default_factory=list)
 
 
 class ParcelResponse(BaseModel):

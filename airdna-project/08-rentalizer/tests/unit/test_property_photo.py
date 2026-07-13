@@ -1,5 +1,5 @@
 """Unit tests for src.property_photo: static-map/placeholder filtering."""
-from src.property_photo import _extract_image, _pick_photo
+from src.property_photo import _extract_gallery, _extract_image, _pick_photo
 
 
 def _result(url, image=None):
@@ -57,3 +57,58 @@ def test_pick_photo_returns_none_when_all_results_are_maps():
         ),
     ]
     assert _pick_photo(results) is None
+
+
+def _result_with_markdown(url, image, markdown):
+    return {"url": url, "metadata": {"ogImage": image}, "markdown": markdown}
+
+
+def test_extract_gallery_pulls_same_host_markdown_images():
+    markdown = (
+        "![Front of home](https://photos.zillowstatic.com/fp/front-uncropped.jpg)\n"
+        "![Kitchen](https://photos.zillowstatic.com/fp/kitchen-uncropped.jpg)\n"
+        "![logo](https://photos.zillowstatic.com/fp/logo-icon.png)\n"
+        "![other site](https://cdn.example.com/unrelated.jpg)\n"
+    )
+    gallery = _extract_gallery(
+        {"url": "https://www.zillow.com/homedetails/123", "markdown": markdown},
+        "https://photos.zillowstatic.com/fp/front-uncropped.jpg",
+    )
+    assert gallery == ["https://photos.zillowstatic.com/fp/kitchen-uncropped.jpg"]
+
+
+def test_extract_gallery_dedupes_and_skips_maps():
+    markdown = (
+        "![Kitchen](https://photos.zillowstatic.com/fp/kitchen-uncropped.jpg)\n"
+        "![Kitchen again](https://photos.zillowstatic.com/fp/kitchen-uncropped.jpg)\n"
+        "![Map](https://maps.googleapis.com/maps/api/staticmap?center=1,2)\n"
+    )
+    gallery = _extract_gallery(
+        {"url": "https://www.zillow.com/homedetails/123", "markdown": markdown},
+        "https://photos.zillowstatic.com/fp/front-uncropped.jpg",
+    )
+    assert gallery == ["https://photos.zillowstatic.com/fp/kitchen-uncropped.jpg"]
+
+
+def test_pick_photo_attaches_gallery_from_markdown():
+    results = [
+        _result_with_markdown(
+            "https://www.zillow.com/homedetails/123-main-st",
+            "https://photos.zillowstatic.com/fp/front-uncropped.jpg",
+            "![Kitchen](https://photos.zillowstatic.com/fp/kitchen-uncropped.jpg)",
+        ),
+    ]
+    photo = _pick_photo(results)
+    assert photo is not None
+    assert photo.gallery == ["https://photos.zillowstatic.com/fp/kitchen-uncropped.jpg"]
+
+
+def test_pick_photo_gallery_defaults_empty_without_markdown():
+    photo = _pick_photo([
+        _result(
+            "https://www.zillow.com/homedetails/123-main-st",
+            "https://photos.zillowstatic.com/fp/front-uncropped.jpg",
+        ),
+    ])
+    assert photo is not None
+    assert photo.gallery == []
