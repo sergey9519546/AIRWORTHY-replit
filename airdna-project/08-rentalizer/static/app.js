@@ -105,7 +105,7 @@
         try {
             const resp = await fetch('/v1/estimate', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: apiHeaders(),
                 body: JSON.stringify(requestBody),
                 signal: controller.signal,
             });

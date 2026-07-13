@@ -5,6 +5,8 @@ import time
 import uuid
 from contextlib import asynccontextmanager
 
+import secrets
+
 import numpy as np
 from fastapi import FastAPI, Request, Depends, HTTPException
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
@@ -74,10 +76,18 @@ async def lifespan(app: FastAPI):
     warm_calibration()
 
     if not API_KEYS:
-        _msg = ("AUTH DISABLED: no API_KEYS configured — /v1/estimate and /v1/batch accept "
-                "unauthenticated requests. Set the API_KEYS secret (comma-separated) to require "
-                "an X-API-Key header before exposing this publicly.")
-        logger.warning(("[PRODUCTION] " + _msg) if os.getenv("REPLIT_DEPLOYMENT") else _msg)
+        if IS_PRODUCTION:
+            logger.warning(
+                "[PRODUCTION] No API_KEYS configured — /v1/estimate and /v1/batch will reject "
+                "any request that isn't recognized as coming from this app's own browser pages. "
+                "Set the API_KEYS secret (comma-separated) to issue keys to other callers."
+            )
+        else:
+            logger.warning(
+                "AUTH DISABLED (dev mode): no API_KEYS configured — /v1/estimate and /v1/batch "
+                "accept unauthenticated requests from any caller. Set the API_KEYS secret "
+                "(comma-separated) to require an X-API-Key header before exposing this publicly."
+            )
 
     logger.info("Ready!")
     yield
@@ -97,16 +107,47 @@ app = FastAPI(
 app.state.limiter = limiter
 
 # Auth
+#
+# Every call to /v1/estimate and /v1/batch must present a valid X-API-Key
+# header — no exceptions, no anonymous exemption. Two kinds of keys:
+#   - API_KEYS: secret, comma-separated partner/server keys (never shipped
+#     to a browser).
+#   - BROWSER_API_KEY: a single public, low-privilege key rendered into our
+#     own HTML pages (visible in page source, same trust model as a Stripe
+#     "publishable key" or a Google Maps browser key) so app.js/property.js/
+#     compare.js can call the API from client-side JS. It grants no more
+#     access than any other valid key and is not a bypass of the header
+#     requirement — it just answers "which key does the web UI itself use".
 API_KEYS = [k.strip() for k in os.getenv("API_KEYS", "").split(",") if k.strip()]
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+IS_PRODUCTION = bool(os.getenv("REPLIT_DEPLOYMENT"))
+
+BROWSER_API_KEY = os.getenv("BROWSER_API_KEY")
+if not BROWSER_API_KEY:
+    # No explicit browser key configured — mint one for this process so the
+    # web UI keeps working; it's re-rendered into every page load, so an
+    # ephemeral value (not surviving a restart) is fine.
+    BROWSER_API_KEY = secrets.token_hex(16)
+
 
 async def verify_api_key(api_key: str = Depends(api_key_header)):
-    """Verify API key. Returns None if no keys configured (dev mode)."""
-    if not API_KEYS:
-        return None  # No auth configured (dev mode)
-    if api_key not in API_KEYS:
-        raise HTTPException(status_code=401, detail="Invalid or missing API key")
-    return api_key
+    """Require a valid X-API-Key on every call.
+
+    - Matches a configured partner key (API_KEYS) or the public browser key
+      (BROWSER_API_KEY) -> allowed.
+    - No API_KEYS configured at all and not in production -> allowed with no
+      key (local dev, matches the project's pre-existing dev-mode behavior).
+    - Anything else (missing, unknown, or wrong key; or unconfigured in
+      production) -> rejected. There is no same-origin/cookie/header-based
+      exemption — those are all spoofable by a plain script.
+    """
+    if api_key and (api_key in API_KEYS or api_key == BROWSER_API_KEY):
+        return api_key
+
+    if not API_KEYS and not IS_PRODUCTION:
+        return None  # local dev, no keys configured at all
+
+    raise HTTPException(status_code=401, detail="Missing or invalid API key")
 
 # Static files and templates
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -165,13 +206,15 @@ async def favicon():
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     """Serve the web UI."""
-    return templates.TemplateResponse(request=request, name="index.html")
+    return templates.TemplateResponse(request=request, name="index.html",
+                                       context={"browser_api_key": BROWSER_API_KEY})
 
 
 @app.get("/map", response_class=HTMLResponse)
 async def map_page(request: Request):
     """Serve the map explorer."""
-    return templates.TemplateResponse(request=request, name="map.html")
+    return templates.TemplateResponse(request=request, name="map.html",
+                                       context={"browser_api_key": BROWSER_API_KEY})
 
 
 @app.get("/property", response_class=HTMLResponse)
@@ -183,7 +226,8 @@ async def property_report(request: Request):
     or the map's "Open estimate" link — the page itself is static; all data
     fetching/rendering happens client-side against /v1/estimate.
     """
-    return templates.TemplateResponse(request=request, name="property.html")
+    return templates.TemplateResponse(request=request, name="property.html",
+                                       context={"browser_api_key": BROWSER_API_KEY})
 
 
 @app.get("/compare", response_class=HTMLResponse)
@@ -196,7 +240,8 @@ async def compare_page(request: Request):
     property plus any manually-added or saved properties are estimated
     client-side against /v1/estimate, one request per property.
     """
-    return templates.TemplateResponse(request=request, name="compare.html")
+    return templates.TemplateResponse(request=request, name="compare.html",
+                                       context={"browser_api_key": BROWSER_API_KEY})
 
 
 @app.get("/api/cities")
