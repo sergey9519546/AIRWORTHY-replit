@@ -14,6 +14,7 @@ from .enrichment import (
     estimate_adr_occupancy, monthly_forecast, performance_drivers, confidence_reasons,
     amenity_multiplier, amenity_drivers,
 )
+from .scoring import compute_airworthy
 
 MIN_COMPS = 5           # fewer than this within MAX_RADIUS_KM => no coverage
 TARGET_COMPS = 25       # cap on comps used for the point estimate
@@ -240,8 +241,18 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
         bedroom_match_ratio=bedroom_match_ratio,
     )
 
+    airworthy = compute_airworthy(
+        annual_revenue=point,
+        benchmark_revenue=median(revs),
+        cv=cv,
+        n_comps=n,
+    )
+
     return {
         "annual_revenue": round(point, 0),
+        "airworthy_score": airworthy.score,
+        "airworthy_verdict": airworthy.verdict,
+        "airworthy_reason": airworthy.reason,
         "confidence": {
             "level": level,
             "revenue_lower": round(min(lower, point), 0),

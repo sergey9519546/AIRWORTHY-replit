@@ -36,6 +36,7 @@ from .enrichment import (
     estimate_adr_occupancy, monthly_forecast, performance_drivers, confidence_reasons,
     amenity_multiplier, amenity_drivers,
 )
+from .scoring import compute_airworthy
 from .amenity_calibration import warm_calibration
 
 import pandas as pd
@@ -467,12 +468,25 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
         bedroom_match_ratio=bedroom_match_ratio,
     )
 
+    # 11b. AIRWORTHY verdict/score — same transparent read used by the
+    # comp-based market path, benchmarked against this borough's median
+    # revenue.
+    airworthy = compute_airworthy(
+        annual_revenue=annual_revenue,
+        benchmark_revenue=market.get("median_revenue", 0),
+        cv=confidence.cv,
+        n_comps=len(comps),
+    )
+
     # 12. Format response
     return EstimateResponse(
         address=req.address,
         lat=round(geo.lat, 6),
         lng=round(geo.lng, 6),
         annual_revenue=round(annual_revenue, 0),
+        airworthy_score=airworthy.score,
+        airworthy_verdict=airworthy.verdict,
+        airworthy_reason=airworthy.reason,
         confidence=ConfidenceResponse(
             level=confidence.level,
             revenue_lower=confidence.revenue_lower,
@@ -558,6 +572,9 @@ def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: flo
         lat=round(geo.lat, 6),
         lng=round(geo.lng, 6),
         annual_revenue=result["annual_revenue"],
+        airworthy_score=result["airworthy_score"],
+        airworthy_verdict=result["airworthy_verdict"],
+        airworthy_reason=result["airworthy_reason"],
         confidence=ConfidenceResponse(**result["confidence"]),
         comps=[CompResponse(**c) for c in result["comps"]],
         market=MarketResponse(**result["market"]),

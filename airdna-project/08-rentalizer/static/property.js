@@ -136,6 +136,13 @@
         document.getElementById('report-updated').textContent =
             `Data current as of ${data.data_freshness || 'the latest snapshot'} · model ${data.model_version}`;
 
+        AirworthyVerdict.render(document.getElementById('verdict-slot'), {
+            score: data.airworthy_score,
+            verdict: data.airworthy_verdict,
+            reason: data.airworthy_reason,
+            lowData: data.comps.length < 8,
+        });
+
         AirworthyEnvelope.render(document.getElementById('envelope-slot'), {
             downside: data.confidence.revenue_lower,
             upside: data.confidence.revenue_upper,

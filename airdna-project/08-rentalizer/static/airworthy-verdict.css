@@ -1,0 +1,133 @@
+/* =========================================================================
+   AIRWORTHY — Verdict badge + score gauge
+   The shared "is this property AIRWORTHY" instrument: a color-coded verdict
+   pill (CLEARED / CONDITIONAL / EXPOSED / GROUNDED) plus a 0-100 score
+   gauge and a one-line, plain-language reason. Every page that shows an
+   estimate loads this component and drives it directly from the response's
+   airworthy_score / airworthy_verdict / airworthy_reason fields.
+   See airworthy-verdict.js for the render API.
+   ========================================================================= */
+
+.aw-verdict {
+    display: flex;
+    align-items: center;
+    gap: var(--aw-space-5);
+    font-family: var(--aw-font-ui);
+    color: var(--aw-ink);
+}
+
+.aw-verdict-gauge {
+    position: relative;
+    width: 76px;
+    height: 76px;
+    flex-shrink: 0;
+}
+.aw-verdict-gauge-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+.aw-verdict-gauge-track {
+    fill: none;
+    stroke: var(--aw-border);
+    stroke-width: 8;
+}
+.aw-verdict-gauge-fill {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.4s ease;
+}
+.aw-verdict-gauge-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.aw-verdict-gauge-score {
+    font-family: var(--aw-font-display-condensed);
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1;
+}
+.aw-verdict-gauge-of {
+    font-family: var(--aw-font-mono);
+    font-size: 9px;
+    color: var(--aw-muted);
+    letter-spacing: 0.03em;
+}
+
+.aw-verdict-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.aw-verdict-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-start;
+    padding: 5px 14px;
+    border-radius: var(--aw-radius-pill);
+    font-family: var(--aw-font-display-condensed);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+.aw-verdict-pill::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+
+.aw-verdict.cleared     .aw-verdict-gauge-fill { stroke: var(--aw-verdict-cleared); }
+.aw-verdict.cleared     .aw-verdict-pill { background: var(--aw-verdict-cleared-tint); color: var(--aw-verdict-cleared-ink); }
+
+.aw-verdict.conditional .aw-verdict-gauge-fill { stroke: var(--aw-verdict-conditional); }
+.aw-verdict.conditional .aw-verdict-pill { background: var(--aw-verdict-conditional-tint); color: var(--aw-verdict-conditional-ink); }
+
+.aw-verdict.exposed     .aw-verdict-gauge-fill { stroke: var(--aw-verdict-exposed); }
+.aw-verdict.exposed     .aw-verdict-pill { background: var(--aw-verdict-exposed-tint); color: var(--aw-verdict-exposed-ink); }
+
+.aw-verdict.grounded    .aw-verdict-gauge-fill { stroke: var(--aw-verdict-grounded); }
+.aw-verdict.grounded    .aw-verdict-pill { background: var(--aw-verdict-grounded-tint); color: var(--aw-verdict-grounded-ink); }
+
+.aw-verdict-reason {
+    font-size: 13px;
+    color: var(--aw-muted);
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* --- Loading state --- */
+.aw-verdict.loading .aw-verdict-gauge-fill { stroke: var(--aw-border-strong); }
+.aw-verdict.loading .aw-verdict-gauge-score,
+.aw-verdict.loading .aw-verdict-pill,
+.aw-verdict.loading .aw-verdict-reason {
+    color: transparent;
+    background: var(--aw-border);
+    border-radius: var(--aw-radius-sm);
+}
+.aw-verdict.loading .aw-verdict-pill::before { background: transparent; }
+
+/* --- Low-data state: still shows a score/verdict, but flags thin evidence --- */
+.aw-verdict.low-data .aw-verdict-body::after {
+    content: 'Limited comparable data — treat this verdict as provisional';
+    font-size: 11px;
+    font-family: var(--aw-font-mono);
+    color: var(--aw-coral-ink);
+}
+
+@media (max-width: 560px) {
+    .aw-verdict { gap: var(--aw-space-3); }
+    .aw-verdict-gauge { width: 60px; height: 60px; }
+    .aw-verdict-gauge-score { font-size: 19px; }
+}

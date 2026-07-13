@@ -95,6 +95,12 @@ class EstimateResponse(BaseModel):
     lat: float
     lng: float
     annual_revenue: float
+    # AIRWORTHY verdict/score: a transparent, deterministic read of the same
+    # earnings-vs-benchmark and reliability signals behind `confidence`, not
+    # a fabricated accuracy figure. See src/scoring.py for the exact model.
+    airworthy_score: int
+    airworthy_verdict: str
+    airworthy_reason: str
     confidence: ConfidenceResponse
     comps: list[CompResponse]
     market: MarketResponse

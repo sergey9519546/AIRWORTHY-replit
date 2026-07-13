@@ -12,6 +12,8 @@ body {
     min-height: 100vh;
 }
 
+.verdict-slot { margin-bottom: var(--aw-space-4); }
+
 .sr-only {
     position: absolute;
     width: 1px;

@@ -7,11 +7,12 @@
     <meta name="description" content="Explore modeled short-term rental revenue, ADR, occupancy, demand and comparable density across California and Florida markets.">
     <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Archivo+Narrow:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="/static/tokens.css" />
     <link rel="stylesheet" href="/static/nav.css" />
     <link rel="stylesheet" href="/static/earnings-envelope.css" />
+    <link rel="stylesheet" href="/static/airworthy-verdict.css" />
     <link rel="stylesheet" href="/static/map.css" />
 </head>
 <body class="map-body">
@@ -206,6 +207,8 @@
                     </div>
                 </div>
 
+                <div class="inspector-verdict" id="inspector-verdict"></div>
+
                 <div class="inspector-envelope" id="inspector-envelope"></div>
 
                 <div class="inspector-stats">
@@ -240,6 +243,7 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="/static/earnings-envelope.js"></script>
+    <script src="/static/airworthy-verdict.js"></script>
     <script src="/static/map.js" defer></script>
 </body>
 </html>

@@ -7,29 +7,54 @@
    ========================================================================= */
 
 :root {
-    /* --- Palette --- */
-    --aw-bg: #F7F6F1;
-    --aw-paper: #FFFFFF;
-    --aw-ink: #14151A;
-    --aw-muted: #6B6E76;
+    /* --- Palette ---
+       Matches AIRWORTHY-DESIGN-BRIEF.md §3: mineral/bone canvas, carbon ink,
+       and three scarce accent roles (positive / warning / analytical). Avoid
+       navy + gold entirely; chartreuse stays reserved for
+       selected/active/positive states only. */
+    --aw-bg: #F2F0E9;          /* Mineral white — primary canvas */
+    --aw-bone: #E8E5DC;        /* Bone — secondary canvas */
+    --aw-paper: #FFFFFF;       /* Card surfaces sit on white above the mineral canvas */
+    --aw-ink: #111310;         /* Carbon — primary ink */
+    --aw-muted: #686A64;       /* Graphite — secondary text */
     --aw-border: #E4E1D6;
     --aw-border-strong: #CFCBBB;
+    --aw-dark-map: #111713;    /* Near-black green — dark map surfaces */
 
-    --aw-blue: #2A55FF;       /* forecast / primary action */
-    --aw-blue-ink: #16307A;
-    --aw-blue-tint: #EAEEFF;
+    --aw-blue: #4968FF;        /* Atmospheric blue — analytical / forecast */
+    --aw-blue-ink: #223099;
+    --aw-blue-tint: #E9EDFF;
 
-    --aw-lime: #C6F135;       /* confidence / positive signal */
-    --aw-lime-ink: #3B4A05;
-    --aw-lime-tint: #F3FBD9;
+    --aw-lime: #C9FF45;        /* Electric chartreuse — positive signal, used sparingly */
+    --aw-lime-ink: #33430A;
+    --aw-lime-tint: #F5FFE0;
 
-    --aw-coral: #FF6350;      /* downside / caution */
-    --aw-coral-ink: #7A1F14;
-    --aw-coral-tint: #FFEBE7;
+    --aw-coral: #FF623F;       /* Runway orange — warning / downside */
+    --aw-coral-ink: #7A2A12;
+    --aw-coral-tint: #FFEDE7;
 
-    /* --- Typography --- */
+    /* --- AIRWORTHY verdict colors (CLEARED/CONDITIONAL/EXPOSED/GROUNDED) —
+       one role each from the palette above, no new colors invented. --- */
+    --aw-verdict-cleared: var(--aw-lime);
+    --aw-verdict-cleared-ink: var(--aw-lime-ink);
+    --aw-verdict-cleared-tint: var(--aw-lime-tint);
+    --aw-verdict-conditional: var(--aw-blue);
+    --aw-verdict-conditional-ink: var(--aw-blue-ink);
+    --aw-verdict-conditional-tint: var(--aw-blue-tint);
+    --aw-verdict-exposed: var(--aw-coral);
+    --aw-verdict-exposed-ink: var(--aw-coral-ink);
+    --aw-verdict-exposed-tint: var(--aw-coral-tint);
+    --aw-verdict-grounded: var(--aw-ink);
+    --aw-verdict-grounded-ink: #FFFFFF;
+    --aw-verdict-grounded-tint: #E7E6E1;
+
+    /* --- Typography: three coordinated voices (brief §3) ---
+       Editorial grotesk for narrative, technical mono for coordinates and
+       source data, condensed display face reserved for revenue figures and
+       verdict/status text. */
     --aw-font-ui: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --aw-font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --aw-font-display-condensed: 'Archivo Narrow', 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --aw-font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
     /* --- Spacing scale --- */

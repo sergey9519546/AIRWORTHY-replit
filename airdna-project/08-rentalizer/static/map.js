@@ -454,6 +454,34 @@ function showInspector(listing) {
         `${listing.room_type || 'Listing'} \u00b7 ${cityLabel}, ${stateLabel} \u00b7 ${listing.bedrooms || 0} bed \u00b7 ${listing.accommodates || 0} guests`;
     document.getElementById('inspector-dot').style.background = colorForT(0.5);
 
+    // AIRWORTHY verdict + score — computed client-side from the same
+    // signals the backend uses (revenue vs. local benchmark, comp spread,
+    // comp count) since this inspector renders from map data without a
+    // /v1/estimate round trip. Mirrors src/scoring.py exactly.
+    const verdictSlot = document.getElementById('inspector-verdict');
+    verdictSlot.innerHTML = '';
+    if (mostLikely > 0) {
+        const cityRevenues = currentListings
+            .filter(l => l.city === listing.city && l.state === listing.state && l.estimated_revenue_l365d > 0)
+            .map(l => l.estimated_revenue_l365d);
+        const benchmarkRevenue = cityRevenues.length ? percentile(cityRevenues.slice().sort((a, b) => a - b), 0.5) : mostLikely;
+        const mean = revenues.length ? revenues.reduce((s, v) => s + v, 0) / revenues.length : mostLikely;
+        const variance = revenues.length ? revenues.reduce((s, v) => s + (v - mean) ** 2, 0) / revenues.length : 0;
+        const cv = mean > 0 ? Math.sqrt(variance) / mean : 1.0;
+        const verdictResult = AirworthyVerdict.computeScore({
+            revenue: mostLikely,
+            benchmarkRevenue,
+            cv,
+            nComps: comps.length,
+        });
+        AirworthyVerdict.render(verdictSlot, {
+            score: verdictResult.score,
+            verdict: verdictResult.verdict,
+            reason: verdictResult.reason,
+            lowData: comps.length < 8,
+        });
+    }
+
     const envelopeSlot = document.getElementById('inspector-envelope');
     envelopeSlot.innerHTML = '';
     if (mostLikely > 0) {

@@ -240,6 +240,16 @@
         const data = entry.data;
         const facts = entry.facts;
 
+        // AIRWORTHY verdict + score (shared component)
+        const verdictSlot = document.createElement('div');
+        body.appendChild(verdictSlot);
+        AirworthyVerdict.render(verdictSlot, {
+            score: data.airworthy_score,
+            verdict: data.airworthy_verdict,
+            reason: data.airworthy_reason,
+            lowData: data.comps.length < 8,
+        });
+
         // Earnings Envelope (shared component, dialed down via compare.css)
         const envelopeSlot = document.createElement('div');
         body.appendChild(envelopeSlot);

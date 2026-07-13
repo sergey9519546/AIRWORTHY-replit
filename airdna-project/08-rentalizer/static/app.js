@@ -156,6 +156,14 @@
 
     // ---- Rendering the result preview ----
     function renderResults(data, requestBody) {
+        // AIRWORTHY verdict + score (shared component)
+        AirworthyVerdict.render(document.getElementById('verdict-slot'), {
+            score: data.airworthy_score,
+            verdict: data.airworthy_verdict,
+            reason: data.airworthy_reason,
+            lowData: data.comps.length < 8,
+        });
+
         // Earnings Envelope (shared component)
         const slot = document.getElementById('envelope-slot');
         AirworthyEnvelope.render(slot, {
