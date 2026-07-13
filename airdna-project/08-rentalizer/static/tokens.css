@@ -1,51 +1,52 @@
 /* =========================================================================
    AIRWORTHY — shared design tokens
-   Bright, editorial, calm. Light paper background, near-black text, and
-   three accent colors tied to the Earnings Envelope: blue = forecast,
-   lime = confidence, coral = downside. No dark/glass/gradient chrome.
+   Clean, light, modern SaaS. White surfaces, near-black text, cool-gray
+   borders, one refined chartreuse accent, and near-black pill controls.
+   A single sans-serif (Inter) carries everything — no monospace chrome,
+   no condensed display face, no cream/mineral canvas.
    Every AIRWORTHY page includes this file first, then a page-specific sheet.
+   Changing a value here re-skins the whole app.
    ========================================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-    /* --- Palette ---
-       Matches AIRWORTHY-DESIGN-BRIEF.md §3: mineral/bone canvas, carbon ink,
-       and three scarce accent roles (positive / warning / analytical). Avoid
-       navy + gold entirely; chartreuse stays reserved for
-       selected/active/positive states only. */
-    --aw-bg: #F2F0E9;          /* Mineral white — primary canvas */
-    --aw-bone: #E8E5DC;        /* Bone — secondary canvas */
-    --aw-paper: #FFFFFF;       /* Card surfaces sit on white above the mineral canvas */
-    --aw-ink: #111310;         /* Carbon — primary ink */
-    --aw-muted: #686A64;       /* Graphite — secondary text */
-    --aw-border: #E4E1D6;
-    --aw-border-strong: #CFCBBB;
-    --aw-dark-map: #111713;    /* Near-black green — dark map surfaces */
+    /* --- Surfaces --- */
+    --aw-bg: #FBFBFA;          /* App canvas — near-white, a hair warm */
+    --aw-bone: #F4F5F5;        /* Secondary canvas / subtle panels */
+    --aw-paper: #FFFFFF;       /* Cards, sheets, chrome */
+    --aw-subtle: #F6F7F8;      /* Sidebars, inset rows */
 
-    --aw-blue: #4968FF;        /* Atmospheric blue — analytical / forecast */
-    --aw-blue-ink: #223099;
-    --aw-blue-tint: #E9EDFF;
+    /* --- Ink --- */
+    --aw-ink: #16181D;         /* Primary text — near black */
+    --aw-muted: #6B7280;       /* Secondary text — cool gray */
+    --aw-border: #E7E8EC;      /* Hairline borders */
+    --aw-border-strong: #D2D6DD;
+    --aw-dark-map: #16181D;    /* Dark chrome surfaces (kept for legacy refs) */
 
-    --aw-lime: #C9FF45;        /* Electric chartreuse — positive signal, used sparingly */
-    --aw-lime-ink: #33430A;
-    --aw-lime-tint: #F5FFE0;
+    /* --- Accents ---
+       lime = positive / active / brand; blue = analytical / forecast;
+       coral = negative / downside. CTAs are near-black pills, not accents. */
+    --aw-blue: #6472FF;        /* Periwinkle — analytical / forecast */
+    --aw-blue-ink: #3B45B5;
+    --aw-blue-tint: #EEF0FF;
 
-    --aw-coral: #FF623F;       /* Runway orange — warning / downside */
-    --aw-coral-ink: #7A2A12;
-    --aw-coral-tint: #FFEDE7;
+    --aw-lime: #B4E24D;        /* Refined chartreuse — positive / active / brand */
+    --aw-lime-strong: #9BCB2E; /* Deeper lime for text/edges on white */
+    --aw-lime-ink: #47600A;    /* Readable lime text on light */
+    --aw-lime-tint: #F1FADB;
 
-    /* --- Dark surfaces (hero, nav CTAs, product-shot chrome) ---
-       Reference direction: near-black chrome + white type + a single lime
-       accent line, over a real photographic backdrop — not a flat color
-       field. Used for the homepage cover and any "black pill" control. */
-    --aw-black: #0B0B0C;
-    --aw-black-soft: #17181A;
-    --aw-on-black-muted: #B7B8B3;
+    --aw-coral: #F04438;       /* Red — negative / downside */
+    --aw-coral-ink: #B42318;
+    --aw-coral-tint: #FEECEA;
+
+    /* --- Dark surfaces / pill controls --- */
+    --aw-black: #16181D;
+    --aw-black-soft: #23252B;
+    --aw-on-black-muted: #A7ABB3;
     --aw-hero-overlay:
-        linear-gradient(180deg, rgba(9,10,9,0.55) 0%, rgba(9,10,9,0.78) 55%, rgba(9,10,9,0.94) 100%),
-        linear-gradient(90deg, rgba(9,10,9,0.96) 0%, rgba(9,10,9,0.55) 55%, rgba(9,10,9,0.30) 100%);
+        linear-gradient(180deg, rgba(9,10,9,0.35) 0%, rgba(9,10,9,0.55) 60%, rgba(9,10,9,0.80) 100%);
 
-    /* --- AIRWORTHY verdict colors (CLEARED/CONDITIONAL/EXPOSED/GROUNDED) —
-       one role each from the palette above, no new colors invented. --- */
+    /* --- AIRWORTHY verdict colors (CLEARED/CONDITIONAL/EXPOSED/GROUNDED) --- */
     --aw-verdict-cleared: var(--aw-lime);
     --aw-verdict-cleared-ink: var(--aw-lime-ink);
     --aw-verdict-cleared-tint: var(--aw-lime-tint);
@@ -57,16 +58,16 @@
     --aw-verdict-exposed-tint: var(--aw-coral-tint);
     --aw-verdict-grounded: var(--aw-ink);
     --aw-verdict-grounded-ink: #FFFFFF;
-    --aw-verdict-grounded-tint: #E7E6E1;
+    --aw-verdict-grounded-tint: #EDEEF0;
 
-    /* --- Typography: three coordinated voices (brief §3) ---
-       Editorial grotesk for narrative, technical mono for coordinates and
-       source data, condensed display face reserved for revenue figures and
-       verdict/status text. */
-    --aw-font-ui: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --aw-font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --aw-font-display-condensed: 'Archivo Narrow', 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --aw-font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    /* --- Typography: one clean sans for everything ---
+       All roles resolve to Inter. The mono + condensed aliases are kept so
+       existing rules keep working, but they no longer render as monospace or
+       condensed — this removes the old "instrumentation" look app-wide. */
+    --aw-font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --aw-font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --aw-font-display-condensed: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --aw-font-mono: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
     /* --- Spacing scale --- */
     --aw-space-1: 4px;
@@ -79,16 +80,15 @@
     --aw-space-8: 64px;
 
     /* --- Geometry --- */
-    --aw-radius-sm: 6px;
+    --aw-radius-sm: 8px;
     --aw-radius-md: 10px;
-    --aw-radius-lg: 16px;
+    --aw-radius-lg: 14px;
     --aw-radius-pill: 999px;
 
-    --aw-shadow-card: 0 1px 2px rgba(20,21,26,0.04), 0 8px 24px rgba(20,21,26,0.05);
-    --aw-shadow-card-hover: 0 2px 4px rgba(20,21,26,0.05), 0 12px 32px rgba(20,21,26,0.08);
+    --aw-shadow-card: 0 1px 2px rgba(16,24,40,0.04), 0 1px 3px rgba(16,24,40,0.06);
+    --aw-shadow-card-hover: 0 4px 12px rgba(16,24,40,0.08), 0 2px 6px rgba(16,24,40,0.05);
 
-    /* --- Legacy aliases (kept during rebrand so existing rules keep working
-       until each stylesheet migrates to the --aw- tokens directly) --- */
+    /* --- Legacy aliases (kept so existing rules keep working) --- */
     --coral: var(--aw-blue);
     --coral-dark: var(--aw-blue-ink);
     --coral-light: var(--aw-blue-tint);
@@ -100,11 +100,7 @@
     --color-card: var(--aw-paper);
 }
 
-/* Global reduced-motion support (loaded on every AIRWORTHY page). Page-specific
-   stylesheets may add their own more tailored overrides on top of this — this
-   is the safety net so no animation (drifting backdrop, pulsing dots/rings,
-   loading spinners) runs unbounded for users who have asked the OS to
-   minimize motion. */
+/* Global reduced-motion safety net (loaded on every AIRWORTHY page). */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation-duration: 0.001ms !important;

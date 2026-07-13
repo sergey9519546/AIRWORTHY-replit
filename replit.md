@@ -2,13 +2,14 @@
 
 Airbnb data analysis project with three connected parts: a revenue estimator, a data analysis pipeline, and a map explorer.
 
-> **AIRWORTHY design direction:** All new UI work (homepage/cover, map, property
-> report, comparison) must follow the authoritative spec in
-> [`airdna-project/08-rentalizer/AIRWORTHY-DESIGN-BRIEF.md`](airdna-project/08-rentalizer/AIRWORTHY-DESIGN-BRIEF.md).
-> Positioning = property-readiness/certification (verdicts CLEARED/CONDITIONAL/EXPOSED/GROUNDED
-> + score /100); mineral-white canvas, scarce chartreuse accent, editorial×instrument
-> style; signature "Earnings Envelope" motif. The uploaded mockup image is approximate —
-> the brief text wins where they conflict.
+> **AIRWORTHY design direction:** Clean, light, modern SaaS — white surfaces,
+> near-black text, cool-gray hairline borders, one refined chartreuse accent, and
+> near-black pill buttons; a single sans-serif (Inter) throughout. The visual
+> target is the user's reference mockup (`attached_assets/Generated_image_1_*.png`).
+> The design system lives entirely in `static/tokens.css` (change values there to
+> re-skin the whole app). The old AIRWORTHY-DESIGN-BRIEF.md and its
+> "mineral/editorial/instrument" direction have been retired at the user's request
+> and are no longer a source of truth.
 
 ## 1. Rentalizer Web App (`airdna-project/08-rentalizer/`)
 

@@ -12,7 +12,7 @@
 :root {
     --nav-h: 64px;
     --cmd-h: 60px;
-    --rail-w: 76px;
+    --rail-w: 236px;
     --dock-h: 248px;
 }
 
@@ -305,45 +305,55 @@ html, body.map-body { margin: 0; padding: 0; }
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 4px;
-    padding: var(--aw-space-3) 8px;
+    gap: 2px;
+    padding: var(--aw-space-4) var(--aw-space-3);
     overflow-y: auto;
     z-index: 40;
 }
+.rail-heading {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--aw-muted);
+    padding: 0 8px 10px;
+}
 .layer-btn {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 4px;
+    gap: 10px;
     border: 1px solid transparent;
     background: none;
     border-radius: var(--aw-radius-md);
-    padding: 9px 4px;
+    padding: 9px 10px;
     font-family: var(--aw-font-ui);
-    font-size: 10.5px;
-    font-weight: 700;
+    font-size: 13.5px;
+    font-weight: 500;
     color: var(--aw-muted);
     cursor: pointer;
-    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    text-align: left;
+    width: 100%;
+    transition: background 0.15s, color 0.15s;
 }
-.layer-btn:hover { background: var(--aw-bg); color: var(--aw-ink); }
-.layer-btn.active { background: var(--aw-ink); color: #fff; border-color: var(--aw-ink); }
+.layer-btn:hover { background: var(--aw-bone); color: var(--aw-ink); }
+.layer-btn.active { background: var(--aw-lime-tint); color: var(--aw-ink); font-weight: 600; }
 .layer-icon {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--aw-font-mono);
     font-size: 12px;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--aw-coral), var(--aw-blue), var(--aw-lime));
-    color: #fff;
+    font-weight: 700;
+    background: var(--aw-bone);
+    color: var(--aw-muted);
     flex-shrink: 0;
 }
-.layer-btn.active .layer-icon { box-shadow: 0 0 0 2px rgba(255,255,255,0.5) inset; }
-.layer-label { line-height: 1.1; }
+.layer-btn:hover .layer-icon { color: var(--aw-ink); }
+.layer-btn.active .layer-icon { background: var(--aw-lime); color: var(--aw-lime-ink); }
+.layer-label { line-height: 1.15; }
 
 /* Restrained, integrated legend — floats over the canvas, describes only
    the single currently-active layer (no stacked legends for five layers). */
@@ -710,11 +720,10 @@ html, body.map-body { margin: 0; padding: 0; }
 
 /* ===== Responsive ===== */
 @media (max-width: 1080px) {
-    :root { --rail-w: 64px; }
+    :root { --rail-w: 204px; }
     .cmd-room-select { width: 120px; }
     .inspector-col-identity { flex-basis: 220px; }
     .inspector-col-season { flex-basis: 260px; }
-    .layer-label { display: none; }
 }
 
 @media (max-width: 900px) {
@@ -731,8 +740,10 @@ html, body.map-body { margin: 0; padding: 0; }
         border-bottom: 1px solid var(--aw-border);
         overflow-x: auto;
         padding: 8px;
+        gap: 6px;
     }
-    .layer-btn { flex-direction: row; flex-shrink: 0; }
+    .map-layer-rail .rail-heading { display: none; }
+    .layer-btn { flex-direction: row; flex-shrink: 0; width: auto; white-space: nowrap; }
     .layer-label { display: inline; }
     .map-legend { display: none !important; }
     .map-body-row { flex-direction: column; }
