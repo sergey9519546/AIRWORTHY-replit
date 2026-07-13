@@ -48,3 +48,15 @@ Key facts that were gotten wrong and must not be repeated:
 - Two honesty departures from the image remain: no fake partner-trust logos (use honest
   data-source attribution) and no invented "94% accuracy" stat (real backtest figure or
   omit). See the brief's "Honesty adaptations" section.
+- **The reference is a full LANDING PAGE, and its two dominant sections are large
+  product-showcase panels** — (1) the map-explorer UI (top nav tabs Explore/Market
+  pulse/Saved/Reports, left "VIEW LAYER" list w/ icon+text rows, price-range slider,
+  type/bedroom selects, price-pill badges on a light map, bottom property strip w/
+  Inspect CTA) and (2) the property-report UI (photo+specs, AIRWORTHY score card,
+  revenue-range card w/ downside/expected/upside bar, right summary stats, tab row,
+  performance-drivers pos/neg list, monthly-forecast bar chart, market summary). These
+  live on the homepage as static showcase panels (static/showcase.css + sections in
+  templates/index.html), separate from the live /map and /property routes. User wants
+  the DESIGN reproduced, not the marketing copy — honest/illustrative copy is fine.
+  Rejections happened when these panels were absent, so the homepage read as "nothing
+  like the reference beyond the background color."

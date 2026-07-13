@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/static/earnings-envelope.css">
     <link rel="stylesheet" href="/static/airworthy-verdict.css">
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/showcase.css">
     <meta name="airworthy-browser-key" content="{{ browser_api_key }}">
 </head>
 <body>
@@ -133,6 +134,180 @@
                     </div>
                 </div>
             </aside>
+        </div>
+    </section>
+
+    <!-- ===== Data-source strip: honest attribution styled like the reference's
+         trust-logo row (names the actual open data sources, not fake partners). -->
+    <div class="trust-strip">
+        <span class="trust-label">Built on real short-term-rental &amp; parcel data</span>
+        <div class="trust-row">
+            <span class="trust-mark">InsideAirbnb</span>
+            <span class="trust-mark">Realie</span>
+            <span class="trust-mark">County Assessors</span>
+            <span class="trust-mark">OpenStreetMap</span>
+            <span class="trust-mark">US Census</span>
+        </div>
+    </div>
+
+    <!-- ===== Product showcase 1: the market-map explorer ===== -->
+    <section class="showcase" aria-label="The market map explorer">
+        <div class="showcase-head">
+            <span class="showcase-eyebrow">The market map</span>
+            <h2 class="showcase-title">See where the revenue actually is</h2>
+            <p class="showcase-lede">Every comparable listing on one map. Switch layers to read revenue, occupancy, ADR, and demand across a whole market at a glance — then open any property for the full inspection.</p>
+        </div>
+        <div class="app-frame">
+            <div class="app-frame-bar">
+                <div class="af-tabs">
+                    <span class="af-tab af-tab-active">Explore</span>
+                    <span class="af-tab">Market pulse</span>
+                    <span class="af-tab">Saved</span>
+                    <span class="af-tab">Reports</span>
+                </div>
+                <div class="af-bar-right">
+                    <span class="af-pill">Austin, TX</span>
+                    <span class="af-pill af-pill-ghost">Filters</span>
+                </div>
+            </div>
+            <div class="app-frame-body">
+                <aside class="af-side">
+                    <span class="af-side-label">View layer</span>
+                    <ul class="af-layers">
+                        <li class="af-layer af-layer-active"><span class="af-layer-ico">$</span>Revenue potential</li>
+                        <li class="af-layer"><span class="af-layer-ico">%</span>Occupancy rate</li>
+                        <li class="af-layer"><span class="af-layer-ico">R</span>ADR (avg. daily rate)</li>
+                        <li class="af-layer"><span class="af-layer-ico">S</span>Supply pressure</li>
+                        <li class="af-layer"><span class="af-layer-ico">!</span>Regulation risk</li>
+                        <li class="af-layer"><span class="af-layer-ico">~</span>Seasonality</li>
+                    </ul>
+                    <span class="af-side-label">Price range</span>
+                    <div class="af-slider"><span class="af-slider-fill"></span><span class="af-slider-knob"></span></div>
+                    <div class="af-slider-scale"><span>$0</span><span>$5,000+</span></div>
+                    <span class="af-side-label">Property type</span>
+                    <div class="af-select">All types<span class="af-select-caret">▾</span></div>
+                    <span class="af-side-label">Bedrooms</span>
+                    <div class="af-select">Any<span class="af-select-caret">▾</span></div>
+                    <span class="af-more">More filters</span>
+                </aside>
+                <div class="af-map">
+                    <span class="af-map-place" style="top:11%;left:40%;">Tarrytown</span>
+                    <span class="af-map-place" style="top:44%;left:68%;">Downtown</span>
+                    <span class="af-map-place" style="top:70%;left:36%;">South Congress</span>
+                    <span class="af-map-place" style="top:26%;left:16%;">West Lake Hills</span>
+                    <div class="af-badge" style="top:18%;left:24%;">$78K</div>
+                    <div class="af-badge af-badge-hi" style="top:30%;left:64%;">$58K</div>
+                    <div class="af-badge-card" style="top:46%;left:40%;">
+                        <span class="af-badge-card-addr">2209 Ridgeway Dr · Austin, TX</span>
+                        <span class="af-badge-card-val">$92K</span>
+                        <span class="af-badge-card-tag">Top performer</span>
+                    </div>
+                    <div class="af-badge" style="top:66%;left:22%;">$42K</div>
+                    <div class="af-badge af-badge-hi" style="top:70%;left:58%;">$67K</div>
+                    <div class="af-badge af-badge-lo" style="top:24%;left:82%;">$33K</div>
+                </div>
+            </div>
+            <div class="app-frame-strip">
+                <div class="af-strip-thumb"></div>
+                <div class="af-strip-main">
+                    <span class="af-strip-addr">2209 Ridgeway Dr</span>
+                    <span class="af-strip-sub">Austin, TX 78704 · <strong>AIRWORTHY 82</strong> · Conditional</span>
+                </div>
+                <div class="af-strip-stats">
+                    <div class="af-stat"><strong>$78K–$94K</strong><span>Est. annual revenue</span></div>
+                    <div class="af-stat"><strong>67%</strong><span>Occupancy</span></div>
+                    <div class="af-stat"><strong>$237</strong><span>ADR</span></div>
+                    <div class="af-stat"><strong>31</strong><span>Comparables</span></div>
+                </div>
+                <span class="af-strip-cta">Inspect property</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Product showcase 2: the property report ===== -->
+    <section class="showcase" aria-label="The property report">
+        <div class="showcase-head">
+            <span class="showcase-eyebrow">The property report</span>
+            <h2 class="showcase-title">A verdict you can act on</h2>
+            <p class="showcase-lede">Score and verdict, a modeled revenue range, the drivers pushing the number up or down, a month-by-month forecast, and the market it sits in — all on one page.</p>
+        </div>
+        <div class="app-frame report-frame">
+            <div class="rf-top">
+                <span class="rf-back">← Back to map</span>
+                <div class="rf-top-actions"><span class="af-pill af-pill-ghost">Favorite</span><span class="af-pill af-pill-ghost">Share</span></div>
+            </div>
+            <div class="rf-head">
+                <div class="rf-photo"></div>
+                <div class="rf-headmeta">
+                    <h3 class="rf-title">2209 Ridgeway Dr</h3>
+                    <span class="rf-sub">Austin, TX 78704</span>
+                    <div class="rf-specs"><span>4 bd</span><span>3.5 ba</span><span>2,450 sqft</span><span>Entire home</span></div>
+                </div>
+            </div>
+            <div class="rf-grid">
+                <div class="rf-score-card">
+                    <span class="rf-card-label">AIRWORTHY score</span>
+                    <div class="rf-score"><span class="rf-score-num">82</span><span class="rf-score-den">/100</span></div>
+                    <span class="rf-verdict-tag">Conditional</span>
+                    <p class="rf-score-note">High potential with moderate risk.</p>
+                </div>
+                <div class="rf-rev-card">
+                    <span class="rf-card-label">Estimated annual revenue</span>
+                    <div class="rf-rev-range">$78,400 – $94,100</div>
+                    <div class="rf-rev-bar"><span class="rf-rev-fill"></span><span class="rf-rev-knob"></span></div>
+                    <div class="rf-rev-scale">
+                        <div><strong>$61K</strong><span>Downside</span></div>
+                        <div><strong>$86.2K</strong><span>Expected</span></div>
+                        <div><strong>$108K</strong><span>Upside</span></div>
+                    </div>
+                </div>
+                <div class="rf-summary-card">
+                    <div class="rf-sum-row"><span>Confidence</span><strong>High</strong></div>
+                    <div class="rf-sum-row"><span>Comparables</span><strong>31 of 44</strong></div>
+                    <div class="rf-sum-row"><span>Forecast horizon</span><strong>12 months</strong></div>
+                    <div class="rf-sum-row"><span>Last updated</span><strong>6 hours ago</strong></div>
+                </div>
+            </div>
+            <div class="rf-tabs">
+                <span class="rf-tab rf-tab-active">Overview</span>
+                <span class="rf-tab">Comparables</span>
+                <span class="rf-tab">Seasonality</span>
+                <span class="rf-tab">Drivers</span>
+                <span class="rf-tab">Expenses</span>
+                <span class="rf-tab">Scenarios</span>
+            </div>
+            <div class="rf-lower">
+                <div class="rf-drivers">
+                    <span class="rf-card-label">Performance drivers</span>
+                    <div class="rf-driver rf-driver-pos"><span>Pool adds strong summer demand</span><strong>+$6.8K</strong></div>
+                    <div class="rf-driver rf-driver-pos"><span>4-bedroom inventory limited nearby</span><strong>+$7.1K</strong></div>
+                    <div class="rf-driver rf-driver-pos"><span>Walkability supports weekend stays</span><strong>+$4.6K</strong></div>
+                    <div class="rf-driver rf-driver-neg"><span>Sensitive below 58% occupancy</span><strong>−$5.7K</strong></div>
+                    <div class="rf-driver rf-driver-neg"><span>Supply growing faster than demand</span><strong>−$3.1K</strong></div>
+                </div>
+                <div class="rf-forecast">
+                    <span class="rf-card-label">Monthly revenue forecast</span>
+                    <div class="rf-bars">
+                        <span class="rf-bar" style="height:40%"></span>
+                        <span class="rf-bar" style="height:46%"></span>
+                        <span class="rf-bar" style="height:54%"></span>
+                        <span class="rf-bar" style="height:62%"></span>
+                        <span class="rf-bar" style="height:72%"></span>
+                        <span class="rf-bar" style="height:86%"></span>
+                        <span class="rf-bar" style="height:96%"></span>
+                        <span class="rf-bar" style="height:90%"></span>
+                        <span class="rf-bar" style="height:72%"></span>
+                        <span class="rf-bar" style="height:58%"></span>
+                        <span class="rf-bar" style="height:48%"></span>
+                        <span class="rf-bar" style="height:42%"></span>
+                    </div>
+                    <div class="rf-months"><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span></div>
+                    <div class="rf-forecast-legend">
+                        <span class="rf-legend-item"><span class="rf-legend-swatch" style="background:var(--aw-lime)"></span>Expected</span>
+                        <span class="rf-legend-item"><span class="rf-legend-swatch" style="background:rgba(73,104,255,0.35)"></span>Range</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
