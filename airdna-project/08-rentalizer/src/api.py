@@ -14,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.security import APIKeyHeader
 from slowapi import Limiter
+from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from .config import settings
@@ -113,11 +114,30 @@ def _rate_limit_key(request: Request) -> str:
     return f"ip:{get_remote_address(request)}"
 
 
-limiter = Limiter(key_func=_rate_limit_key)
+# headers_enabled writes standard X-RateLimit-Limit / -Remaining / -Reset (and
+# Retry-After) onto responses so partners can see their own budget and how close
+# they are to it, instead of only discovering the ceiling by hitting an opaque 429.
+limiter = Limiter(key_func=_rate_limit_key, headers_enabled=True)
 
 app = FastAPI(
     title="AIRWORTHY",
-    description="Short-term rental earnings instrument — modeled revenue ranges, not falsely-precise numbers.",
+    description=(
+        "Short-term rental earnings instrument — modeled revenue ranges, not "
+        "falsely-precise numbers.\n\n"
+        "## Rate limits\n\n"
+        "Rate limits are enforced **per API key** (unauthenticated browser/dev "
+        "traffic is limited per IP instead). Each partner key has its own "
+        "requests-per-minute budget for `/v1/estimate` and `/v1/batch`, so a "
+        "noisy or leaked key never eats into anyone else's allowance.\n\n"
+        "Every response includes standard headers so you can self-throttle:\n\n"
+        "- `X-RateLimit-Limit` — your budget for the endpoint\n"
+        "- `X-RateLimit-Remaining` — calls left in the current window\n"
+        "- `X-RateLimit-Reset` — unix time when the window resets\n"
+        "- `Retry-After` — seconds to wait (sent on 429 responses)\n\n"
+        "Exceeding your budget returns HTTP 429 with a body explaining the limit "
+        "and when to retry. Need more headroom? Contact us with your API key to "
+        "request a higher per-key limit."
+    ),
     version=settings.VERSION,
     lifespan=lifespan,
 )
@@ -262,6 +282,48 @@ async def invalid_input_handler(request, exc):
         "error": "invalid_input",
         "detail": str(exc),
     })
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    """Explain the 429 in plain language and attach the standard headers.
+
+    Rather than the default opaque body (just the limit string), tell the caller
+    exactly what their per-key budget is, when they can retry, and how to raise
+    it — then let slowapi inject X-RateLimit-* / Retry-After so a client can
+    self-throttle programmatically.
+    """
+    limit_str = str(exc.limit.limit)  # e.g. "30 per 1 minute"
+
+    retry_after = None
+    try:
+        current_limit = request.state.view_rate_limit
+        window_stats = limiter.limiter.get_window_stats(current_limit[0], *current_limit[1])
+        retry_after = max(0, int(1 + window_stats[0] - time.time()))
+    except Exception:
+        pass
+
+    if retry_after is not None:
+        when = f"in {retry_after} second{'' if retry_after == 1 else 's'}"
+    else:
+        when = "shortly (see the Retry-After header)"
+
+    body = {
+        "error": "rate_limit_exceeded",
+        "detail": (
+            f"You've hit your rate limit of {limit_str} on this endpoint. "
+            f"Retry {when}. Rate limits are enforced per API key; see the "
+            "X-RateLimit-Limit, X-RateLimit-Remaining and X-RateLimit-Reset "
+            "response headers to pace your requests."
+        ),
+        "limit": limit_str,
+        "suggestion": "Need a higher budget? Contact us with your API key to request a larger per-key limit.",
+    }
+    if retry_after is not None:
+        body["retry_after_seconds"] = retry_after
+
+    response = JSONResponse(status_code=429, content=body)
+    return limiter._inject_headers(response, getattr(request.state, "view_rate_limit", None))
+
 
 @app.exception_handler(Exception)
 async def generic_handler(request, exc):
@@ -732,8 +794,13 @@ def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: flo
 
 @app.post("/v1/estimate", response_model=EstimateResponse)
 @limiter.limit(_estimate_limit)
-async def estimate(request: Request, req: EstimateRequest, api_key: str = Depends(verify_api_key)):
-    """Single property revenue estimate."""
+async def estimate(request: Request, response: Response, req: EstimateRequest, api_key: str = Depends(verify_api_key)):
+    """Single property revenue estimate.
+
+    Rate limited per API key. Every response carries X-RateLimit-Limit,
+    X-RateLimit-Remaining and X-RateLimit-Reset so you can pace your calls; the
+    `response: Response` param is what slowapi writes those headers onto.
+    """
     return await _do_estimate(req)
 
 
@@ -747,8 +814,13 @@ _BATCH_ERROR_CODES = {
 
 @app.post("/v1/batch")
 @limiter.limit(_batch_limit)
-async def batch_estimate(request: Request, requests: list[EstimateRequest], api_key: str = Depends(verify_api_key)):
-    """Batch estimates (max 20)."""
+async def batch_estimate(request: Request, response: Response, requests: list[EstimateRequest], api_key: str = Depends(verify_api_key)):
+    """Batch estimates (max 20).
+
+    Rate limited per API key (a batch call counts as one request against your
+    /v1/batch budget). Responses carry X-RateLimit-Limit / -Remaining / -Reset
+    so you can pace your calls.
+    """
     if len(requests) > settings.MAX_BATCH:
         return JSONResponse(status_code=413, content={
             "error": "batch_too_large",
