@@ -21,6 +21,7 @@ than presented as data-backed) when neither has enough support.
 import os
 import re
 import sqlite3
+import threading
 from functools import lru_cache
 
 # Bedroom buckets used to control for the "bigger homes have more amenities
@@ -182,6 +183,11 @@ def compute_calibration(conn):
 
 _calibration_cache = None
 _calibration_cache_snapshot = None
+# Guards the cache fields above, and tracks which snapshot (if any) a
+# background recompute is currently in flight for, so a burst of concurrent
+# requests after a data load only kicks off one recompute thread.
+_calibration_lock = threading.Lock()
+_calibration_computing_snapshot = None
 
 
 def _latest_snapshot_date(conn):
@@ -189,38 +195,78 @@ def _latest_snapshot_date(conn):
     return row["d"] if row else None
 
 
+def _recompute_in_background(latest):
+    """Run the full-table-scan recompute on a background thread and swap it
+    into the cache when done, so no single request pays the scan cost."""
+
+    def _run():
+        global _calibration_cache, _calibration_cache_snapshot, _calibration_computing_snapshot
+        try:
+            conn = sqlite3.connect(_db_path())
+            conn.row_factory = sqlite3.Row
+            try:
+                result = compute_calibration(conn)
+            finally:
+                conn.close()
+        except Exception:
+            # Leave the existing (possibly stale) cache in place; the next
+            # request will notice the snapshot is still unmatched and retry.
+            with _calibration_lock:
+                _calibration_computing_snapshot = None
+            raise
+
+        with _calibration_lock:
+            _calibration_cache = result
+            _calibration_cache_snapshot = latest
+            _calibration_computing_snapshot = None
+
+    threading.Thread(target=_run, name="amenity-calibration-recompute", daemon=True).start()
+
+
 def get_calibration():
-    """Lazily compute and cache amenity calibration, keyed by the newest
+    """Return the cached amenity calibration, keyed by the newest
     `snapshot_date` present in the listings table.
 
     Recomputing the full calibration is a single full-table scan, so we
-    avoid it on every request. But we also can't just cache it forever: new
-    market data can be loaded into the DB (via `scripts/load_data.py`)
-    without a server restart, and that data carries a new `snapshot_date`.
-    So on every call we run a cheap `MAX(snapshot_date)` check (same
-    freshness signal `/api/cities` already exposes to the frontend) and only
-    redo the expensive full scan when that value has changed.
+    avoid it on every request. New market data can be loaded into the DB
+    (via `scripts/load_data.py`) without a server restart, and that data
+    carries a new `snapshot_date`. So on every call we run a cheap
+    `MAX(snapshot_date)` check (same freshness signal `/api/cities` already
+    exposes to the frontend); when it has changed (or nothing has been
+    computed yet), we kick off the expensive full scan on a background
+    thread rather than doing it inline, and keep serving the last-known
+    (possibly stale, or empty on first-ever call) cache in the meantime. A
+    concurrent burst of requests right after a data load only starts one
+    such background recompute.
     """
-    global _calibration_cache, _calibration_cache_snapshot
+    global _calibration_cache, _calibration_cache_snapshot, _calibration_computing_snapshot
 
     db_path = _db_path()
     if not os.path.exists(db_path):
-        _calibration_cache = {}
-        _calibration_cache_snapshot = None
-        return _calibration_cache
+        with _calibration_lock:
+            _calibration_cache = {}
+            _calibration_cache_snapshot = None
+        return {}
 
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     try:
         latest = _latest_snapshot_date(conn)
-        if _calibration_cache is not None and latest == _calibration_cache_snapshot:
-            return _calibration_cache
-
-        _calibration_cache = compute_calibration(conn)
-        _calibration_cache_snapshot = latest
     finally:
         conn.close()
-    return _calibration_cache
+
+    with _calibration_lock:
+        is_stale = _calibration_cache is None or latest != _calibration_cache_snapshot
+        already_computing = _calibration_computing_snapshot == latest
+        should_kick_off = is_stale and not already_computing
+        if should_kick_off:
+            _calibration_computing_snapshot = latest
+        current = _calibration_cache if _calibration_cache is not None else {}
+
+    if should_kick_off:
+        _recompute_in_background(latest)
+
+    return current
 
 
 def lookup(state, amenity_key, city_slug=None):
