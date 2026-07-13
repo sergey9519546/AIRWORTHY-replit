@@ -41,6 +41,68 @@
         return (a || '').trim().toLowerCase();
     }
 
+    // ---- Shareable/bookmarkable URL ----
+    // The full set of compared properties (address + facts) is packed into a
+    // single `p` query param so reloading or sharing the link restores the
+    // exact same comparison, not just the first property.
+    function syncUrl() {
+        const url = new URL(window.location.href);
+        if (entries.length) {
+            const packed = entries.map((e) => ([
+                e.facts.address,
+                e.facts.bedrooms,
+                e.facts.bathrooms,
+                e.facts.accommodates,
+                e.facts.nightly_rate,
+            ]));
+            url.searchParams.set('p', encodeURIComponent(JSON.stringify(packed)));
+        } else {
+            url.searchParams.delete('p');
+        }
+        // Legacy single-property params are superseded by `p` once present.
+        url.searchParams.delete('address');
+        url.searchParams.delete('bedrooms');
+        url.searchParams.delete('bathrooms');
+        url.searchParams.delete('accommodates');
+        url.searchParams.delete('nightly_rate');
+        window.history.replaceState(null, '', url.toString());
+    }
+
+    function parseUrlEntries() {
+        const params = new URLSearchParams(window.location.search);
+        const packedParam = params.get('p');
+        if (packedParam) {
+            try {
+                const packed = JSON.parse(decodeURIComponent(packedParam));
+                if (Array.isArray(packed)) {
+                    return packed
+                        .filter((row) => Array.isArray(row) && row[0])
+                        .map(([address, bedrooms, bathrooms, accommodates, nightly_rate]) => ({
+                            address,
+                            bedrooms: parseInt(bedrooms, 10) || 1,
+                            bathrooms: parseFloat(bathrooms) || 1,
+                            accommodates: parseInt(accommodates, 10) || 2,
+                            nightly_rate: parseFloat(nightly_rate) || 150,
+                        }));
+                }
+            } catch (e) {
+                // Malformed/tampered link — fall through to legacy handling.
+            }
+        }
+        // Legacy single-property link (e.g. from the homepage/report "Compare" link).
+        const address = params.get('address');
+        if (address) {
+            return [{
+                address,
+                bedrooms: parseInt(params.get('bedrooms'), 10) || 1,
+                bathrooms: parseFloat(params.get('bathrooms')) || 1,
+                accommodates: parseInt(params.get('accommodates'), 10) || 2,
+                nightly_rate: parseFloat(params.get('nightly_rate')) || 150,
+            }];
+        }
+        return [];
+    }
+
     // ---- Entry management ----
     function addEntry(facts) {
         if (!facts || !facts.address) return;
@@ -52,6 +114,7 @@
         entries.push(entry);
         renderAll();
         runEstimate(entry);
+        syncUrl();
         return entry;
     }
 
@@ -59,6 +122,7 @@
         entries = entries.filter((e) => e.key !== key);
         renderAll();
         refreshSavedOptions();
+        syncUrl();
     }
 
     async function runEstimate(entry) {
@@ -303,6 +367,7 @@
             adr: data.market.adr,
             occupancyRate: data.market.occupancy_rate,
             bedrooms: facts.bedrooms,
+            bathrooms: facts.bathrooms,
             accommodates: facts.accommodates,
             nightlyRate: facts.nightly_rate,
         };
@@ -388,23 +453,16 @@
         addEntry({
             address: p.address,
             bedrooms: typeof p.bedrooms === 'number' ? p.bedrooms : 1,
-            bathrooms: 1,
+            bathrooms: typeof p.bathrooms === 'number' ? p.bathrooms : 1,
             accommodates: typeof p.accommodates === 'number' ? p.accommodates : 2,
             nightly_rate: typeof p.nightlyRate === 'number' ? p.nightlyRate : 150,
         });
     });
 
-    // ---- Boot: seed from URL params (the homepage / report "Compare" link) ----
-    const params = new URLSearchParams(window.location.search);
-    const initialAddress = params.get('address');
-    if (initialAddress) {
-        addEntry({
-            address: initialAddress,
-            bedrooms: parseInt(params.get('bedrooms'), 10) || 1,
-            bathrooms: parseFloat(params.get('bathrooms')) || 1,
-            accommodates: parseInt(params.get('accommodates'), 10) || 2,
-            nightly_rate: parseFloat(params.get('nightly_rate')) || 150,
-        });
+    // ---- Boot: seed from URL (shareable/bookmarkable comparison link) ----
+    const initialEntries = parseUrlEntries();
+    if (initialEntries.length) {
+        initialEntries.forEach((facts) => addEntry(facts));
     } else {
         renderAll();
     }

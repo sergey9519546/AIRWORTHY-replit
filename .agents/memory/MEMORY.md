@@ -9,3 +9,4 @@
 - [Rentalizer desktop SaaS redesign](rentalizer-desktop-redesign.md) — focus({preventScroll:true}) to avoid hiding in-flow nav, map.invalidateSize() on inspector resize, genuine cv-derived confidence gauge
 - [Rentalizer property comparison page](rentalizer-property-comparison.md) — /compare: per-card independent estimate fetches, shared facts shape, single scroll-snap flex row for responsive layout
 - [Rentalizer listings bathrooms column](rentalizer-listings-bathrooms.md) — listings table lacked bathrooms; parse from raw bathrooms_text, backfill in-place (ALTER+UPDATE) to preserve demand_curve
+- [Project-task queue main-agent limits](project-task-queue-main-agent-limits.md) — main agent can't force-claim/complete a PENDING task-agent-queued task via the task API; do the code work directly and let the user reconcile the queue entry

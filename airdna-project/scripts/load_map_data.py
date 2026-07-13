@@ -54,6 +54,15 @@ def main():
     print("=" * 60)
     conn.close()
 
+    # Seasonal demand curves (map's "Demand" layer) are derived from a
+    # separate forward-calendar download, not the listings snapshot itself.
+    # Without this step, any newly loaded/refreshed city would silently have
+    # no demand_curve and the Demand layer would look blank for it — so we
+    # always re-derive curves as part of the standard map-data load.
+    print("\nDeriving seasonal demand curves for the newly loaded snapshots...")
+    import load_demand_curves
+    load_demand_curves.main()
+
 
 if __name__ == '__main__':
     main()

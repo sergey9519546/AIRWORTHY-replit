@@ -19,6 +19,7 @@
  *   adr: number,
  *   occupancyRate: number,
  *   bedrooms: number,
+ *   bathrooms: number,   // falls back to 1 for snapshots saved before this field existed
  *   accommodates: number,
  *   nightlyRate: number,
  *   savedAt: string,         // ISO timestamp

@@ -184,6 +184,30 @@ def main():
     print("\n" + "=" * 60)
     print(f"Demand curves populated for {covered:,} / {total_rows:,} listings")
     print("=" * 60)
+
+    # Coverage check scoped to the *latest* snapshot per city — this is what
+    # the map actually renders (see /api/listings), so a gap here means the
+    # Demand layer will look blank/wrong for that city right now, not just
+    # for stale historical rows we don't care about.
+    gaps = conn.execute(
+        """
+        SELECT l.state, l.city, l.snapshot_date,
+               COUNT(*) AS total, SUM(CASE WHEN l.demand_curve IS NULL THEN 1 ELSE 0 END) AS missing
+        FROM listings l
+        JOIN (
+            SELECT state, city, MAX(snapshot_date) AS snapshot_date
+            FROM listings GROUP BY state, city
+        ) latest
+          ON l.state = latest.state AND l.city = latest.city AND l.snapshot_date = latest.snapshot_date
+        GROUP BY l.state, l.city, l.snapshot_date
+        HAVING missing > 0
+        """
+    ).fetchall()
+    if gaps:
+        print("\nWARNING: the following current-snapshot cities are missing demand curves")
+        print("(their map Demand layer will look blank/wrong until this is fixed):")
+        for state, city, date, total_n, missing_n in gaps:
+            print(f"  - {state}/{city} @ {date}: {missing_n:,} / {total_n:,} listings missing demand_curve")
     conn.close()
 
 

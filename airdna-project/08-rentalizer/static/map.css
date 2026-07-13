@@ -503,6 +503,45 @@ html, body.map-body { margin: 0; padding: 0; }
 .inspector-stat-label { font-family: var(--aw-font-mono); font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--aw-muted); margin-bottom: 3px; }
 .inspector-stat-value { font-family: var(--aw-font-display); font-size: 17px; font-weight: 700; color: var(--aw-ink); }
 
+.inspector-season { margin-bottom: var(--aw-space-4); }
+.inspector-season-label {
+    font-family: var(--aw-font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--aw-muted);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+.inspector-season-hint { text-transform: none; font-weight: 500; letter-spacing: normal; font-size: 10.5px; color: var(--aw-muted); opacity: 0.75; }
+.inspector-season-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 44px;
+    border-top: 1px solid var(--aw-border);
+    padding-top: 8px;
+}
+.inspector-season-bar {
+    flex: 1;
+    min-width: 0;
+    background: var(--aw-blue);
+    border-radius: 2px 2px 0 0;
+    opacity: 0.55;
+    position: relative;
+}
+.inspector-season-bar.peak { opacity: 1; }
+.inspector-season-empty {
+    font-family: var(--aw-font-ui);
+    font-size: 12.5px;
+    color: var(--aw-muted);
+    border-top: 1px solid var(--aw-border);
+    padding-top: 10px;
+}
+
 .inspector-cta {
     display: flex;
     align-items: center;

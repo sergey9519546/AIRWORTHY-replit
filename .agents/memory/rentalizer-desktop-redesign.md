@@ -37,4 +37,6 @@ every restructured page after layout changes.
 **How to apply:** whenever moving a nav/panel from a floating/overlay
 position to an in-flow or flex-sibling position in this app, re-screenshot
 every page that can auto-scroll or resize that region before calling the
-work done.
+work done. This convention applies app-wide, not just the page it was first
+found on — audit every `.focus()` call on a section/panel across the app
+(homepage, property, map, compare, etc.), not only the one just touched.

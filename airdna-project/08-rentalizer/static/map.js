@@ -473,6 +473,8 @@ function showInspector(listing) {
     document.getElementById('inspector-occupancy').textContent = occ > 0 ? Math.round(occ * 100) + '%' : '\u2014';
     document.getElementById('inspector-comps').textContent = comps.length.toLocaleString();
 
+    renderInspectorSeason(listing);
+
     const cta = document.getElementById('inspector-cta');
     const ctaParams = new URLSearchParams();
     if (listing.name) ctaParams.set('address', listing.name);
@@ -487,6 +489,33 @@ function showInspector(listing) {
     // opening it changes the canvas width — Leaflet caches its container
     // size and needs an explicit nudge to redraw correctly.
     requestAnimationFrame(() => map.invalidateSize());
+}
+
+// Compact 12-point booked-share sparkline for the selected listing, using the
+// same demand_curve field that powers the Demand map layer — so the number a
+// user sees per-property here always matches what the layer/timeline show.
+function renderInspectorSeason(listing) {
+    const chart = document.getElementById('inspector-season-chart');
+    chart.innerHTML = '';
+    const curve = parseDemandCurve(listing);
+    if (!curve) {
+        const empty = document.createElement('div');
+        empty.className = 'inspector-season-empty';
+        empty.textContent = 'No seasonal booking data for this listing yet.';
+        chart.appendChild(empty);
+        return;
+    }
+    const vals = curve.map(v => (typeof v === 'number' ? v : 0));
+    const max = Math.max(...vals, 0.01);
+    curve.forEach((v, i) => {
+        const bar = document.createElement('div');
+        bar.className = 'inspector-season-bar';
+        const value = typeof v === 'number' ? v : 0;
+        if (value >= max * 0.97 && value > 0) bar.classList.add('peak');
+        bar.style.height = Math.max((value / max) * 100, typeof v === 'number' ? 8 : 3) + '%';
+        bar.title = `${MONTH_ABBR[i]}: ${typeof v === 'number' ? Math.round(v * 100) + '% booked' : 'no data'}`;
+        chart.appendChild(bar);
+    });
 }
 
 document.getElementById('inspector-close').addEventListener('click', () => {

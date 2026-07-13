@@ -236,6 +236,7 @@
             adr: data.market.adr,
             occupancyRate: data.market.occupancy_rate,
             bedrooms: facts.bedrooms,
+            bathrooms: facts.bathrooms,
             accommodates: facts.accommodates,
             nightlyRate: facts.nightly_rate,
         };

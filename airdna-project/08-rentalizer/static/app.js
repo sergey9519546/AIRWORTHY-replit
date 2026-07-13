@@ -197,6 +197,7 @@
             adr: data.market.adr,
             occupancyRate: data.market.occupancy_rate,
             bedrooms: requestBody.bedrooms,
+            bathrooms: requestBody.bathrooms,
             accommodates: requestBody.accommodates,
             nightlyRate: requestBody.nightly_rate,
         };
