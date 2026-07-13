@@ -122,7 +122,7 @@
 
             renderResults(data, requestBody);
             showOnly(resultsSection);
-            resultsSection.focus();
+            resultsSection.focus({ preventScroll: true });
         } catch (err) {
             clearTimeout(timeout);
             const message = err.name === 'AbortError'
