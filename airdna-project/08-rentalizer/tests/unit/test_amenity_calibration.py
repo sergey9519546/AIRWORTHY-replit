@@ -226,3 +226,100 @@ def test_lookup_returns_none_when_neither_city_nor_state_supported(tmp_path, mon
     entry = ac.lookup("ca", "pool", city_slug="los-angeles")
 
     assert entry is None
+
+
+def test_resolve_group_clamps_raw_pct_above_max():
+    """A raw weighted percentage above CLAMP_MAX must be clamped, not
+    passed through raw -- otherwise a confound (or a bug) could ship an
+    implausible 100%+ amenity price bump."""
+    accum = {
+        1: {"with": [2000.0 * 30, 30], "without": [1000.0 * 30, 30]},  # raw pct = 1.0
+    }
+
+    entry = ac._resolve_group(accum, "pool")
+
+    assert entry["is_data_backed"] is True
+    assert entry["impact_pct"] == ac.CLAMP_MAX
+
+
+def test_resolve_group_clamps_raw_pct_below_min():
+    """A raw weighted percentage below CLAMP_MIN must be clamped up rather
+    than reported as an implausibly large negative impact."""
+    accum = {
+        1: {"with": [500.0 * 30, 30], "without": [1000.0 * 30, 30]},  # raw pct = -0.5
+    }
+
+    entry = ac._resolve_group(accum, "pool")
+
+    assert entry["is_data_backed"] is True
+    assert entry["impact_pct"] == ac.CLAMP_MIN
+
+
+def test_resolve_group_weights_multiple_buckets_not_just_largest():
+    """Buckets must be combined via a weight-averaged percentage, not by
+    letting the bucket with the most listings simply win outright."""
+    accum = {
+        # bucket 1: pct = 0.10, weight 20
+        1: {"with": [1100.0 * 20, 20], "without": [1000.0 * 20, 20]},
+        # bucket 3: pct = 0.30, weight 40
+        3: {"with": [1300.0 * 40, 40], "without": [1000.0 * 40, 40]},
+    }
+
+    entry = ac._resolve_group(accum, "pool")
+
+    assert entry["is_data_backed"] is True
+    # Weighted average: (0.10*20 + 0.30*40) / 60 = 0.2333...
+    assert entry["impact_pct"] == pytest.approx(0.2333, abs=1e-4)
+    # Must not equal the pct of either individual bucket (i.e. must not
+    # have just picked the largest-weight bucket's own percentage).
+    assert entry["impact_pct"] != 0.30
+    assert entry["impact_pct"] != 0.10
+
+
+def test_resolve_group_bucket_below_min_bucket_n_is_excluded_entirely():
+    """A bucket with fewer than MIN_BUCKET_N listings on either side must
+    contribute nothing to the combined weight -- not even partial credit --
+    so it can't be used to sneak a market over MIN_MARKET_WEIGHT."""
+    below = ac.MIN_BUCKET_N - 1
+    accum = {
+        # Well-supported bucket, but alone it doesn't reach MIN_MARKET_WEIGHT.
+        1: {"with": [2000.0 * ac.MIN_BUCKET_N, ac.MIN_BUCKET_N],
+            "without": [1000.0 * ac.MIN_BUCKET_N, ac.MIN_BUCKET_N]},
+        # Under-supported bucket with a huge n_without that should NOT
+        # count towards weight_total, since n_with is below MIN_BUCKET_N.
+        3: {"with": [2000.0 * below, below],
+            "without": [1000.0 * 100, 100]},
+    }
+
+    entry = ac._resolve_group(accum, "pool")
+
+    assert entry["is_data_backed"] is False
+    assert entry["impact_pct"] is None
+    # n totals still reflect all rows seen, even the excluded bucket.
+    assert entry["n_with"] == ac.MIN_BUCKET_N + below
+    assert entry["n_without"] == ac.MIN_BUCKET_N + 100
+
+
+def test_resolve_group_at_min_market_weight_boundary():
+    """Combined weight exactly at MIN_MARKET_WEIGHT must be data-backed;
+    one listing short of it (on either side of one bucket) must not be."""
+    half = ac.MIN_MARKET_WEIGHT // 2
+    assert half >= ac.MIN_BUCKET_N, "test assumes half a market's weight still clears MIN_BUCKET_N"
+
+    accum_at_threshold = {
+        1: {"with": [2000.0 * half, half], "without": [1000.0 * half, half]},
+        3: {"with": [2000.0 * half, half], "without": [1000.0 * half, half]},
+    }
+    entry_at = ac._resolve_group(accum_at_threshold, "pool")
+    assert entry_at["is_data_backed"] is True
+
+    # Shrink one bucket below MIN_BUCKET_N so it's excluded entirely,
+    # dropping weight_total below MIN_MARKET_WEIGHT.
+    below = ac.MIN_BUCKET_N - 1
+    accum_below_threshold = {
+        1: {"with": [2000.0 * half, half], "without": [1000.0 * half, half]},
+        3: {"with": [2000.0 * below, below], "without": [1000.0 * below, below]},
+    }
+    entry_below = ac._resolve_group(accum_below_threshold, "pool")
+    assert entry_below["is_data_backed"] is False
+    assert entry_below["impact_pct"] is None
