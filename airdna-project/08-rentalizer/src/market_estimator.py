@@ -138,7 +138,8 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
     rows = conn.execute(
         """
         SELECT id, city, state, bedrooms, accommodates, price_numeric,
-               estimated_revenue_l365d AS rev, latitude, longitude
+               estimated_revenue_l365d AS rev, latitude, longitude,
+               picture_url, listing_url
         FROM listings
         WHERE (state, city, snapshot_date) IN (
                 SELECT state, city, MAX(snapshot_date) FROM listings GROUP BY state, city
@@ -285,6 +286,8 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
             "price": float(row["price_numeric"]) if row["price_numeric"] is not None else None,
             "reason_included": ", ".join(reason_bits),
             "differences": ", ".join(diff_bits) if diff_bits else "closely matches this property",
+            "picture_url": (row["picture_url"] or None) if "picture_url" in row.keys() else None,
+            "listing_url": (row["listing_url"] or None) if "listing_url" in row.keys() else None,
         })
 
     nightly_rate_for_adr = nightly_rate if nightly_rate else median_price

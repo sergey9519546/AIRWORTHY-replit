@@ -64,6 +64,8 @@ CREATE TABLE listings (
     estimated_occupancy_l365d   INTEGER,
     estimated_revenue_l365d     REAL,
     amenities                   TEXT,
+    picture_url                 TEXT,
+    listing_url                 TEXT,
     created_at                  TEXT DEFAULT (datetime('now')),
     updated_at                  TEXT DEFAULT (datetime('now')),
     PRIMARY KEY (id, state, city, snapshot_date)

@@ -630,6 +630,16 @@ html, body.map-body { margin: 0; padding: 0; }
 .inspector-col-envelope { flex: 1 1 auto; justify-content: center; padding-right: var(--aw-space-6); border-right: 1px solid var(--aw-border); }
 .inspector-col-season { flex: 0 0 320px; justify-content: center; }
 
+.inspector-photo-link {
+    display: block; position: relative; margin-bottom: var(--aw-space-3);
+    border-radius: var(--aw-radius-md); overflow: hidden; text-decoration: none;
+    border: 1px solid var(--aw-border);
+}
+.inspector-photo { display: block; width: 100%; height: 120px; object-fit: cover; background: var(--aw-blue-tint); }
+.inspector-photo-source {
+    position: absolute; left: 8px; bottom: 8px; font-size: 10.5px; font-weight: 600;
+    color: #fff; background: rgba(0,0,0,0.6); padding: 3px 8px; border-radius: 999px;
+}
 .inspector-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: var(--aw-space-2); padding-right: var(--aw-space-6); }
 .inspector-type-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
 .inspector-name { font-family: var(--aw-font-display); font-size: 16px; font-weight: 700; color: var(--aw-ink); letter-spacing: -0.01em; }

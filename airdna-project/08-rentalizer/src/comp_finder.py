@@ -25,6 +25,8 @@ class Comp:
     borough: str
     distance_km: float
     score: float
+    picture_url: str | None = None
+    listing_url: str | None = None
 
 
 # Global state
@@ -74,6 +76,8 @@ def build_index(train_df: pd.DataFrame, source_path: str | None = None):
             "price": float(row["price_num"]),
             "revenue": float(row["revenue"]),
             "borough": _get_borough(row),
+            "picture_url": (row.get("picture_url") or None),
+            "listing_url": (row.get("listing_url") or None),
         })
 
     # Pre-compute market stats per borough at startup
@@ -163,6 +167,8 @@ def find_comps(lat: float, lng: float, bedrooms: int, accommodates: int, bathroo
             borough=listing["borough"],
             distance_km=round(dist_km, 2),
             score=round(score, 4),
+            picture_url=listing.get("picture_url"),
+            listing_url=listing.get("listing_url"),
         ))
 
     # Sort by score descending
@@ -206,6 +212,8 @@ def _find_comps_relaxed(lat: float, lng: float, k: int) -> list[Comp]:
             borough=listing["borough"],
             distance_km=round(dist_km, 2),
             score=round(score, 4),
+            picture_url=listing.get("picture_url"),
+            listing_url=listing.get("listing_url"),
         ))
 
     return comps

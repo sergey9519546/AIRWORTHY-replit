@@ -1,4 +1,5 @@
 """FastAPI application — AIRWORTHY API."""
+import asyncio
 import logging
 import os
 import time
@@ -21,6 +22,7 @@ from .config import settings
 from .schemas import (
     EstimateRequest, EstimateResponse, ErrorResponse,
     ConfidenceResponse, CompResponse, MarketResponse, ParcelResponse,
+    PropertyPhotoResponse,
     HealthResponse, ModelInfoResponse, CreditsResponse,
 )
 from .exceptions import (
@@ -30,6 +32,7 @@ from .exceptions import (
 from .validation import validate_input, in_nyc_bounds
 from .geocoder import geocode
 from .realie_client import get_parcel
+from .property_photo import get_property_photo
 from .comp_finder import build_index, find_comps, predict_from_comps, get_market_stats
 from .market_estimator import estimate_from_db, covered_markets, get_demand_curve
 from .features import build_features, get_borough_from_coords
@@ -493,7 +496,8 @@ async def listings(
         sql = """
             SELECT id, state, city, snapshot_date, name, room_type, bedrooms,
                    bathrooms, accommodates, price_numeric, number_of_reviews,
-                   estimated_revenue_l365d, latitude, longitude, demand_curve
+                   estimated_revenue_l365d, latitude, longitude, demand_curve,
+                   picture_url, listing_url
             FROM listings
             WHERE (state, city, snapshot_date) IN (
                 SELECT state, city, MAX(snapshot_date)
@@ -552,26 +556,48 @@ async def _do_estimate(req: EstimateRequest) -> EstimateResponse:
     geo = geocode(req.address)
     geocode_ms = int((time.time() - t0) * 1000)
 
-    # 2b. Real parcel/assessor enrichment (Realie). Optional and fail-open:
-    #     never blocks or fails the estimate if unconfigured or unavailable.
-    try:
-        parcel = get_parcel(geo.lat, geo.lng)
-    except Exception as e:
-        logger.warning(f"[{request_id}] parcel enrichment failed: {e}")
-        parcel = None
+    # 2b/2c. Real parcel/assessor enrichment (Realie) + real property photo
+    # (Firecrawl). Both optional and fail-open: neither may block or fail the
+    # estimate if unconfigured or unavailable. Run concurrently on worker
+    # threads (both are blocking `requests` calls) so their timeouts don't
+    # stack — sequential worst-case latency could otherwise approach or
+    # exceed the frontend's own abort timeout for the whole /v1/estimate
+    # request, turning a slow enrichment provider into a failed estimate.
+    def _safe_parcel():
+        try:
+            return get_parcel(geo.lat, geo.lng)
+        except Exception as e:
+            logger.warning(f"[{request_id}] parcel enrichment failed: {e}")
+            return None
+
+    def _safe_photo():
+        try:
+            return get_property_photo(req.address)
+        except Exception as e:
+            logger.warning(f"[{request_id}] photo enrichment failed: {e}")
+            return None
+
+    parcel, photo = await asyncio.gather(
+        asyncio.to_thread(_safe_parcel),
+        asyncio.to_thread(_safe_photo),
+    )
 
     # 3. Route by coverage: NYC uses the trained ML model; every other market
     #    is served by the comp-based estimate over the shared listings DB.
     if in_nyc_bounds(geo.lat, geo.lng):
-        return _estimate_nyc_ml(req, geo, request_id, start, geocode_ms, parcel)
-    return _estimate_from_market(req, geo, request_id, start, geocode_ms, parcel)
+        return _estimate_nyc_ml(req, geo, request_id, start, geocode_ms, parcel, photo)
+    return _estimate_from_market(req, geo, request_id, start, geocode_ms, parcel, photo)
 
 
 def _parcel_response(parcel) -> ParcelResponse | None:
     return ParcelResponse(**vars(parcel)) if parcel else None
 
 
-def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, geocode_ms: int, parcel=None) -> EstimateResponse:
+def _photo_response(photo) -> PropertyPhotoResponse | None:
+    return PropertyPhotoResponse(**vars(photo)) if photo else None
+
+
+def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, geocode_ms: int, parcel=None, photo=None) -> EstimateResponse:
     """NYC estimate using the trained LightGBM model + NYC comp index."""
     # 4. Find comps
     t0 = time.time()
@@ -725,6 +751,8 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
                     f"{abs(c.bedrooms - req.bedrooms)} {'more' if c.bedrooms > req.bedrooms else 'fewer'} bedroom(s)"
                     if c.bedrooms != req.bedrooms else "closely matches this property"
                 ),
+                picture_url=c.picture_url,
+                listing_url=c.listing_url,
             )
             for c in comps[:20]
         ],
@@ -740,6 +768,7 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
         performance_drivers=drivers,
         demand_curve=demand_curve,
         parcel=_parcel_response(parcel),
+        photo=_photo_response(photo),
         disclaimer=settings.DISCLAIMER,
         data_source=settings.DATA_SOURCE,
         model_version=get_model_info().get("version", settings.VERSION),
@@ -747,7 +776,7 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
     )
 
 
-def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: float, geocode_ms: int, parcel=None) -> EstimateResponse:
+def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: float, geocode_ms: int, parcel=None, photo=None) -> EstimateResponse:
     """Comp-based estimate for any market present in the listings DB.
 
     Raises OutsideCoverageError (with a data-driven message) when there aren't
@@ -800,6 +829,7 @@ def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: flo
         performance_drivers=result.get("performance_drivers", []),
         demand_curve=demand_curve,
         parcel=_parcel_response(parcel),
+        photo=_photo_response(photo),
         disclaimer=settings.DISCLAIMER,
         data_source=settings.DATA_SOURCE,
         model_version="comps-1.0",

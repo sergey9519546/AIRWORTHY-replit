@@ -164,7 +164,10 @@ LISTINGS_COLUMNS = [
     'instant_bookable', 'calculated_host_listings_count',
     'availability_30', 'availability_60', 'availability_90', 'availability_365',
     'estimated_occupancy_l365d', 'estimated_revenue_l365d',
-    'amenities'
+    'amenities',
+    # Real listing photo + source page (InsideAirbnb carries both). Kept as
+    # plain TEXT so they pass straight through the loader untouched.
+    'picture_url', 'listing_url',
 ]
 
 

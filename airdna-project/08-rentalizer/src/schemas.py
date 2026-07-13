@@ -54,6 +54,10 @@ class CompResponse(BaseModel):
     price: float | None = None
     reason_included: str = ""
     differences: str = ""
+    # Real listing photo + source page (InsideAirbnb). Nullable — a handful of
+    # listings carry no photo, and the UI degrades gracefully when absent.
+    picture_url: str | None = None
+    listing_url: str | None = None
 
 
 class MarketResponse(BaseModel):
@@ -63,6 +67,15 @@ class MarketResponse(BaseModel):
     active_listings: int
     adr: float = 0.0
     occupancy_rate: float = 0.0
+
+
+class PropertyPhotoResponse(BaseModel):
+    """A real photo of the searched property, scraped from a live real-estate
+    listing. Always attributed to its source, and always nullable — photo
+    enrichment is fail-open and dormant when unconfigured."""
+    photo_url: str | None = None
+    source_url: str | None = None
+    source_site: str | None = None
 
 
 class ParcelResponse(BaseModel):
@@ -112,6 +125,9 @@ class EstimateResponse(BaseModel):
     # (e.g. NYC, which isn't in the listings DB this is sourced from).
     demand_curve: list[float] | None = None
     parcel: ParcelResponse | None = None
+    # Real scraped photo of the searched property + its source attribution.
+    # Null when no photo could be found or the scrape service is unconfigured.
+    photo: PropertyPhotoResponse | None = None
     disclaimer: str
     data_source: str
     model_version: str

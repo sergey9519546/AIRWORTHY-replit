@@ -469,6 +469,8 @@ function showInspector(listing) {
     const cityLabel = titleCase(listing.city);
     const stateLabel = (listing.state || '').toUpperCase();
 
+    renderInspectorPhoto(listing);
+
     document.getElementById('inspector-name').textContent = listing.name || 'Unnamed listing';
     document.getElementById('inspector-meta').textContent =
         `${listing.room_type || 'Listing'} \u00b7 ${cityLabel}, ${stateLabel} \u00b7 ${listing.bedrooms || 0} bed \u00b7 ${listing.accommodates || 0} guests`;
@@ -538,6 +540,30 @@ function showInspector(listing) {
     // opening it changes the canvas width — Leaflet caches its container
     // size and needs an explicit nudge to redraw correctly.
     requestAnimationFrame(() => map.invalidateSize());
+}
+
+// Show the selected listing's real photo with a link to its Airbnb source.
+// Fails cleanly when a listing has no photo, or the image URL 404s.
+function renderInspectorPhoto(listing) {
+    const link = document.getElementById('inspector-photo-link');
+    const img = document.getElementById('inspector-photo');
+    const photo = listing.picture_url;
+    if (!photo) {
+        link.hidden = true;
+        img.removeAttribute('src');
+        return;
+    }
+    img.onerror = () => { link.hidden = true; };
+    img.alt = listing.name || 'Listing photo';
+    img.src = photo;
+    if (listing.listing_url) {
+        link.href = listing.listing_url;
+        link.style.pointerEvents = '';
+    } else {
+        link.removeAttribute('href');
+        link.style.pointerEvents = 'none';
+    }
+    link.hidden = false;
 }
 
 // Compact 12-point booked-share sparkline for the selected listing, using the

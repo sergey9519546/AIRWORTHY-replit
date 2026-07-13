@@ -179,6 +179,14 @@ body.compare-body {
 
 .compare-card-body { padding: var(--aw-space-4); display: flex; flex-direction: column; gap: var(--aw-space-4); flex: 1; }
 
+.compare-card-photo { margin: 0; }
+.compare-card-photo-img {
+    display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover;
+    border-radius: var(--aw-radius-md); background: var(--aw-blue-tint); border: 1px solid var(--aw-border);
+}
+.compare-card-photo-caption { margin-top: 5px; font-size: 11px; color: var(--aw-muted); }
+.compare-card-photo-caption a { color: var(--aw-blue-ink); }
+
 /* Card-scale envelope: dial back the homepage-sized figure so several
    cards can sit side by side without the number dwarfing everything else. */
 .compare-card .aw-envelope-figure-value { font-size: 26px; }

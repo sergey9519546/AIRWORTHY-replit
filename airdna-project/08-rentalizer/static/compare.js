@@ -245,6 +245,36 @@
         const data = entry.data;
         const facts = entry.facts;
 
+        // Real property photo (scraped) with a source-attribution link. Hidden
+        // cleanly when no photo was found or the image URL fails to load.
+        const photo = data.photo;
+        if (photo && photo.photo_url) {
+            const figure = document.createElement('figure');
+            figure.className = 'compare-card-photo';
+            const img = document.createElement('img');
+            img.className = 'compare-card-photo-img';
+            img.alt = `Photo of ${data.address}`;
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.onerror = () => { figure.remove(); };
+            img.src = photo.photo_url;
+            figure.appendChild(img);
+            const caption = document.createElement('figcaption');
+            caption.className = 'compare-card-photo-caption';
+            if (photo.source_url) {
+                const a = document.createElement('a');
+                a.href = photo.source_url;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.textContent = `Photo: ${photo.source_site || 'source'}`;
+                caption.appendChild(a);
+            } else {
+                caption.textContent = `Photo: ${photo.source_site || 'source'}`;
+            }
+            figure.appendChild(caption);
+            body.appendChild(figure);
+        }
+
         // AIRWORTHY verdict + score (shared component)
         const verdictSlot = document.createElement('div');
         verdictSlot.dataset.metric = 'score';

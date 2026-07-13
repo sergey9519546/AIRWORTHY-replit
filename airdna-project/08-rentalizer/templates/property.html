@@ -54,6 +54,14 @@
                     <h1 id="report-address" class="report-address">&mdash;</h1>
                     <p id="report-updated" class="report-updated"></p>
 
+                    <figure id="report-photo-figure" class="report-photo-figure" hidden>
+                        <img id="report-photo" class="report-photo" alt="" loading="lazy" decoding="async">
+                        <figcaption class="report-photo-caption">
+                            Photo source:
+                            <a id="report-photo-source" href="#" target="_blank" rel="noopener noreferrer">source</a>
+                        </figcaption>
+                    </figure>
+
                     <div id="verdict-slot" class="verdict-slot"></div>
 
                     <div class="score-gauge">
@@ -333,6 +341,14 @@
                         <ul id="confidence-reasons" class="confidence-list confidence-list-good"></ul>
                         <ul id="confidence-weaknesses" class="confidence-list confidence-list-weak"></ul>
                     </div>
+                </section>
+
+                <!-- Public-records property facts (Realie) -->
+                <section id="parcel-section" class="report-section" aria-labelledby="parcel-heading" hidden>
+                    <h2 id="parcel-heading" class="report-section-title">Property facts &mdash; public records</h2>
+                    <p class="report-section-note">Assessor and parcel records for this address, from public data. Coverage varies by county; blank fields aren't recorded for this parcel.</p>
+                    <dl id="parcel-facts" class="parcel-facts"></dl>
+                    <p class="report-section-note parcel-attr">Source: <a href="https://realie.ai" target="_blank" rel="noopener noreferrer">Realie</a> public property data.</p>
                 </section>
 
                 <!-- Decision footer -->

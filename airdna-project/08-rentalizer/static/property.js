@@ -163,6 +163,8 @@
         document.getElementById('compare-link').href = `/compare?${compareParams.toString()}`;
         document.getElementById('compare-link-footer').href = `/compare?${compareParams.toString()}`;
 
+        renderPhoto(data);
+        renderParcel(data);
         renderScoreGauge(data);
         wireSaveButtons(data, facts);
         renderDecisionSummary(data);
@@ -174,6 +176,84 @@
         renderFactsStatus();
         renderScenario(data);
         renderFooterVerdict(data);
+    }
+
+    // ---- Hero photo: a real scraped photo of the searched property ----
+    // Degrades gracefully: hidden when no photo was found, and hidden again if
+    // the source image URL fails to load (no broken-image icon).
+    function renderPhoto(data) {
+        const figure = document.getElementById('report-photo-figure');
+        const img = document.getElementById('report-photo');
+        const sourceLink = document.getElementById('report-photo-source');
+        const photo = data.photo;
+        if (!photo || !photo.photo_url) {
+            figure.hidden = true;
+            img.removeAttribute('src');
+            return;
+        }
+        img.onerror = () => { figure.hidden = true; };
+        img.alt = `Photo of ${data.address}`;
+        img.src = photo.photo_url;
+        if (photo.source_url) {
+            sourceLink.href = photo.source_url;
+            sourceLink.textContent = photo.source_site || 'source';
+        } else {
+            sourceLink.removeAttribute('href');
+            sourceLink.textContent = photo.source_site || 'source';
+        }
+        figure.hidden = false;
+    }
+
+    // ---- Public-records property facts (Realie) ----
+    function renderParcel(data) {
+        const section = document.getElementById('parcel-section');
+        const dl = document.getElementById('parcel-facts');
+        const parcel = data.parcel;
+        dl.innerHTML = '';
+        if (!parcel) {
+            section.hidden = true;
+            return;
+        }
+
+        // Realie represents "not recorded for this parcel" as 0 for numeric
+        // measurement fields, so a positive value is required before we show
+        // one — otherwise we'd print misleading "0 sq ft" / "$0" facts.
+        const pos = (n) => (typeof n === 'number' && n > 0 ? n : null);
+        const fmtInt = (n) => Math.round(n).toLocaleString('en-US');
+        const rows = [
+            ['Year built', pos(parcel.year_built) ? String(parcel.year_built) : null],
+            ['Lot size', pos(parcel.lot_acres) != null ? `${parcel.lot_acres.toLocaleString('en-US', { maximumFractionDigits: 2 })} acres` : null],
+            ['Building area', pos(parcel.building_area_sqft) != null ? `${fmtInt(parcel.building_area_sqft)} sq ft` : null],
+            ['Bedrooms', pos(parcel.bedrooms) != null ? String(parcel.bedrooms) : null],
+            ['Bathrooms', pos(parcel.bathrooms) != null ? String(parcel.bathrooms) : null],
+            ['Stories', pos(parcel.stories) != null ? String(parcel.stories) : null],
+            ['Garage', parcel.has_garage == null ? null : (parcel.has_garage ? 'Yes' : 'No')],
+            ['Pool', parcel.has_pool == null ? null : (parcel.has_pool ? 'Yes' : 'No')],
+            ['Construction', parcel.construction_type || null],
+            ['Roof', parcel.roof_type || null],
+            ['Assessed value', pos(parcel.assessed_market_value) != null ? formatCurrency(parcel.assessed_market_value) : null],
+            ['Estimated value (AVM)', pos(parcel.avm_value) != null ? formatCurrency(parcel.avm_value) : null],
+            ['Last sale price', pos(parcel.last_sale_price) != null ? formatCurrency(parcel.last_sale_price) : null],
+            ['Last sale date', parcel.last_sale_date || null],
+            ['Owner', parcel.owner_name || null],
+        ].filter(([, value]) => value != null && value !== '');
+
+        if (!rows.length) {
+            section.hidden = true;
+            return;
+        }
+
+        rows.forEach(([label, value]) => {
+            const dt = document.createElement('dt');
+            dt.className = 'parcel-fact-label';
+            dt.textContent = label;
+            const dd = document.createElement('dd');
+            dd.className = 'parcel-fact-value';
+            dd.textContent = value;
+            dl.appendChild(dt);
+            dl.appendChild(dd);
+        });
+        section.hidden = false;
     }
 
     // ---- Decision summary: a plain-language paragraph explaining the verdict ----
@@ -517,6 +597,38 @@
         return SIMILARITY_TIERS.find((t) => score >= t.min) || SIMILARITY_TIERS[SIMILARITY_TIERS.length - 1];
     }
 
+    // A comp's real listing photo (with a link to its Airbnb source) when
+    // available, falling back to the bedroom-count chip. Fails cleanly when a
+    // listing has no photo or the image URL 404s.
+    function buildCompThumb(c) {
+        const hasPhoto = !!c.picture_url;
+        const thumb = document.createElement(c.listing_url ? 'a' : 'div');
+        thumb.className = 'comp-thumb' + (hasPhoto ? ' comp-thumb-photo' : '');
+        if (c.listing_url) {
+            thumb.href = c.listing_url;
+            thumb.target = '_blank';
+            thumb.rel = 'noopener noreferrer';
+            thumb.title = 'View on Airbnb';
+        }
+        const fallback = document.createElement('span');
+        fallback.className = 'comp-thumb-fallback';
+        fallback.textContent = c.bedrooms + 'BR';
+        thumb.appendChild(fallback);
+        if (hasPhoto) {
+            const img = document.createElement('img');
+            img.className = 'comp-thumb-img';
+            img.alt = '';
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.onerror = () => { img.remove(); thumb.classList.remove('comp-thumb-photo'); };
+            img.src = c.picture_url;
+            thumb.appendChild(img);
+        } else {
+            thumb.setAttribute('aria-hidden', 'true');
+        }
+        return thumb;
+    }
+
     function paintComps(comps) {
         const sorted = [...comps].sort((a, b) => {
             switch (compsSortKey) {
@@ -565,10 +677,7 @@
                 document.getElementById('comps-recalc').disabled = !changed;
             });
 
-            const thumb = document.createElement('div');
-            thumb.className = 'comp-thumb';
-            thumb.textContent = c.bedrooms + 'BR';
-            thumb.setAttribute('aria-hidden', 'true');
+            const thumb = buildCompThumb(c);
 
             const main = document.createElement('div');
             main.className = 'comp-main';

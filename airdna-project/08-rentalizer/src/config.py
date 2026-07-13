@@ -8,6 +8,20 @@ class Settings:
     REALIE_API_KEY = os.getenv("REALIE_API_KEY", "")
     REALIE_BASE_URL = "https://app.realie.ai/api"
     REALIE_TIMEOUT = 6  # seconds — parcel enrichment must never stall the estimate
+
+    # Firecrawl (real-estate photo scraping). Optional & fail-open: when the
+    # key is absent the property-photo feature stays dormant and the report
+    # still works. Kept on a tight timeout so it never stalls an estimate.
+    FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY", "")
+    FIRECRAWL_BASE_URL = "https://api.firecrawl.dev"
+    # Photo lookup runs inline in the /v1/estimate critical path, and the
+    # frontend aborts that whole request at 15s (see property.js/compare.js).
+    # This timeout MUST stay comfortably below that so a slow/degraded
+    # Firecrawl never causes the frontend to abort the entire estimate —
+    # fail-open means the estimate finishes on time with photo=None, not that
+    # the estimate itself times out. If Firecrawl continues to run past this,
+    # the estimate simply proceeds without a photo.
+    FIRECRAWL_TIMEOUT = 6  # seconds
     MODEL_PATH = os.path.join(BASE_DIR, "models", "revenue_model.pkl")
     META_PATH = os.path.join(BASE_DIR, "models", "meta.json")
     FEATURES_PATH = os.path.join(BASE_DIR, "models", "features.json")

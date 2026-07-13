@@ -25,6 +25,11 @@ or AVM-cross-check alternatives.
   erroring — treat both as "disable enrichment for now", not a crash.
 - Date fields like `transferDate` are `YYYYMMDD` strings, not ISO — despite the
   docs example showing hyphens.
+- **"Not recorded" comes back as `0`/`0.0`, not null,** for numeric measurement
+  fields (buildingArea, totalBedrooms, totalBathrooms, totalMarketValue, etc.).
+  A parcel can return a valid `parcelId`/`ownerName`/AVM while every physical
+  measurement is 0. When displaying these, require a *positive* value before
+  showing one — otherwise the report prints misleading "0 sq ft" / "$0" facts.
 
 ## Why fail-open matters here
 Realie coverage/uptime must never gate the core revenue estimate (the
