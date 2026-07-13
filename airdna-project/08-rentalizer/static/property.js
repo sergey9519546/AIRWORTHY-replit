@@ -24,6 +24,7 @@
 
     let currentFacts = null;   // last-run request body
     let currentData = null;    // last /v1/estimate response
+    let originalFacts = null;  // facts as first loaded, for "reset to original"
     let excludedCompIds = new Set();
     let pendingExcludeIds = new Set(); // staged, not yet recalculated
     let forecastMode = 'monthly';
@@ -164,12 +165,54 @@
 
         renderScoreGauge(data);
         wireSaveButtons(data, facts);
+        renderDecisionSummary(data);
         renderForecast(data);
         renderDrivers(data);
         renderConfidence(data);
         renderComps(data);
         populateFactsForm(facts);
+        renderFactsStatus();
         renderScenario(data);
+        renderFooterVerdict(data);
+    }
+
+    // ---- Decision summary: a plain-language paragraph explaining the verdict ----
+    function renderDecisionSummary(data) {
+        const verdict = data.airworthy_verdict || 'GROUNDED';
+        const level = data.confidence.level || 'low';
+        const compCount = data.comps.length;
+        const drivers = data.performance_drivers || [];
+        const topDriver = drivers.length ? drivers.slice().sort((a, b) => Math.abs(b.impact_dollars) - Math.abs(a.impact_dollars))[0] : null;
+
+        const verdictOpeners = {
+            CLEARED: 'This property clears the bar for strong short-term-rental performance.',
+            CONDITIONAL: 'This property is viable, but its performance depends on the assumptions holding up.',
+            EXPOSED: "This property's projection is financially sensitive — small changes in facts or comps move the outcome meaningfully.",
+            GROUNDED: 'This property currently shows insufficient earnings potential to clear the bar.',
+        };
+        const opener = verdictOpeners[verdict] || verdictOpeners.GROUNDED;
+
+        const rangeSentence = `The modeled range is ${formatCurrency(data.confidence.revenue_lower)} to ${formatCurrency(data.confidence.revenue_upper)} per year, with ${formatCurrency(data.annual_revenue)} as the most likely outcome at ${level} confidence.`;
+
+        const evidenceSentence = compCount >= 8
+            ? `That estimate is backed by ${compCount} comparable listings in the area.`
+            : `That estimate rests on a thinner set of ${compCount} comparable listing${compCount === 1 ? '' : 's'}, so treat it as provisional.`;
+
+        let driverSentence = '';
+        if (topDriver) {
+            const dir = topDriver.impact_dollars >= 0 ? 'pushing revenue up' : 'pulling revenue down';
+            driverSentence = ` The single biggest factor is "${topDriver.label}," ${dir} by roughly ${formatCurrency(Math.abs(topDriver.impact_dollars))} a year.`;
+        }
+
+        document.getElementById('decision-summary').textContent =
+            `${opener} ${rangeSentence} ${evidenceSentence}${driverSentence}`;
+    }
+
+    // ---- Decision footer: verdict recap above the actions ----
+    function renderFooterVerdict(data) {
+        const el = document.getElementById('footer-verdict');
+        el.textContent = `Verdict: ${data.airworthy_verdict} — ${data.airworthy_reason}`;
+        el.className = `footer-verdict footer-verdict-${String(data.airworthy_verdict || 'grounded').toLowerCase()}`;
     }
 
     // ---- Scenario laboratory: net revenue under real operating costs ----
@@ -297,6 +340,9 @@
         if (idx >= 0.9) return 'Medium';
         return 'Low';
     }
+    function demandTierClass(idx) {
+        return 'tier-' + demandLevel(idx).toLowerCase();
+    }
 
     function renderForecast(data) {
         const forecast = data.monthly_forecast || [];
@@ -334,22 +380,23 @@
             const col = document.createElement('button');
             col.type = 'button';
             col.className = 'forecast-bar-col';
-            col.setAttribute('aria-label', `${m.month}: expected ${formatCurrency(m.expected)}`);
 
             const range = document.createElement('div');
             range.className = 'forecast-bar-range';
             range.style.height = Math.max((m.high / maxHigh) * 100, 4) + '%';
 
+            const idxForTier = meanExpected > 0 ? m.expected / meanExpected : 1;
             const expectedBar = document.createElement('div');
-            expectedBar.className = 'forecast-bar-expected';
+            expectedBar.className = `forecast-bar-expected ${demandTierClass(idxForTier)}`;
             const heightPct = m.high > m.low ? ((m.expected - m.low) / (m.high - m.low)) * 100 : 100;
             expectedBar.style.height = Math.max(Math.min(heightPct, 100), 8) + '%';
             range.appendChild(expectedBar);
+            col.setAttribute('aria-label', `${m.month}: expected ${formatCurrency(m.expected)}, range ${formatCurrency(m.low)} to ${formatCurrency(m.high)}, ${demandLevel(idxForTier)} demand`);
 
             const label = document.createElement('span');
             label.className = 'forecast-bar-label';
             if (forecastMode === 'seasonal') {
-                label.textContent = demandLevel(meanExpected > 0 ? m.expected / meanExpected : 1)[0];
+                label.textContent = demandLevel(idxForTier)[0];
             } else {
                 label.textContent = m.month;
             }
@@ -461,6 +508,15 @@
         document.getElementById('comps-recalc').disabled = true;
     }
 
+    const SIMILARITY_TIERS = [
+        { key: 'strong', label: 'Strong match', min: 0.8 },
+        { key: 'reasonable', label: 'Reasonable match', min: 0.5 },
+        { key: 'weak', label: 'Weak match', min: 0 },
+    ];
+    function tierFor(score) {
+        return SIMILARITY_TIERS.find((t) => score >= t.min) || SIMILARITY_TIERS[SIMILARITY_TIERS.length - 1];
+    }
+
     function paintComps(comps) {
         const sorted = [...comps].sort((a, b) => {
             switch (compsSortKey) {
@@ -473,9 +529,26 @@
 
         const list = document.getElementById('comps-list');
         list.innerHTML = '';
+
+        // Positioned "by similarity" — a constellation of tiers, not a flat
+        // distance-sorted table. Only grouped when sorted by similarity;
+        // other sorts stay a flat list so the chosen order stays literal.
+        let lastTierKey = null;
+        const groupBySimilarity = compsSortKey === 'similarity';
+
         sorted.forEach((c) => {
+            if (groupBySimilarity) {
+                const tier = tierFor(c.similarity_score);
+                if (tier.key !== lastTierKey) {
+                    lastTierKey = tier.key;
+                    const heading = document.createElement('div');
+                    heading.className = `comp-tier-heading comp-tier-${tier.key}`;
+                    heading.textContent = tier.label;
+                    list.appendChild(heading);
+                }
+            }
             const row = document.createElement('div');
-            row.className = 'comp-row';
+            row.className = `comp-row comp-tier-${tierFor(c.similarity_score).key}`;
             if (pendingExcludeIds.has(c.id)) row.classList.add('excluded');
 
             const check = document.createElement('input');
@@ -575,7 +648,49 @@
         document.getElementById('f-min-nights').value = facts.minimum_nights;
         document.getElementById('f-host-listings').value = facts.host_listings_count;
         document.getElementById('f-superhost').checked = !!facts.is_superhost;
+        (facts.amenities || []).forEach((key) => {
+            const input = document.querySelector(`input[name="amenity"][value="${key}"]`);
+            if (input) input.checked = true;
+        });
     }
+
+    function factsEqual(a, b) {
+        if (!a || !b) return false;
+        const keys = ['bedrooms', 'bathrooms', 'accommodates', 'nightly_rate', 'property_type', 'minimum_nights', 'host_listings_count', 'is_superhost'];
+        if (keys.some((k) => a[k] !== b[k])) return false;
+        const aAmen = (a.amenities || []).slice().sort().join(',');
+        const bAmen = (b.amenities || []).slice().sort().join(',');
+        return aAmen === bAmen;
+    }
+
+    // Verified-vs-edited distinction: shows whether the facts currently
+    // driving the estimate still match the original entry, and reveals a
+    // "reset to original" escape hatch once they diverge.
+    function renderFactsStatus() {
+        const status = document.getElementById('facts-status');
+        const resetBtn = document.getElementById('facts-reset');
+        const edited = !factsEqual(currentFacts, originalFacts);
+        status.textContent = edited ? 'Edited from original entry' : 'Verified against original entry';
+        status.className = `facts-status ${edited ? 'facts-status-edited' : 'facts-status-verified'}`;
+        resetBtn.classList.toggle('hidden', !edited);
+    }
+
+    document.getElementById('facts-reset').addEventListener('click', async () => {
+        if (!originalFacts) return;
+        excludedCompIds = new Set();
+        const deltaEl = document.getElementById('facts-delta');
+        const previousRevenue = currentData ? currentData.annual_revenue : null;
+        const data = await runEstimate(Object.assign({}, originalFacts), { silent: true });
+        if (data && previousRevenue != null) {
+            const delta = data.annual_revenue - previousRevenue;
+            const sign = delta >= 0 ? '+' : '−';
+            deltaEl.textContent = `${sign}${formatCurrency(Math.abs(delta))}/yr vs. previous edit — reset to original facts`;
+            deltaEl.className = `facts-delta ${delta >= 0 ? 'positive' : 'negative'}`;
+        } else {
+            deltaEl.textContent = 'Reset to original facts.';
+            deltaEl.className = 'facts-delta';
+        }
+    });
 
     function buildAmenitiesGrid() {
         const grid = document.getElementById('amenities-grid');
@@ -624,6 +739,7 @@
         deltaEl.className = 'facts-delta';
         const data = await runEstimate(newFacts, { silent: true });
         submitBtn.disabled = false;
+        renderFactsStatus();
         if (data && previousRevenue != null) {
             const delta = data.annual_revenue - previousRevenue;
             const sign = delta >= 0 ? '+' : '−';
@@ -634,10 +750,109 @@
         }
     });
 
-    // ---- Export / print ----
+    // ---- Export: a genuine downloadable report artifact ----
+    // Builds a self-contained, styled HTML document from the current
+    // estimate and triggers a browser download — a real report artifact,
+    // not just a bare window.print() of the interactive dashboard.
+    function escapeHtml(s) {
+        const div = document.createElement('div');
+        div.textContent = String(s == null ? '' : s);
+        return div.innerHTML;
+    }
+
+    function buildReportHtml(data, facts) {
+        const drivers = (data.performance_drivers || []).map((d) => {
+            const sign = d.impact_dollars >= 0 ? '+' : '−';
+            const cls = d.impact_dollars >= 0 ? 'pos' : 'neg';
+            return `<tr><td>${escapeHtml(d.label)}</td><td class="num ${cls}">${sign}${formatCurrency(Math.abs(d.impact_dollars))}/yr</td></tr>`;
+        }).join('') || '<tr><td colspan="2">No standout drivers.</td></tr>';
+
+        const comps = [...data.comps]
+            .sort((a, b) => b.similarity_score - a.similarity_score)
+            .slice(0, 15)
+            .map((c) => `<tr><td>${escapeHtml(c.borough)} · ${c.bedrooms} bd</td><td class="num">${c.similarity_score.toFixed(2)}</td><td class="num">${formatCurrency(c.revenue)}/yr</td><td class="num">${c.distance_km.toFixed(1)} km</td></tr>`)
+            .join('');
+
+        const forecast = (data.monthly_forecast || [])
+            .map((m) => `<tr><td>${escapeHtml(m.month)}</td><td class="num">${formatCurrency(m.expected)}</td><td class="num">${formatCurrency(m.low)} – ${formatCurrency(m.high)}</td></tr>`)
+            .join('');
+
+        const reasons = (data.confidence.reasons || []).map((r) => `<li>${escapeHtml(r)}</li>`).join('');
+        const weaknesses = (data.confidence.weaknesses || []).map((w) => `<li>${escapeHtml(w)}</li>`).join('') || '<li>No significant weaknesses disclosed for this estimate.</li>';
+
+        const decisionSummary = document.getElementById('decision-summary').textContent;
+
+        return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>AIRWORTHY report — ${escapeHtml(data.address)}</title>
+<style>
+  body { font-family: Georgia, 'Times New Roman', serif; color: #1a1a1a; max-width: 760px; margin: 40px auto; padding: 0 24px; line-height: 1.55; }
+  h1 { font-size: 22px; margin-bottom: 2px; }
+  h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid #ccc; padding-bottom: 6px; margin-top: 32px; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #666; }
+  .meta { font-size: 12px; color: #666; margin-bottom: 18px; }
+  .verdict { display: inline-block; font-weight: bold; padding: 4px 12px; border-radius: 20px; margin: 8px 0 16px; font-size: 13px; }
+  .verdict.cleared { background: #dff6df; color: #1c5e1c; }
+  .verdict.conditional { background: #fff4d6; color: #6b4e05; }
+  .verdict.exposed { background: #ffe4d6; color: #8a3d10; }
+  .verdict.grounded { background: #fde0e0; color: #8a1c1c; }
+  .range { font-size: 26px; font-weight: bold; margin: 6px 0; }
+  .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0; font-size: 13px; }
+  .metrics div span { display: block; }
+  .metrics .label { font-size: 10px; text-transform: uppercase; color: #666; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+  td, th { padding: 5px 6px; border-bottom: 1px solid #e0e0e0; text-align: left; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.pos { color: #1c5e1c; }
+  td.neg { color: #8a1c1c; }
+  .disclaimer { font-size: 11px; color: #666; margin-top: 30px; border-top: 1px solid #ccc; padding-top: 10px; }
+  @media print { body { margin: 0 auto; } }
+</style>
+</head><body>
+  <p class="eyebrow">AIRWORTHY — property earnings report</p>
+  <h1>${escapeHtml(data.address)}</h1>
+  <p class="meta">Generated ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} · data current as of ${escapeHtml(data.data_freshness || 'the latest snapshot')} · model ${escapeHtml(data.model_version)}</p>
+  <span class="verdict ${String(data.airworthy_verdict || '').toLowerCase()}">${escapeHtml(data.airworthy_verdict)} — score ${data.airworthy_score}/100</span>
+  <div class="range">${formatCurrency(data.confidence.revenue_lower)} – ${formatCurrency(data.confidence.revenue_upper)} / yr</div>
+  <p>Most likely: <strong>${formatCurrency(data.annual_revenue)}/yr</strong> at ${escapeHtml(data.confidence.level)} confidence.</p>
+  <div class="metrics">
+    <div><span class="label">Nightly rate</span><span>${formatCurrency(data.market.adr)}</span></div>
+    <div><span class="label">Occupancy</span><span>${formatPercent(data.market.occupancy_rate)}</span></div>
+    <div><span class="label">Comparables</span><span>${data.comps.length}</span></div>
+  </div>
+
+  <h2>Decision summary</h2>
+  <p>${escapeHtml(decisionSummary)}</p>
+
+  <h2>Performance drivers</h2>
+  <table>${drivers}</table>
+
+  <h2>Comparable evidence (top matches by similarity)</h2>
+  <table><tr><th>Comp</th><th class="num">Similarity</th><th class="num">Revenue</th><th class="num">Distance</th></tr>${comps}</table>
+
+  <h2>Monthly forecast</h2>
+  <table><tr><th>Month</th><th class="num">Expected</th><th class="num">Range</th></tr>${forecast}</table>
+
+  <h2>Why this confidence level</h2>
+  <ul>${reasons}</ul>
+  <ul>${weaknesses}</ul>
+
+  <p class="disclaimer">${escapeHtml(data.disclaimer)}<br>Data source: InsideAirbnb, licensed under CC BY 4.0. Facts used: ${facts.bedrooms} bd / ${facts.bathrooms} ba / sleeps ${facts.accommodates} at ${formatCurrency(facts.nightly_rate)}/night.</p>
+</body></html>`;
+    }
+
     function exportReport() {
-        document.getElementById('month-detail').classList.add('hidden');
-        window.print();
+        if (!currentData || !currentFacts) return;
+        const html = buildReportHtml(currentData, currentFacts);
+        const blob = new Blob([html], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const slug = currentData.address.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 60) || 'property';
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `airworthy-report-${slug}.html`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
     }
     document.getElementById('export-btn').addEventListener('click', exportReport);
     document.getElementById('export-btn-footer').addEventListener('click', exportReport);
@@ -650,12 +865,14 @@
         const facts = { address, bedrooms: 1, bathrooms: 1, accommodates: 2, nightly_rate: 150,
             property_type: 'Entire home/apt', minimum_nights: 1, is_superhost: false, host_listings_count: 1 };
         excludedCompIds = new Set();
+        originalFacts = Object.assign({}, facts);
         runEstimate(facts);
     });
 
     // ---- Boot ----
     const facts = factsFromParams(new URLSearchParams(window.location.search));
     if (facts) {
+        originalFacts = Object.assign({}, facts);
         runEstimate(facts);
     } else {
         showOnly(entryEmpty);

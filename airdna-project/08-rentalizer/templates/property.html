@@ -104,12 +104,13 @@
                     </div>
 
                     <nav class="summary-jumpnav no-print" aria-label="Report sections">
-                        <a href="#forecast-heading">Monthly forecast</a>
+                        <a href="#summary-heading">Decision summary</a>
                         <a href="#drivers-heading">Performance drivers</a>
-                        <a href="#confidence-heading">Confidence</a>
                         <a href="#comps-heading">Comparable evidence</a>
+                        <a href="#forecast-heading">Monthly forecast</a>
                         <a href="#scenario-heading">Scenario laboratory</a>
                         <a href="#facts-heading">Facts &amp; assumptions</a>
+                        <a href="#confidence-heading">Confidence</a>
                     </nav>
                 </div>
             </aside>
@@ -117,32 +118,10 @@
             <!-- ===== Right: scrolling detail sections ===== -->
             <div class="dashboard-right">
 
-                <!-- Monthly forecast -->
-                <section class="report-section" aria-labelledby="forecast-heading">
-                    <div class="report-section-head">
-                        <h2 id="forecast-heading" class="report-section-title">Monthly forecast</h2>
-                        <div class="segmented no-print" id="forecast-toggle" role="tablist" aria-label="Forecast view">
-                            <button type="button" class="segmented-btn active" data-mode="monthly" role="tab" aria-selected="true">Monthly</button>
-                            <button type="button" class="segmented-btn" data-mode="seasonal" role="tab" aria-selected="false">Seasonal</button>
-                            <button type="button" class="segmented-btn" data-mode="annual" role="tab" aria-selected="false">Annual</button>
-                        </div>
-                    </div>
-                    <p class="report-section-note">Modeled from this estimate and a general short-term-rental seasonality curve — not this specific listing's booking history.</p>
-
-                    <div id="forecast-chart" class="forecast-chart"></div>
-                    <div id="forecast-annual" class="forecast-annual hidden"></div>
-
-                    <div id="month-detail" class="month-detail hidden">
-                        <button type="button" id="month-detail-close" class="month-detail-close no-print" aria-label="Close month detail">&times;</button>
-                        <div class="month-detail-grid">
-                            <div><span class="month-detail-label">Month</span><span id="md-month" class="month-detail-value">&mdash;</span></div>
-                            <div><span class="month-detail-label">Expected revenue</span><span id="md-expected" class="month-detail-value">&mdash;</span></div>
-                            <div><span class="month-detail-label">Range</span><span id="md-range" class="month-detail-value">&mdash;</span></div>
-                            <div><span class="month-detail-label">ADR</span><span id="md-adr" class="month-detail-value">&mdash;</span></div>
-                            <div><span class="month-detail-label">Occupancy</span><span id="md-occupancy" class="month-detail-value">&mdash;</span></div>
-                            <div><span class="month-detail-label">Demand level</span><span id="md-demand" class="month-detail-value">&mdash;</span></div>
-                        </div>
-                    </div>
+                <!-- Decision summary — plain-language verdict framing, read first -->
+                <section class="report-section decision-summary-section" aria-labelledby="summary-heading">
+                    <h2 id="summary-heading" class="report-section-title">Decision summary</h2>
+                    <p id="decision-summary" class="decision-summary-text">&mdash;</p>
                 </section>
 
                 <!-- Performance drivers -->
@@ -152,16 +131,7 @@
                     <ul id="drivers-list" class="drivers-list"></ul>
                 </section>
 
-                <!-- Confidence -->
-                <section class="report-section" aria-labelledby="confidence-heading">
-                    <h2 id="confidence-heading" class="report-section-title">Why this confidence level</h2>
-                    <div class="confidence-body">
-                        <ul id="confidence-reasons" class="confidence-list confidence-list-good"></ul>
-                        <ul id="confidence-weaknesses" class="confidence-list confidence-list-weak"></ul>
-                    </div>
-                </section>
-
-                <!-- Comparable-rental explorer -->
+                <!-- Comparable-rental explorer, positioned by similarity -->
                 <section class="report-section" aria-labelledby="comps-heading">
                     <div class="report-section-head">
                         <h2 id="comps-heading" class="report-section-title">Comparable evidence</h2>
@@ -178,6 +148,41 @@
                     </div>
                     <p id="comps-count-note" class="report-section-note"></p>
                     <div id="comps-list" class="comps-list"></div>
+                </section>
+
+                <!-- Monthly forecast -->
+                <section class="report-section" aria-labelledby="forecast-heading">
+                    <div class="report-section-head">
+                        <h2 id="forecast-heading" class="report-section-title">Monthly forecast</h2>
+                        <div class="segmented no-print" id="forecast-toggle" role="tablist" aria-label="Forecast view">
+                            <button type="button" class="segmented-btn active" data-mode="monthly" role="tab" aria-selected="true">Monthly</button>
+                            <button type="button" class="segmented-btn" data-mode="seasonal" role="tab" aria-selected="false">Seasonal</button>
+                            <button type="button" class="segmented-btn" data-mode="annual" role="tab" aria-selected="false">Annual</button>
+                        </div>
+                    </div>
+                    <p class="report-section-note">Modeled from this estimate and a general short-term-rental seasonality curve — not this specific listing's booking history. Bar color marks demand tier; the pale band above each bar is the modeled range for that month.</p>
+
+                    <div id="forecast-legend" class="forecast-legend" aria-hidden="true">
+                        <span class="forecast-legend-item"><span class="forecast-swatch tier-peak"></span>Peak</span>
+                        <span class="forecast-legend-item"><span class="forecast-swatch tier-high"></span>High</span>
+                        <span class="forecast-legend-item"><span class="forecast-swatch tier-medium"></span>Medium</span>
+                        <span class="forecast-legend-item"><span class="forecast-swatch tier-low"></span>Low</span>
+                    </div>
+
+                    <div id="forecast-chart" class="forecast-chart"></div>
+                    <div id="forecast-annual" class="forecast-annual hidden"></div>
+
+                    <div id="month-detail" class="month-detail hidden">
+                        <button type="button" id="month-detail-close" class="month-detail-close no-print" aria-label="Close month detail">&times;</button>
+                        <div class="month-detail-grid">
+                            <div><span class="month-detail-label">Month</span><span id="md-month" class="month-detail-value">&mdash;</span></div>
+                            <div><span class="month-detail-label">Expected revenue</span><span id="md-expected" class="month-detail-value">&mdash;</span></div>
+                            <div><span class="month-detail-label">Range</span><span id="md-range" class="month-detail-value">&mdash;</span></div>
+                            <div><span class="month-detail-label">ADR</span><span id="md-adr" class="month-detail-value">&mdash;</span></div>
+                            <div><span class="month-detail-label">Occupancy</span><span id="md-occupancy" class="month-detail-value">&mdash;</span></div>
+                            <div><span class="month-detail-label">Demand level</span><span id="md-demand" class="month-detail-value">&mdash;</span></div>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- Scenario laboratory: net revenue under real operating costs -->
@@ -233,7 +238,10 @@
 
                 <!-- Property facts / assumptions editor -->
                 <section class="report-section no-print" aria-labelledby="facts-heading">
-                    <h2 id="facts-heading" class="report-section-title">Property facts &amp; assumptions</h2>
+                    <div class="report-section-head">
+                        <h2 id="facts-heading" class="report-section-title">Property facts &amp; assumptions</h2>
+                        <span id="facts-status" class="facts-status facts-status-verified">Verified against original entry</span>
+                    </div>
                     <p class="report-section-note">Change a fact and re-run the estimate — the full report above updates to match.</p>
                     <form id="facts-form" class="facts-form">
                         <div class="facts-grid">
@@ -311,13 +319,24 @@
 
                         <div class="facts-actions">
                             <button type="submit" id="facts-submit" class="btn-primary">Update estimate</button>
+                            <button type="button" id="facts-reset" class="btn-secondary hidden">Reset to original</button>
                             <span id="facts-delta" class="facts-delta" aria-live="polite"></span>
                         </div>
                     </form>
                 </section>
 
+                <!-- Confidence -->
+                <section class="report-section" aria-labelledby="confidence-heading">
+                    <h2 id="confidence-heading" class="report-section-title">Why this confidence level</h2>
+                    <div class="confidence-body">
+                        <ul id="confidence-reasons" class="confidence-list confidence-list-good"></ul>
+                        <ul id="confidence-weaknesses" class="confidence-list confidence-list-weak"></ul>
+                    </div>
+                </section>
+
                 <!-- Decision footer -->
-                <footer class="report-footer no-print">
+                <footer class="report-footer no-print" aria-labelledby="footer-verdict">
+                    <p id="footer-verdict" class="footer-verdict">&mdash;</p>
                     <p id="disclaimer" class="footer-disclaimer"></p>
                     <div class="report-footer-actions">
                         <button type="button" id="save-btn-footer" class="btn-secondary">Save property</button>
