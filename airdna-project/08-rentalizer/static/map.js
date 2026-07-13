@@ -479,6 +479,7 @@ function showInspector(listing) {
     const ctaParams = new URLSearchParams();
     if (listing.name) ctaParams.set('address', listing.name);
     if (listing.bedrooms != null) ctaParams.set('bedrooms', listing.bedrooms);
+    if (listing.bathrooms != null) ctaParams.set('bathrooms', listing.bathrooms);
     if (listing.accommodates != null) ctaParams.set('accommodates', listing.accommodates);
     if (listing.price_numeric != null) ctaParams.set('nightly_rate', listing.price_numeric);
     cta.href = `/property?${ctaParams.toString()}`;
