@@ -149,28 +149,43 @@ def compute_calibration(conn):
 
 
 _calibration_cache = None
+_calibration_cache_snapshot = None
+
+
+def _latest_snapshot_date(conn):
+    row = conn.execute("SELECT MAX(snapshot_date) AS d FROM listings").fetchone()
+    return row["d"] if row else None
 
 
 def get_calibration():
-    """Lazily compute and cache amenity calibration for the process lifetime.
+    """Lazily compute and cache amenity calibration, keyed by the newest
+    `snapshot_date` present in the listings table.
 
-    The listings DB doesn't change while the server runs, so a one-time
-    computation (a single full-table scan) is cached in memory rather than
-    re-run per estimate request.
+    Recomputing the full calibration is a single full-table scan, so we
+    avoid it on every request. But we also can't just cache it forever: new
+    market data can be loaded into the DB (via `scripts/load_data.py`)
+    without a server restart, and that data carries a new `snapshot_date`.
+    So on every call we run a cheap `MAX(snapshot_date)` check (same
+    freshness signal `/api/cities` already exposes to the frontend) and only
+    redo the expensive full scan when that value has changed.
     """
-    global _calibration_cache
-    if _calibration_cache is not None:
-        return _calibration_cache
+    global _calibration_cache, _calibration_cache_snapshot
 
     db_path = _db_path()
     if not os.path.exists(db_path):
         _calibration_cache = {}
+        _calibration_cache_snapshot = None
         return _calibration_cache
 
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     try:
+        latest = _latest_snapshot_date(conn)
+        if _calibration_cache is not None and latest == _calibration_cache_snapshot:
+            return _calibration_cache
+
         _calibration_cache = compute_calibration(conn)
+        _calibration_cache_snapshot = latest
     finally:
         conn.close()
     return _calibration_cache
