@@ -9,13 +9,25 @@
     const form = document.getElementById('estimate-form');
     const detailsToggle = document.getElementById('details-toggle');
     const detailsPanel = document.getElementById('details-panel');
-    const entrySection = document.querySelector('.hero');
+    const entrySection = document.querySelector('.cover');
     const sequenceSection = document.getElementById('sequence');
     const errorSection = document.getElementById('error');
     const resultsSection = document.getElementById('results');
     const submitBtn = document.getElementById('submit-btn');
 
     let lastRequest = null; // remembers the last submitted property for "Save" / links
+
+    // ---- Example inspection preview (pre-submit, first-glance framing) ----
+    // Illustrative only — not a real estimate — so it renders once from
+    // static, clearly-labeled sample figures via the shared verdict component.
+    const previewVerdictSlot = document.getElementById('cover-preview-verdict');
+    if (previewVerdictSlot) {
+        AirworthyVerdict.render(previewVerdictSlot, {
+            score: 62,
+            verdict: 'CONDITIONAL',
+            reason: 'Viable performance under current assumptions.',
+        });
+    }
 
     // ---- Adjust-details disclosure ----
     detailsToggle.addEventListener('click', () => {
@@ -111,14 +123,18 @@
             // brief pauses keep each step legible instead of a flash.
             setStep('locate', 'done', `Located near ${data.market.borough}.`);
             setStep('comps', 'active', 'Gathering comparable listings…');
-            await sleep(420);
+            await sleep(380);
 
             setStep('comps', 'done', `Found ${data.comps.length} comparable ${data.comps.length === 1 ? 'listing' : 'listings'} nearby.`);
-            setStep('resolve', 'active', 'Resolving the earnings range…');
-            await sleep(420);
+            setStep('seasonal', 'active', 'Mapping seasonal demand…');
+            await sleep(380);
 
-            setStep('resolve', 'done', `Range resolved with ${data.confidence.level} confidence.`);
-            await sleep(280);
+            setStep('seasonal', 'done', `Expected occupancy ${Math.round(data.market.occupancy_rate * 100)}%.`);
+            setStep('verdict', 'active', 'Resolving the earnings range and verdict…');
+            await sleep(380);
+
+            setStep('verdict', 'done', `${data.airworthy_verdict} — range resolved with ${data.confidence.level} confidence.`);
+            await sleep(260);
 
             renderResults(data, requestBody);
             showOnly(resultsSection);

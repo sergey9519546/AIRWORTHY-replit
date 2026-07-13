@@ -17,108 +17,116 @@
 <body>
     {% include "_nav.html" %}
 
-    <!-- ===== Hero: promise + input on the left, evidence on the right ===== -->
-    <section class="hero">
-        <div class="hero-inner">
-            <div class="hero-copy">
-                <span class="hero-eyebrow">Property revenue intelligence</span>
-                <h1 class="hero-title">Know what any property<br><em>could actually earn.</em></h1>
-                <p class="hero-sub">Enter an address. We locate it, pull comparable listings nearby, and model an honest earnings range in seconds — no signup, no card.</p>
+    <!-- ===== Cover: an immediate property inspection, not a marketing hero =====
+         Address command field over a restrained, moving geographic field.
+         The example inspection preview below the form shows what the tool
+         produces before anyone has typed anything, so the product's purpose
+         reads in the first five seconds. -->
+    <section class="cover">
+        <div class="cover-backdrop" aria-hidden="true">
+            <div class="cover-backdrop-contours"></div>
+            <div class="cover-backdrop-grid"></div>
+        </div>
+        <div class="cover-inner">
+            <span class="cover-eyebrow">Property inspection, not a calculator</span>
+            <h1 class="cover-title">What could this property earn?</h1>
+            <p class="cover-sub">Enter an address, listing URL, or parcel ID. AIRWORTHY locates the parcel, pulls comparable listings nearby, and resolves a modeled earnings range with a verdict — in seconds, no signup.</p>
 
-                <form id="estimate-form" class="entry-form" novalidate>
-                    <div class="entry-input-row">
-                        <svg class="entry-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
-                        <label class="sr-only" for="address">Property address</label>
-                        <input type="text" id="address" name="address"
-                               class="entry-input" placeholder="350 5th Ave, New York, NY" required
-                               autocomplete="off">
-                        <button type="submit" id="submit-btn" class="btn-primary entry-submit">
-                            <span class="btn-label">Estimate revenue</span>
-                        </button>
-                    </div>
-
-                    <button type="button" id="details-toggle" class="details-toggle" aria-expanded="false" aria-controls="details-panel">
-                        Adjust property details
-                        <svg class="details-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
+            <form id="estimate-form" class="entry-form" novalidate>
+                <div class="entry-input-row">
+                    <svg class="entry-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+                    <label class="sr-only" for="address">Address, listing URL, or parcel ID</label>
+                    <input type="text" id="address" name="address"
+                           class="entry-input" placeholder="Enter an address, listing URL, or parcel ID" required
+                           autocomplete="off">
+                    <button type="submit" id="submit-btn" class="btn-primary entry-submit">
+                        <span class="btn-label">Estimate earnings</span>
                     </button>
-
-                    <div id="details-panel" class="details-panel hidden">
-                        <div class="details-grid">
-                            <div class="form-group">
-                                <label class="form-label" for="bedrooms">Bedrooms</label>
-                                <div class="form-select-wrap">
-                                    <select id="bedrooms" name="bedrooms" class="form-select">
-                                        <option value="0">Studio</option>
-                                        <option value="1" selected>1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5+</option>
-                                    </select>
-                                    <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="bathrooms">Bathrooms</label>
-                                <div class="form-select-wrap">
-                                    <select id="bathrooms" name="bathrooms" class="form-select">
-                                        <option value="1" selected>1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3+</option>
-                                    </select>
-                                    <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="accommodates">Guests</label>
-                                <div class="form-select-wrap">
-                                    <select id="accommodates" name="accommodates" class="form-select">
-                                        <option value="1">1</option>
-                                        <option value="2" selected>2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="6">6</option>
-                                        <option value="8">8</option>
-                                        <option value="10">10+</option>
-                                    </select>
-                                    <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label" for="nightly_rate">Nightly rate ($)</label>
-                                <input type="number" id="nightly_rate" name="nightly_rate"
-                                       class="form-input" value="150" min="25" max="5000">
-                            </div>
-                        </div>
-                    </div>
-                </form>
-
-                <div class="hero-samples">
-                    <span class="hero-samples-label">Try a sample:</span>
-                    <button type="button" class="sample-chip" data-address="Los Angeles, CA">Los Angeles, CA</button>
-                    <button type="button" class="sample-chip" data-address="Fort Lauderdale, FL">Fort Lauderdale, FL</button>
-                    <button type="button" class="sample-chip" data-address="San Diego, CA">San Diego, CA</button>
-                    <button type="button" class="sample-chip" data-address="350 5th Ave, New York, NY">New York, NY</button>
                 </div>
 
-                <div class="hero-sources">
-                    <span class="hero-sources-label">Built on real data</span>
-                    <div class="hero-sources-row">
-                        <span class="source-mark">InsideAirbnb</span>
-                        <span class="source-mark">Realie parcel records</span>
-                        <span class="source-mark">County assessor data</span>
+                <button type="button" id="details-toggle" class="details-toggle" aria-expanded="false" aria-controls="details-panel">
+                    Adjust property details
+                    <svg class="details-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+
+                <div id="details-panel" class="details-panel hidden">
+                    <div class="details-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="bedrooms">Bedrooms</label>
+                            <div class="form-select-wrap">
+                                <select id="bedrooms" name="bedrooms" class="form-select">
+                                    <option value="0">Studio</option>
+                                    <option value="1" selected>1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5+</option>
+                                </select>
+                                <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="bathrooms">Bathrooms</label>
+                            <div class="form-select-wrap">
+                                <select id="bathrooms" name="bathrooms" class="form-select">
+                                    <option value="1" selected>1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3+</option>
+                                </select>
+                                <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="accommodates">Guests</label>
+                            <div class="form-select-wrap">
+                                <select id="accommodates" name="accommodates" class="form-select">
+                                    <option value="1">1</option>
+                                    <option value="2" selected>2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="6">6</option>
+                                    <option value="8">8</option>
+                                    <option value="10">10+</option>
+                                </select>
+                                <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="nightly_rate">Nightly rate ($)</label>
+                            <input type="number" id="nightly_rate" name="nightly_rate"
+                                   class="form-input" value="150" min="25" max="5000">
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="hero-samples">
+                <span class="hero-samples-label">Try a sample:</span>
+                <button type="button" class="sample-chip" data-address="Los Angeles, CA">Los Angeles, CA</button>
+                <button type="button" class="sample-chip" data-address="Fort Lauderdale, FL">Fort Lauderdale, FL</button>
+                <button type="button" class="sample-chip" data-address="San Diego, CA">San Diego, CA</button>
+                <button type="button" class="sample-chip" data-address="350 5th Ave, New York, NY">New York, NY</button>
+            </div>
+
+            <!-- Live inspection preview: an illustrative example of the output,
+                 clearly labeled as such — not a testimonial or fabricated result. -->
+            <div class="cover-preview" aria-hidden="true">
+                <span class="cover-preview-label">Example inspection &mdash; what you get back</span>
+                <div class="cover-preview-body">
+                    <div id="cover-preview-verdict" class="cover-preview-verdict-slot"></div>
+                    <div class="cover-preview-facts">
+                        <span class="cover-preview-range">$61K&ndash;$94K<span>/yr modeled range</span></span>
+                        <span class="cover-preview-meta">Medium confidence &middot; 14 comparable listings</span>
                     </div>
                 </div>
             </div>
 
-            <div class="hero-visual">
-                <div class="hero-photo-frame">
-                    <img src="/static/images/hero-property.jpg" alt="Aerial view of a short-term rental property with a pool" class="hero-photo">
-                    <div class="hero-floating-card">
-                        <span class="hero-floating-badge">Example report</span>
-                        <div class="hero-floating-value">$58K&ndash;$74K<span>/yr</span></div>
-                        <div class="hero-floating-meta">Modeled range &middot; High confidence</div>
-                    </div>
+            <div class="hero-sources">
+                <span class="hero-sources-label">Built on real data</span>
+                <div class="hero-sources-row">
+                    <span class="source-mark">InsideAirbnb</span>
+                    <span class="source-mark">Realie parcel records</span>
+                    <span class="source-mark">County assessor data</span>
                 </div>
             </div>
         </div>
@@ -126,20 +134,26 @@
 
     <div class="page-shell">
 
-        <!-- ===== Live sequence: locate → comparables → resolve ===== -->
+        <!-- ===== Live sequence: locate → comparables → seasonal → verdict =====
+             A short progressive demo, not a cinematic delay — each step
+             resolves with real values from the response, not decorative filler. -->
         <section id="sequence" class="sequence hidden" role="status" aria-live="polite">
             <ol class="sequence-steps">
                 <li class="sequence-step" data-step="locate">
                     <span class="sequence-dot" aria-hidden="true"></span>
-                    <span class="sequence-text" data-step-text="locate">Locating the property…</span>
+                    <span class="sequence-text" data-step-text="locate">Locating the parcel…</span>
                 </li>
                 <li class="sequence-step" data-step="comps">
                     <span class="sequence-dot" aria-hidden="true"></span>
                     <span class="sequence-text" data-step-text="comps">Gathering comparable listings…</span>
                 </li>
-                <li class="sequence-step" data-step="resolve">
+                <li class="sequence-step" data-step="seasonal">
                     <span class="sequence-dot" aria-hidden="true"></span>
-                    <span class="sequence-text" data-step-text="resolve">Resolving the earnings range…</span>
+                    <span class="sequence-text" data-step-text="seasonal">Mapping seasonal demand…</span>
+                </li>
+                <li class="sequence-step" data-step="verdict">
+                    <span class="sequence-dot" aria-hidden="true"></span>
+                    <span class="sequence-text" data-step-text="verdict">Resolving the earnings range and verdict…</span>
                 </li>
             </ol>
         </section>
@@ -154,8 +168,8 @@
         <!-- ===== Result state ===== -->
         <section id="results" class="results hidden" aria-live="polite" tabindex="-1">
             <div class="result-card result-card-primary">
-                <div id="verdict-slot" class="verdict-slot"></div>
                 <div id="envelope-slot"></div>
+                <div id="verdict-slot" class="verdict-slot"></div>
             </div>
 
             <div class="result-metrics">
@@ -187,51 +201,26 @@
             </div>
         </section>
 
-        <!-- ===== How it works ===== -->
-        <section class="how-it-works" aria-labelledby="how-heading">
-            <h2 id="how-heading" class="section-heading">How AIRWORTHY works</h2>
-            <div class="how-steps">
-                <div class="how-step">
-                    <span class="how-step-num">01</span>
-                    <h3 class="how-step-title">Locate</h3>
-                    <p class="how-step-body">Type any address. We geocode it and confirm it falls inside a covered market.</p>
-                </div>
-                <div class="how-step">
-                    <span class="how-step-num">02</span>
-                    <h3 class="how-step-title">Analyze</h3>
-                    <p class="how-step-body">We pull nearby comparable listings and real parcel data to understand the property.</p>
-                </div>
-                <div class="how-step">
-                    <span class="how-step-num">03</span>
-                    <h3 class="how-step-title">Forecast</h3>
-                    <p class="how-step-body">You get a modeled revenue range and a 12-month forecast — not a single misleading number.</p>
-                </div>
-                <div class="how-step">
-                    <span class="how-step-num">04</span>
-                    <h3 class="how-step-title">Decide</h3>
-                    <p class="how-step-body">Save the estimate, compare it against other properties, or export the full report.</p>
-                </div>
-            </div>
+        <!-- ===== Flight path: the decision logic, stated once, no aviation
+             decoration elsewhere on the page (brief §4). ===== -->
+        <section class="flight-path" aria-label="How an estimate is produced">
+            <ol class="flight-path-steps">
+                <li class="flight-path-step"><span class="flight-path-num">01</span>Property</li>
+                <li class="flight-path-arrow" aria-hidden="true">→</li>
+                <li class="flight-path-step"><span class="flight-path-num">02</span>Market conditions</li>
+                <li class="flight-path-arrow" aria-hidden="true">→</li>
+                <li class="flight-path-step"><span class="flight-path-num">03</span>Operating assumptions</li>
+                <li class="flight-path-arrow" aria-hidden="true">→</li>
+                <li class="flight-path-step flight-path-step-outcome"><span class="flight-path-num">04</span>Revenue outcome</li>
+            </ol>
         </section>
 
-        <!-- ===== Stats: real numbers from the underlying dataset ===== -->
-        <section class="stats-row" aria-label="Coverage statistics">
-            <div class="stat-item">
-                <span class="stat-value">97K+</span>
-                <span class="stat-label">Real listings analyzed</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-value">10</span>
-                <span class="stat-label">Markets across CA, FL &amp; NY</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-value">12-mo</span>
-                <span class="stat-label">Seasonal forecast horizon</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-value">$0</span>
-                <span class="stat-label">To run an estimate</span>
-            </div>
+        <!-- ===== Coverage facts: thin rule, technical mono — not stat cards ===== -->
+        <section class="facts-row" aria-label="Coverage statistics">
+            <span class="fact-item"><strong>97K+</strong> real listings analyzed</span>
+            <span class="fact-item"><strong>10</strong> markets across CA, FL &amp; NY</span>
+            <span class="fact-item"><strong>12-mo</strong> seasonal forecast horizon</span>
+            <span class="fact-item"><strong>$0</strong> to run an estimate</span>
         </section>
 
         <footer class="page-footer">
