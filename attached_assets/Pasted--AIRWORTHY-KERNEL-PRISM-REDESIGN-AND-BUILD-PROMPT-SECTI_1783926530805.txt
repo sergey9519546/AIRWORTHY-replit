@@ -1,0 +1,1776 @@
+# AIRWORTHY — KERNEL+PRISM REDESIGN AND BUILD PROMPT
+
+---
+
+## SECTION 1 — INSTALL THE KERNEL+PRISM OPERATING RULES
+
+You will follow the KERNEL+PRISM framework throughout this AIRWORTHY project.
+
+### KERNEL rules
+
+Apply these rules to every step:
+
+- **K — Keep it simple:** Each step has one clear goal.
+- **E — Easy to verify:** Every output must include objective success criteria.
+- **R — Reproducible:** Base decisions on the existing repository, named references, explicit requirements, and documented evidence.
+- **N — Narrow scope:** Do not combine unrelated work into one step.
+- **E — Explicit constraints:** State what must be done and what must not be done.
+- **L — Logical structure:** Every task uses:
+  1. Context
+  2. Task
+  3. Constraints
+  4. Output format
+  5. Verification
+
+### PRISM rules
+
+Before each major task, restate:
+
+- **P — Purpose:** What this step produces and why it matters.
+- **R — Reusable parts:** What systems, components, or rules can be reused.
+- **I — Inputs:** Which files, repository sections, prior outputs, and references are being used.
+- **S — Segments:** The exact output sections.
+- **M — Method:** How the result will be verified.
+
+### Execution rules
+
+- Do not jump directly into visual styling.
+- Do not redesign before understanding the current repository.
+- Do not combine audit, strategy, implementation, and validation into one vague pass.
+- Complete every verification step before proceeding.
+- When a verification check fails, fix the problem and rerun the check.
+- Preserve working product logic unless there is a documented reason to change it.
+- Do not replace the current framework without a strong technical justification.
+- Do not stop at recommendations, wireframes, or written descriptions.
+- Implement the approved redesign in the existing project.
+- Do not declare completion while buttons, routes, states, or interactions remain incomplete.
+
+---
+
+# SECTION 2 — MASTER PRISM
+
+## PRISM for AIRWORTHY
+
+### P — Purpose
+
+Redesign and implement AIRWORTHY as a distinctive, production-quality tool that estimates how much any property could earn as a short-term rental on platforms such as Airbnb, Vrbo, and Booking.com.
+
+The completed product must help a user quickly understand:
+
+1. How much a property could earn annually.
+2. How much it could earn by month.
+3. What nightly rate and occupancy support the estimate.
+4. Which comparable rentals support the estimate.
+5. How reliable the estimate is.
+6. Which property features increase or reduce earnings.
+7. How the result changes when property facts or assumptions change.
+
+### R — Reusable parts
+
+Create reusable systems for:
+
+- Design tokens
+- Typography
+- Spacing
+- Layout grids
+- Form controls
+- Address search
+- Property summaries
+- Revenue metrics
+- Earnings Envelope
+- Monthly forecasts
+- Comparable listings
+- Confidence explanations
+- Map layers
+- Property selection
+- Assumption editing
+- Loading states
+- Error states
+- Empty states
+- Mobile bottom sheets
+- Save, compare, and export actions
+
+Each reusable system must have:
+
+- A clear purpose
+- Defined states
+- Responsive behavior
+- Accessibility requirements
+- Consistent styling
+- A documented data contract where applicable
+
+### I — Inputs
+
+Use:
+
+- The complete existing AIRWORTHY repository
+- Current routes
+- Current components
+- Existing APIs and data models
+- Existing map implementation
+- Existing charting system
+- Existing property and revenue logic
+- Existing authentication and saved-property logic
+- Existing responsive behavior
+- Existing design tokens
+- Any supplied screenshots or design references
+- The product requirements in this prompt
+
+### S — Segments
+
+Execute the work in these segments:
+
+1. Repository and product audit
+2. Product architecture
+3. Information hierarchy
+4. Visual system
+5. Signature visualization
+6. Homepage and instant estimate
+7. Market map
+8. Property earnings report
+9. Comparable-rental explorer
+10. Property assumptions and scenario editing
+11. Responsive and accessibility implementation
+12. Functional validation
+13. Visual audit
+14. Final completion report
+
+### M — Method
+
+The redesign is verified by:
+
+- Repository inspection
+- Route and component inventory
+- Objective acceptance criteria
+- Desktop, laptop, tablet, and mobile review
+- Functional interaction testing
+- Accessibility checks
+- Loading and error-state checks
+- Comparison against prohibited generic patterns
+- Final self-audit with evidence
+- Confirmation that every required interaction works
+
+---
+
+# SECTION 3 — PRODUCT DEFINITION
+
+## Core product
+
+AIRWORTHY estimates how much a residential property could earn when operated as a short-term rental.
+
+The primary user job is:
+
+> Enter a property and understand how much it could realistically earn as a short-term rental.
+
+AIRWORTHY is not primarily:
+
+- A mortgage calculator
+- A property brokerage
+- A generic investment dashboard
+- A property-management platform
+- An aviation-themed interface
+- A luxury-property marketing website
+- A general-purpose AI analytics platform
+
+Do not broaden the product into unrelated real-estate features.
+
+## Primary promise
+
+Use this core positioning:
+
+> See what any property could earn.
+
+Supporting explanation:
+
+> Estimate short-term-rental revenue using comparable listings, local demand, occupancy patterns, seasonality, and nightly pricing.
+
+Primary action:
+
+> Estimate earnings
+
+## Product hierarchy
+
+Every interface should prioritize information in this order:
+
+1. Property
+2. Estimated annual revenue
+3. Revenue range
+4. Most likely revenue
+5. Monthly earning pattern
+6. Average nightly rate
+7. Expected occupancy
+8. Comparable evidence
+9. Estimate confidence
+10. Performance drivers
+11. Editable property assumptions
+12. Secondary market information
+
+Revenue must remain the dominant result.
+
+---
+
+# SECTION 4 — DO/THEN EXECUTION CHAIN
+
+---
+
+## DO THIS — STEP 1: AUDIT THE EXISTING REPOSITORY
+
+### PRISM
+
+**P — Purpose:**  
+Understand the current AIRWORTHY application before making design or architecture decisions.
+
+**R — Reusable parts:**  
+Identify components, logic, APIs, state systems, and layouts worth preserving.
+
+**I — Inputs:**  
+The complete current repository.
+
+**S — Segments:**  
+Repository structure, product flow, components, data, visual system, defects, preservation decisions.
+
+**M — Method:**  
+Every finding must cite the relevant file, route, component, or implementation location.
+
+### KERNEL SPEC
+
+**TASK:**  
+Audit the existing AIRWORTHY repository and produce an evidence-based product and interface inventory.
+
+**INPUTS:**
+
+- Full repository
+- Current routes
+- Current components
+- Existing APIs
+- Existing data models
+- Current map and chart implementation
+- Current design system
+- Current responsive behavior
+
+**CONSTRAINTS:**
+
+- Inspect the actual project before proposing changes.
+- Identify what is complete, partial, disconnected, duplicated, generic, or broken.
+- Distinguish working product logic from visual presentation.
+- Identify which parts should be preserved, modified, replaced, or removed.
+- Do not edit code during this step.
+- Do not propose a new framework unless the current one is technically unsuitable.
+- Do not provide vague statements such as “the UI needs improvement.”
+- Cite exact files, routes, and components.
+
+**OUTPUT FORMAT:**
+
+1. Current product summary
+2. Route inventory
+3. Component inventory
+4. Data and API inventory
+5. State-management inventory
+6. Existing design-system inventory
+7. Map and chart inventory
+8. Responsive behavior findings
+9. Accessibility findings
+10. Working systems to preserve
+11. Systems requiring modification
+12. Systems requiring replacement
+13. Systems to remove
+14. Critical risks and blockers
+15. Audit conclusion
+
+Include a decision table:
+
+| Area | Current state | Evidence | Preserve | Modify | Replace | Remove | Reason |
+|---|---|---|---:|---:|---:|---:|---|
+
+**VERIFY:**
+
+- Every current route is accounted for.
+- Every major product component is accounted for.
+- The main revenue-estimation workflow is traced from input to result.
+- Existing APIs and data dependencies are identified.
+- No major redesign decision is made without repository evidence.
+- Each preservation or replacement decision has a reason.
+
+### STOP CONDITIONS
+
+Stop and resolve the audit before proceeding if:
+
+- The revenue-estimation flow cannot be located.
+- Critical APIs or data models remain unidentified.
+- The current routing architecture is unclear.
+- Existing working functionality is at risk of being removed without documentation.
+
+---
+
+## THEN THAT — STEP 2: DEFINE THE PRODUCT ARCHITECTURE
+
+### PRISM
+
+**P — Purpose:**  
+Define the smallest coherent AIRWORTHY experience that fully solves the property-earnings task.
+
+**R — Reusable parts:**  
+Routes, shared components, data structures, revenue-result patterns, and navigation rules.
+
+**I — Inputs:**  
+The completed repository audit.
+
+**S — Segments:**  
+User journey, route architecture, data hierarchy, component architecture, state model, edge states.
+
+**M — Method:**  
+Every page and component must support a defined user question or workflow.
+
+### KERNEL SPEC
+
+**TASK:**  
+Define the complete product architecture for AIRWORTHY using the audit as the source of truth.
+
+**INPUTS:**
+
+- Step 1 audit
+- Existing repository structure
+- Existing revenue-estimation logic
+- Core AIRWORTHY product definition
+
+**CONSTRAINTS:**
+
+- Keep the product centered on short-term-rental revenue estimation.
+- Do not add unrelated investment, financing, property-management, or brokerage features.
+- Avoid duplicated routes and duplicated functionality.
+- Ensure the user can move from address entry to complete estimate without confusion.
+- Ensure each screen has one dominant purpose.
+- Preserve existing working systems when they fit the new architecture.
+- Include loading, empty, error, incomplete-data, and low-confidence states.
+
+**OUTPUT FORMAT:**
+
+1. Primary user journey
+2. Secondary user journeys
+3. Route map
+4. Page responsibilities
+5. Navigation model
+6. Data hierarchy
+7. Component hierarchy
+8. State model
+9. Loading and failure-state model
+10. Responsive interaction model
+11. Implementation dependencies
+12. Architecture acceptance checklist
+
+Use a route table:
+
+| Route | Primary purpose | Main user question | Core components | Required data | Entry points | Exit actions |
+|---|---|---|---|---|---|---|
+
+**VERIFY:**
+
+- A first-time user can move from address entry to complete earnings report.
+- The architecture includes homepage, market map, property report, and comparison.
+- No route exists without a clear user purpose.
+- No required product capability is orphaned.
+- Every major data element has a defined display location.
+- Loading, failure, and low-confidence states are represented.
+
+---
+
+## THEN — STEP 3: DEFINE THE INFORMATION HIERARCHY
+
+### PRISM
+
+**P — Purpose:**  
+Ensure the product communicates the earnings answer before secondary analytics.
+
+**R — Reusable parts:**  
+Metric hierarchy, content labels, information grouping, progressive disclosure rules.
+
+**I — Inputs:**  
+Product architecture and current data model.
+
+**S — Segments:**  
+Primary metrics, supporting metrics, evidence, assumptions, secondary information.
+
+**M — Method:**  
+Test every screen against the question: “Can the user understand the estimated earnings within five seconds?”
+
+### KERNEL SPEC
+
+**TASK:**  
+Define the information hierarchy for every primary AIRWORTHY screen.
+
+**INPUTS:**
+
+- Step 2 product architecture
+- Existing property and revenue data
+- Core product hierarchy
+
+**CONSTRAINTS:**
+
+- Estimated annual revenue must remain the dominant result.
+- Use a revenue range and most likely estimate.
+- Do not make a proprietary score more prominent than revenue.
+- Comparable evidence and confidence must be clearly accessible.
+- Avoid equal-weight card grids.
+- Use progressive disclosure for advanced details.
+- Use concise, literal labels.
+- Avoid generic SaaS copy.
+
+**OUTPUT FORMAT:**
+
+For each required screen, provide:
+
+1. Primary question
+2. Primary information
+3. Supporting information
+4. Evidence
+5. Editable information
+6. Secondary information
+7. Hidden or deferred information
+8. Primary action
+9. Secondary actions
+10. Mobile priority order
+
+Required screens:
+
+- Homepage
+- Instant estimate state
+- Market map
+- Property earnings report
+- Comparable explorer
+- Property comparison
+- Saved properties
+
+**VERIFY:**
+
+- Annual revenue appears in the first viewport of every relevant result screen.
+- A user can distinguish range, most likely estimate, ADR, and occupancy.
+- Confidence and comparable count are visible without deep navigation.
+- Advanced information does not obscure the initial answer.
+- Mobile priority matches desktop product hierarchy.
+
+---
+
+## THEN — STEP 4: DEFINE THE VISUAL SYSTEM
+
+### PRISM
+
+**P — Purpose:**  
+Create a distinctive visual language generated by AIRWORTHY’s measurement function.
+
+**R — Reusable parts:**  
+Tokens, typography, spacing, layout, controls, surfaces, map styling, charts, motion.
+
+**I — Inputs:**  
+Audit, product architecture, and information hierarchy.
+
+**S — Segments:**  
+Brand character, color, type, geometry, imagery, data visualization, motion.
+
+**M — Method:**  
+The visual system must remain recognizable without relying on luxury houses, aviation graphics, dark mode, or generic dashboard cards.
+
+### KERNEL SPEC
+
+**TASK:**  
+Create a production-ready AIRWORTHY design system for a bright, precise, spatial property-earnings product.
+
+**INPUTS:**
+
+- Step 1 audit
+- Step 2 architecture
+- Step 3 hierarchy
+- Existing design tokens
+- Current framework and styling approach
+
+**CONSTRAINTS:**
+
+The design must feel:
+
+- Bright
+- Precise
+- Spatial
+- Editorial
+- Calm
+- Technically credible
+- Product-focused
+
+Do not use:
+
+- Black-and-gold luxury styling
+- Purple gradients
+- Glassmorphism
+- Glowing panels
+- Aviation dashboards
+- Airplane icons
+- Wings
+- Radar graphics
+- Cockpit interfaces
+- Hexagon logos
+- Giant mansion heroes
+- Excessive pills
+- Excessive cards
+- Generic AI sparkle icons
+- Fashion-serif-heavy interfaces
+- Unsupported trust badges
+- Decorative charts
+
+Suggested starting palette:
+
+- Background: `#F4F5F1`
+- Surface: `#FFFFFF`
+- Primary text: `#141514`
+- Secondary text: `#696D68`
+- Forecast blue: `#315CFF`
+- Selection lime: `#D7FF52`
+- Downside coral: `#FF654F`
+- Structural gray: `#DADDD7`
+
+Treat these colors as a starting point. Adjust them only when contrast, legibility, or brand coherence improves.
+
+**OUTPUT FORMAT:**
+
+1. Brand character
+2. Color tokens
+3. Typography system
+4. Type scale
+5. Spacing scale
+6. Layout grid
+7. Surface rules
+8. Border and radius rules
+9. Control states
+10. Navigation rules
+11. Iconography rules
+12. Image rules
+13. Map-style rules
+14. Data-visualization rules
+15. Motion rules
+16. Responsive rules
+17. Accessibility rules
+18. Token implementation plan
+
+**VERIFY:**
+
+- Text and controls meet accessibility contrast requirements.
+- Revenue remains visually dominant.
+- The system works in desktop and mobile layouts.
+- The design remains recognizable without property photography.
+- No prohibited generic pattern is required to make the design feel premium.
+- Tokens can be implemented centrally rather than scattered across files.
+
+---
+
+## THEN — STEP 5: DESIGN THE EARNINGS ENVELOPE
+
+### PRISM
+
+**P — Purpose:**  
+Create AIRWORTHY’s signature visualization for revenue range, probability, and confidence.
+
+**R — Reusable parts:**  
+Homepage result, map preview, property report, comparison, saved property, export report.
+
+**I — Inputs:**  
+Revenue range, most likely estimate, downside, upside, benchmark, and confidence data.
+
+**S — Segments:**  
+Data contract, visual structure, interaction, states, responsive behavior, accessibility.
+
+**M — Method:**  
+The visualization must communicate the result more clearly than a single number or generic progress bar.
+
+### KERNEL SPEC
+
+**TASK:**  
+Design and implement the AIRWORTHY Earnings Envelope visualization.
+
+**INPUTS:**
+
+- Lower-case estimate
+- Expected range
+- Most likely estimate
+- Upper-case estimate
+- Market benchmark
+- Confidence level
+- Data quality indicators
+- Monthly or annual mode
+
+**CONSTRAINTS:**
+
+- Do not create a standard progress bar.
+- Do not use a generic chart without adaptation.
+- Do not imply false precision.
+- Clearly distinguish likely range from extreme downside and upside.
+- Support hover, keyboard focus, and touch interaction.
+- Include a text summary for screen readers.
+- Work at full report size and compact card size.
+- Support loading, insufficient-data, and low-confidence states.
+- Avoid decorative complexity that obscures meaning.
+
+**OUTPUT FORMAT:**
+
+1. Visualization concept
+2. Data contract
+3. Visual anatomy
+4. State definitions
+5. Interaction rules
+6. Responsive variants
+7. Accessibility behavior
+8. Component API
+9. Implementation
+10. Test cases
+
+**VERIFY:**
+
+A user must be able to identify within five seconds:
+
+- Estimated annual revenue range
+- Most likely estimate
+- Downside
+- Upside
+- Confidence
+- Market benchmark
+
+Also verify:
+
+- It works at mobile width.
+- It works without hover.
+- It has accessible text.
+- It handles missing or partial data.
+- It can be reused across all required product surfaces.
+
+---
+
+## THEN — STEP 6: BUILD THE HOMEPAGE AND INSTANT ESTIMATE
+
+### PRISM
+
+**P — Purpose:**  
+Let users begin an estimate immediately and receive useful value before registration.
+
+**R — Reusable parts:**  
+Address input, property confirmation, loading sequence, Earnings Envelope, revenue summary.
+
+**I — Inputs:**  
+Existing search logic, property data, map implementation, design system, Earnings Envelope.
+
+**S — Segments:**  
+Initial state, search state, loading state, confirmation state, estimate state, failure states.
+
+**M — Method:**  
+A first-time user must understand the product and find the address input within five seconds.
+
+### KERNEL SPEC
+
+**TASK:**  
+Implement the AIRWORTHY homepage as an immediate property-earnings tool.
+
+**INPUTS:**
+
+- Existing homepage route
+- Existing address or property search
+- Existing APIs
+- New design system
+- Earnings Envelope component
+
+**CONSTRAINTS:**
+
+Use the core message:
+
+> See what any property could earn.
+
+Supporting copy:
+
+> Estimate short-term-rental revenue using comparable listings, local demand, occupancy patterns, seasonality, and nightly pricing.
+
+Primary CTA:
+
+> Estimate earnings
+
+The first viewport must include:
+
+- AIRWORTHY brand
+- Address or listing URL input
+- Clear product explanation
+- Immediate action
+- Restrained spatial or property context
+
+After address entry, progressively reveal:
+
+1. Property location
+2. Property confirmation
+3. Comparable discovery
+4. Revenue calculation
+5. Earnings Envelope
+6. ADR
+7. Occupancy
+8. Comparable count
+9. Confidence
+10. Link to full report
+
+Do not use:
+
+- Giant mansion hero
+- Feature-card grid above the tool
+- Fake logos
+- Fake testimonials
+- Fake accuracy percentages
+- Generic AI messaging
+- Forced registration before the first estimate
+- Long cinematic loading sequences
+
+**OUTPUT FORMAT:**
+
+- Complete implemented homepage
+- Initial state
+- Search state
+- Loading state
+- Property confirmation state
+- Estimate state
+- Error state
+- No-property state
+- Mobile layout
+- Interaction test results
+
+**VERIFY:**
+
+- Address input is immediately visible.
+- Primary purpose is understandable within five seconds.
+- Search produces a clear state transition.
+- Revenue range is the dominant result.
+- ADR, occupancy, comparables, and confidence are visible.
+- Full report is reachable.
+- Mobile interaction is complete.
+- Keyboard interaction works.
+- No primary button is inactive or decorative.
+
+---
+
+## THEN — STEP 7: BUILD THE MARKET MAP
+
+### PRISM
+
+**P — Purpose:**  
+Help users discover and compare short-term-rental earning potential spatially.
+
+**R — Reusable parts:**  
+Map controls, search, layers, selected-property state, bottom inspection panel.
+
+**I — Inputs:**  
+Existing map library, property data, market data, filters, and design system.
+
+**S — Segments:**  
+Map canvas, command rail, layers, zoom behavior, selection, mobile behavior.
+
+**M — Method:**  
+The map must remain legible and useful without being covered by filters or price bubbles.
+
+### KERNEL SPEC
+
+**TASK:**  
+Implement AIRWORTHY’s market map as a dominant spatial analysis workspace.
+
+**INPUTS:**
+
+- Existing market-map route
+- Current mapping library
+- Revenue, ADR, occupancy, seasonality, and comparable data
+- Property search
+- Design system
+- Earnings Envelope compact variant
+
+**CONSTRAINTS:**
+
+- The map should occupy approximately 75–85% of the viewport.
+- Use compact contextual controls.
+- Avoid a large permanent filter sidebar.
+- Limit primary layers to:
+  - Annual revenue
+  - Average nightly rate
+  - Occupancy
+  - Seasonality
+  - Comparable density
+- Use market-level intensity when zoomed out.
+- Use property-level estimates only at useful zoom levels.
+- Declutter labels automatically.
+- Emphasize one selected property.
+- Reveal comparables contextually.
+- Use a bottom inspection panel rather than a large map popup.
+- Preserve map performance.
+- Support mobile bottom-sheet behavior.
+
+Do not:
+
+- Cover the map with black dollar bubbles.
+- Show every data layer simultaneously.
+- Keep all filters permanently expanded.
+- Use decorative 3D effects that reduce clarity.
+
+**OUTPUT FORMAT:**
+
+1. Full map implementation
+2. Search behavior
+3. Layer selector
+4. Filter behavior
+5. Zoom-level rules
+6. Property-selection behavior
+7. Comparable reveal
+8. Bottom inspection panel
+9. Mobile bottom sheet
+10. Loading and error states
+11. Performance findings
+12. Interaction test results
+
+**VERIFY:**
+
+- Map remains readable at all supported zoom levels.
+- Selected property is unambiguous.
+- Revenue, ADR, occupancy, and comparable count are visible in the selection panel.
+- Full report is reachable from the selection.
+- Filters materially update the result.
+- Mobile selection and dismissal work.
+- No overlapping labels make the map unusable.
+- Panning and zooming remain responsive.
+
+---
+
+## THEN — STEP 8: BUILD THE PROPERTY EARNINGS REPORT
+
+### PRISM
+
+**P — Purpose:**  
+Give the user the full estimate, evidence, reasoning, and editable assumptions.
+
+**R — Reusable parts:**  
+Revenue summary, Earnings Envelope, monthly forecast, drivers, confidence, comparables.
+
+**I — Inputs:**  
+Property data, market data, comparable set, forecast output, assumptions, and design system.
+
+**S — Segments:**  
+Summary, monthly forecast, drivers, comparables, assumptions, confidence, actions.
+
+**M — Method:**  
+The first viewport must answer how much the property could earn and how reliable the estimate is.
+
+### KERNEL SPEC
+
+**TASK:**  
+Implement the complete AIRWORTHY property earnings report.
+
+**INPUTS:**
+
+- Existing property-report route
+- Property details
+- Revenue model output
+- ADR
+- Occupancy
+- Monthly estimates
+- Comparable listings
+- Estimate-confidence data
+- Editable assumptions
+- Earnings Envelope
+
+**CONSTRAINTS:**
+
+The first viewport must show:
+
+- Property address
+- Property identity
+- Estimated annual revenue range
+- Most likely revenue
+- ADR
+- Occupancy
+- Confidence
+- Comparable count
+- Forecast horizon
+- Last update time
+
+Required report sections:
+
+1. Earnings summary
+2. Earnings Envelope
+3. Monthly forecast
+4. Positive revenue contributors
+5. Limiting factors
+6. Comparable-rental evidence
+7. Property facts
+8. Editable assumptions
+9. Estimate-confidence explanation
+10. Save, compare, and export actions
+
+Do not:
+
+- Reduce the report to a grid of equal cards.
+- Hide the main result below the fold.
+- Present “High confidence” without explanation.
+- Use generic “market insights” filler.
+- Let the property image dominate the report.
+- Use unsupported scores or accuracy claims.
+
+**OUTPUT FORMAT:**
+
+- Complete implemented report
+- Desktop layout
+- Mobile layout
+- Every required report section
+- Loading state
+- Partial-data state
+- Low-confidence state
+- Error state
+- Interaction test results
+
+**VERIFY:**
+
+- Revenue range is visible immediately.
+- Most likely revenue is distinguishable from the range.
+- ADR and occupancy are clear.
+- Monthly forecast is understandable.
+- Positive and negative drivers include estimated financial impact where data allows.
+- Comparable evidence is accessible.
+- Confidence is explained.
+- Assumptions can be edited.
+- Save, compare, and export actions work.
+
+---
+
+## THEN — STEP 9: BUILD THE MONTHLY FORECAST
+
+### PRISM
+
+**P — Purpose:**  
+Show when the property is expected to earn revenue and how certain each month is.
+
+**R — Reusable parts:**  
+Annual report, comparison view, scenario updates, mobile summaries.
+
+**I — Inputs:**  
+Monthly revenue, ADR, occupancy, ranges, seasonality, and demand data.
+
+**S — Segments:**  
+Annual view, monthly view, seasonal explanation, interactions, responsive version.
+
+**M — Method:**  
+Users must be able to distinguish strong, weak, and uncertain months.
+
+### KERNEL SPEC
+
+**TASK:**  
+Implement an interactive monthly earnings forecast.
+
+**INPUTS:**
+
+For each month:
+
+- Expected revenue
+- Lower estimate
+- Upper estimate
+- ADR
+- Occupancy
+- Demand level
+- Seasonal factors
+- Relevant local events when available
+
+**CONSTRAINTS:**
+
+- Do not use twelve identical bars without uncertainty.
+- Show expected value and range.
+- Allow comparison between conservative, expected, and strong cases.
+- Allow keyboard and touch exploration.
+- Explain meaningful seasonal changes.
+- Provide a screen-reader summary.
+- Support mobile without horizontal overflow.
+
+**OUTPUT FORMAT:**
+
+1. Forecast component
+2. Annual mode
+3. Monthly mode
+4. Scenario mode
+5. Tooltip or detail panel
+6. Mobile presentation
+7. Accessibility summary
+8. Test cases
+
+**VERIFY:**
+
+- Strong and weak months are visually distinguishable.
+- Uncertainty is visible.
+- ADR and occupancy are available per month.
+- The chart works without hover.
+- Mobile users can inspect all months.
+- Changes in assumptions update the forecast.
+
+---
+
+## THEN — STEP 10: BUILD THE COMPARABLE-RENTAL EXPLORER
+
+### PRISM
+
+**P — Purpose:**  
+Show the evidence behind the revenue estimate and allow the user to challenge it.
+
+**R — Reusable parts:**  
+Report comparables, map comparables, comparison view, confidence calculation.
+
+**I — Inputs:**  
+Comparable properties and match factors.
+
+**S — Segments:**  
+List, map, match explanation, inclusion controls, estimate impact.
+
+**M — Method:**  
+Every included comparable must have a visible reason for inclusion.
+
+### KERNEL SPEC
+
+**TASK:**  
+Implement the comparable-rental evidence explorer.
+
+**INPUTS:**
+
+For each comparable:
+
+- Image
+- Location
+- Distance
+- Property type
+- Bedrooms
+- Bathrooms
+- Guest capacity
+- Amenities
+- Annual revenue
+- ADR
+- Occupancy
+- Active months
+- Reviews when available
+- Similarity score or factors
+- Inclusion status
+- Reason for inclusion or exclusion
+
+**CONSTRAINTS:**
+
+- Treat comparables as primary evidence, not a sidebar widget.
+- Show meaningful differences from the subject property.
+- Explain match quality.
+- Allow include and exclude actions.
+- Recalculate estimate and confidence when comparable selection changes.
+- Show the impact of removing a comparable.
+- Support list and map context where appropriate.
+- Avoid fake precision in similarity scores.
+- Do not hide exclusion reasons.
+
+**OUTPUT FORMAT:**
+
+1. Comparable explorer implementation
+2. Comparable cards or rows
+3. Match explanation
+4. Include/exclude controls
+5. Estimate-impact feedback
+6. Sort and filter options
+7. Map relationship
+8. Mobile behavior
+9. Empty and low-data states
+10. Test results
+
+**VERIFY:**
+
+- Every included comparable has an explanation.
+- Every excluded comparable has an explanation where applicable.
+- Removing a comparable changes the estimate when expected.
+- Confidence updates correctly.
+- Sorting works.
+- Mobile controls remain usable.
+- The user can return to the original comparable set.
+
+---
+
+## THEN — STEP 11: BUILD PROPERTY ASSUMPTIONS AND SCENARIOS
+
+### PRISM
+
+**P — Purpose:**  
+Let users test how property facts and operating assumptions affect earnings.
+
+**R — Reusable parts:**  
+Report editor, scenario comparison, renovation or amenity impact.
+
+**I — Inputs:**  
+Current property facts, model assumptions, and recalculation logic.
+
+**S — Segments:**  
+Property facts, operating assumptions, revenue impact, reset, scenarios.
+
+**M — Method:**  
+Every meaningful edit must produce a visible and traceable estimate change.
+
+### KERNEL SPEC
+
+**TASK:**  
+Implement editable property facts and short-term-rental operating assumptions.
+
+**INPUTS:**
+
+- Property type
+- Bedrooms
+- Bathrooms
+- Guest capacity
+- Entire home or private room
+- Pool
+- Hot tub
+- Parking
+- Outdoor space
+- View
+- Waterfront
+- Minimum stay
+- Cleaning fee
+- Management model
+- Operating availability
+- Furnishing quality
+- Other model-supported inputs
+
+**CONSTRAINTS:**
+
+- Only expose assumptions that affect the current model.
+- Clearly distinguish verified facts from user-edited assumptions.
+- Recalculate revenue, ADR, occupancy, and confidence where appropriate.
+- Show estimated revenue impact for meaningful changes.
+- Allow reset to original data.
+- Prevent impossible combinations.
+- Preserve user changes during the active session.
+- Do not present unsupported amenity impacts.
+
+**OUTPUT FORMAT:**
+
+1. Assumption editor
+2. Verified vs edited state
+3. Revenue-impact feedback
+4. Scenario save state
+5. Reset behavior
+6. Validation rules
+7. Mobile controls
+8. Test cases
+
+**VERIFY:**
+
+- Every editable field is connected to model behavior or clearly marked as informational.
+- Invalid combinations are blocked or explained.
+- Estimate updates are visible.
+- Original values can be restored.
+- Changes persist through expected navigation.
+- Mobile controls are usable.
+
+---
+
+## THEN — STEP 12: BUILD PROPERTY COMPARISON
+
+### PRISM
+
+**P — Purpose:**  
+Help users compare multiple properties using the same earnings framework.
+
+**R — Reusable parts:**  
+Earnings Envelope, monthly forecast, metrics, confidence, property facts.
+
+**I — Inputs:**  
+Two or more saved or selected property estimates.
+
+**S — Segments:**  
+Summary, earnings, seasonality, evidence quality, property differences.
+
+**M — Method:**  
+The comparison must make tradeoffs visible without forcing users to inspect separate reports.
+
+### KERNEL SPEC
+
+**TASK:**  
+Implement a property-comparison view.
+
+**INPUTS:**
+
+For each property:
+
+- Revenue range
+- Most likely revenue
+- ADR
+- Occupancy
+- Monthly forecast
+- Confidence
+- Comparable count and quality
+- Property features
+- Key positive drivers
+- Key limiting factors
+
+**CONSTRAINTS:**
+
+- Compare properties using consistent definitions.
+- Highlight material differences.
+- Do not declare a universal winner unless a transparent comparison rule exists.
+- Support two or more properties.
+- Use responsive layouts that remain legible.
+- Reuse established visualization components.
+
+**OUTPUT FORMAT:**
+
+1. Comparison summary
+2. Revenue comparison
+3. Monthly performance comparison
+4. ADR and occupancy comparison
+5. Confidence comparison
+6. Comparable-quality comparison
+7. Property-feature comparison
+8. Driver comparison
+9. Mobile behavior
+10. Test results
+
+**VERIFY:**
+
+- Metrics use the same calculation basis.
+- Revenue ranges are directly comparable.
+- Seasonal differences are visible.
+- Confidence differences are explained.
+- Users can add and remove properties.
+- Mobile view remains understandable.
+
+---
+
+## THEN — STEP 13: IMPLEMENT RESPONSIVE DESIGN AND ACCESSIBILITY
+
+### PRISM
+
+**P — Purpose:**  
+Ensure AIRWORTHY works as a complete product across devices and assistive technologies.
+
+**R — Reusable parts:**  
+Responsive tokens, bottom sheets, chart summaries, form patterns, focus behavior.
+
+**I — Inputs:**  
+All completed screens and components.
+
+**S — Segments:**  
+Desktop, laptop, tablet, mobile, keyboard, screen reader, reduced motion.
+
+**M — Method:**  
+Test required workflows at defined viewport sizes and accessibility states.
+
+### KERNEL SPEC
+
+**TASK:**  
+Complete responsive and accessibility implementation across AIRWORTHY.
+
+**INPUTS:**
+
+- All implemented routes
+- All shared components
+- Existing accessibility configuration
+- Design-system rules
+
+**CONSTRAINTS:**
+
+Support at minimum:
+
+- Large desktop
+- Standard laptop
+- Tablet portrait
+- Tablet landscape
+- Mobile portrait
+- Mobile landscape where practical
+
+Implement:
+
+- Semantic HTML
+- Keyboard navigation
+- Visible focus states
+- Proper labels
+- Accessible validation
+- Screen-reader summaries for data visualizations
+- Reduced-motion support
+- Adequate touch targets
+- Accessible dialogs and bottom sheets
+- Logical heading structure
+- Sufficient contrast
+
+Do not merely shrink desktop layouts.
+
+**OUTPUT FORMAT:**
+
+1. Responsive implementation summary
+2. Viewport-specific adaptations
+3. Keyboard test results
+4. Screen-reader support summary
+5. Contrast findings
+6. Reduced-motion behavior
+7. Remaining accessibility issues
+8. Fixes completed
+
+**VERIFY:**
+
+At every target viewport, the user can:
+
+1. Enter a property
+2. Confirm the property
+3. View the estimate
+4. Open the market map
+5. Select a property
+6. Inspect comparables
+7. Edit assumptions
+8. Save or compare a property
+9. Export or access the report action
+
+Also verify:
+
+- No inaccessible focus traps
+- No clipped critical content
+- No tiny touch targets
+- No charts that rely only on color
+- No essential interaction that requires hover
+
+---
+
+## THEN — STEP 14: RUN FUNCTIONAL VALIDATION
+
+### PRISM
+
+**P — Purpose:**  
+Prove that the redesigned product works, not merely that it renders.
+
+**R — Reusable parts:**  
+Test cases, route checks, interaction checks, state checks.
+
+**I — Inputs:**  
+The fully implemented AIRWORTHY project.
+
+**S — Segments:**  
+Routes, search, map, report, comparables, assumptions, saving, comparison, export.
+
+**M — Method:**  
+Run every required workflow and report actual results.
+
+### KERNEL SPEC
+
+**TASK:**  
+Test every primary AIRWORTHY workflow and fix all failures.
+
+**INPUTS:**
+
+- Completed application
+- Available test environment
+- Existing automated tests
+- Representative property data
+- Error and partial-data fixtures
+
+**CONSTRAINTS:**
+
+Test:
+
+- Route loading
+- Navigation
+- Address search
+- Property confirmation
+- Estimate loading
+- Revenue result
+- Earnings Envelope
+- Monthly forecast
+- Map layers
+- Map filters
+- Property selection
+- Comparable inclusion and exclusion
+- Assumption editing
+- Estimate recalculation
+- Save property
+- Property comparison
+- Export action
+- Loading states
+- Empty states
+- Error states
+- Low-confidence states
+- Mobile interactions
+
+- Fix failures before proceeding.
+- Do not report “working” without running the interaction.
+- Do not ignore console errors.
+- Do not leave dead buttons.
+
+**OUTPUT FORMAT:**
+
+Use a test table:
+
+| Workflow | Test case | Expected result | Actual result | Pass/Fail | Fix applied |
+|---|---|---|---|---|---|
+
+Then provide:
+
+1. Automated test results
+2. Manual interaction results
+3. Console findings
+4. Network/API failures
+5. Fixes completed
+6. Remaining limitations
+
+**VERIFY:**
+
+- Every primary workflow passes.
+- No critical console errors remain.
+- No dead buttons remain.
+- No required route is broken.
+- Loading, error, and empty states are reachable and correct.
+- Recalculation produces consistent outputs.
+- Save and comparison state behave correctly.
+
+---
+
+## THEN — STEP 15: RUN THE HIGH-END VISUAL AUDIT
+
+### PRISM
+
+**P — Purpose:**  
+Remove generic design patterns, hierarchy failures, and visual inconsistencies before completion.
+
+**R — Reusable parts:**  
+Design-system rules, prohibited-pattern checklist, responsive screenshots.
+
+**I — Inputs:**  
+Rendered application at all required breakpoints.
+
+**S — Segments:**  
+Hierarchy, typography, spacing, maps, charts, interaction states, originality.
+
+**M — Method:**  
+Evaluate rendered screens against explicit acceptance criteria, not subjective “looks good” language.
+
+### KERNEL SPEC
+
+**TASK:**  
+Perform a strict visual and product-design audit of the implemented AIRWORTHY experience.
+
+**INPUTS:**
+
+- Rendered desktop screens
+- Rendered laptop screens
+- Rendered tablet screens
+- Rendered mobile screens
+- Design-system specification
+- Product hierarchy
+- Prohibited-pattern list
+
+**CONSTRAINTS:**
+
+Audit for:
+
+- Revenue dominance
+- Five-second comprehension
+- Clear address-entry action
+- Information hierarchy
+- Typography quality
+- Spacing rhythm
+- Grid consistency
+- Card overuse
+- Excessive pills
+- Decorative imagery
+- Map clarity
+- Chart clarity
+- Color discipline
+- Interaction feedback
+- Loading-state quality
+- Empty-state quality
+- Error-state quality
+- Responsive quality
+- Accessibility
+- Generic SaaS resemblance
+- Internal consistency
+
+Reject any screen that relies on:
+
+- Black-and-gold luxury styling
+- Giant mansion imagery
+- Purple gradients
+- Generic AI decoration
+- Excessive floating cards
+- Dollar bubbles covering the map
+- Aviation clichés
+- Unsupported scores
+- Fake trust signals
+- Empty visual polish without product clarity
+
+**OUTPUT FORMAT:**
+
+1. Critical visual failures
+2. Important visual failures
+3. Minor inconsistencies
+4. Generic-pattern findings
+5. Hierarchy findings
+6. Responsive findings
+7. Accessibility findings
+8. Fixes applied
+9. Before/after evidence where practical
+10. Final visual acceptance table
+
+Use:
+
+| Screen | Criterion | Result | Failure | Fix | Final status |
+|---|---|---|---|---|---|
+
+**VERIFY:**
+
+The final visual audit passes only if:
+
+- A first-time user understands the product within five seconds.
+- The revenue estimate is the dominant focal point.
+- Every major screen has one clear purpose.
+- The interface does not resemble a generic dashboard template.
+- Maps and charts improve understanding.
+- Property photography supports rather than dominates.
+- Desktop and mobile feel intentionally designed.
+- No prohibited visual pattern remains without a documented functional reason.
+
+---
+
+## THEN — STEP 16: FINAL COMPLETION REPORT
+
+### PRISM
+
+**P — Purpose:**  
+Document exactly what was changed, verified, preserved, and left incomplete.
+
+**R — Reusable parts:**  
+Audit decisions, implementation files, test results, acceptance criteria.
+
+**I — Inputs:**  
+All prior step outputs and the final repository state.
+
+**S — Segments:**  
+Changes, preserved systems, removed systems, tests, limitations, final status.
+
+**M — Method:**  
+Every completion claim must point to code, tests, or rendered behavior.
+
+### KERNEL SPEC
+
+**TASK:**  
+Produce the final AIRWORTHY redesign and implementation report.
+
+**INPUTS:**
+
+- Final repository
+- Original audit
+- Architecture plan
+- Design system
+- Test results
+- Visual audit
+- Accessibility findings
+
+**CONSTRAINTS:**
+
+- Do not claim completion for unfinished features.
+- Do not hide mock data, technical debt, or unavailable APIs.
+- Distinguish implemented, partial, blocked, and recommended future work.
+- Cite relevant files and routes.
+- Keep the report factual and concise.
+
+**OUTPUT FORMAT:**
+
+1. Executive summary
+2. Product changes
+3. UX changes
+4. Visual-system changes
+5. New reusable components
+6. Preserved existing systems
+7. Modified systems
+8. Removed systems
+9. Route-by-route status
+10. Functional test results
+11. Responsive test results
+12. Accessibility status
+13. Performance findings
+14. Known limitations
+15. Remaining technical debt
+16. Final acceptance checklist
+17. Final completion status
+
+Use a status table:
+
+| Requirement | Implemented | Verified | Evidence | Remaining issue |
+|---|---:|---:|---|---|
+
+**VERIFY:**
+
+- Every acceptance criterion has a status.
+- Every major implementation claim has evidence.
+- Partial or blocked items are explicitly identified.
+- No failed validation item is represented as complete.
+
+---
+
+# SECTION 5 — GLOBAL CONTENT RULES
+
+Use concise, literal product copy.
+
+## Preferred language
+
+- See what any property could earn
+- Estimate earnings
+- Estimated annual revenue
+- Most likely revenue
+- Average nightly rate
+- Expected occupancy
+- Comparable rentals
+- Estimate confidence
+- Monthly forecast
+- What increases earnings
+- What limits earnings
+- Adjust property details
+- View comparable evidence
+- Save property
+- Compare properties
+- Export report
+
+## Avoid
+
+- Unlock your potential
+- Maximize performance
+- Leverage AI
+- Revolutionize investing
+- Intelligent insights
+- Powerful analytics
+- Seamless experience
+- Make data-driven decisions
+- Transform your portfolio
+- AI-powered property intelligence
+
+Do not fill empty areas with generic marketing copy.
+
+---
+
+# SECTION 6 — GLOBAL TECHNICAL RULES
+
+- Use the existing stack unless a change is justified.
+- Build reusable components.
+- Centralize design tokens.
+- Keep product logic separate from presentation.
+- Do not fabricate integrations.
+- Clearly mark mock data.
+- Preserve data provenance.
+- Avoid unnecessary dependencies.
+- Optimize maps, charts, animations, and images.
+- Implement proper loading, error, empty, and partial states.
+- Avoid hardcoded values scattered across components.
+- Use realistic data fixtures.
+- Ensure all actions are wired.
+- Do not leave placeholder controls.
+- Do not remove working logic merely to simplify implementation.
+- Add or update tests for critical behavior.
+- Maintain type safety when supported by the stack.
+
+---
+
+# SECTION 7 — GLOBAL ACCEPTANCE CRITERIA
+
+The project is complete only if all of the following pass:
+
+## Product clarity
+
+- A new user understands AIRWORTHY within five seconds.
+- The address input is immediately visible.
+- The product clearly estimates short-term-rental revenue.
+- The result is useful before forced registration.
+
+## Revenue communication
+
+- Annual revenue range is visually dominant.
+- Most likely revenue is clearly identified.
+- ADR and occupancy are visible.
+- Monthly revenue is understandable.
+- Uncertainty is communicated.
+
+## Evidence and trust
+
+- Comparable properties are visible and inspectable.
+- Comparable inclusion is explained.
+- Confidence is explained.
+- Low-confidence and incomplete-data states exist.
+- Unsupported accuracy claims are absent.
+
+## Interaction
+
+- Search works.
+- Map works.
+- Filters work.
+- Property selection works.
+- Comparables can be inspected.
+- Assumptions can be edited.
+- Estimate updates work.
+- Save works.
+- Comparison works.
+- Export action works or is explicitly marked unavailable.
+
+## Design quality
+
+- The product does not resemble a generic SaaS dashboard.
+- The interface does not depend on black-and-gold luxury styling.
+- The interface does not use aviation clichés.
+- Property imagery does not overpower revenue information.
+- Maps are not covered by unnecessary bubbles.
+- Cards are used only when structurally useful.
+- Typography and spacing are consistent.
+- Motion improves comprehension.
+
+## Responsive and accessible behavior
+
+- Complete desktop experience
+- Complete laptop experience
+- Complete tablet experience
+- Complete mobile experience
+- Keyboard navigation
+- Visible focus states
+- Reduced-motion support
+- Screen-reader chart summaries
+- Accessible controls
+- Adequate contrast
+- Adequate touch targets
+
+## Engineering
+
+- No broken routes
+- No dead primary buttons
+- No critical console errors
+- No unhandled primary workflow failures
+- No falsely completed placeholder features
+- No unnecessary framework rewrite
+- No undocumented removal of working product logic
+
+---
+
+# SECTION 8 — STOP CONDITIONS
+
+Stop the chain and fix the active step when:
+
+- A verification check fails.
+- A step contradicts a prior approved output.
+- A required data dependency is unknown.
+- Existing working functionality could be lost.
+- A major route remains unaccounted for.
+- The implementation introduces a broken primary workflow.
+- Revenue no longer remains the dominant product result.
+- The design becomes dependent on generic luxury or aviation styling.
+- The agent is about to present a written recommendation instead of implementing the work.
+
+Do not skip forward.
+
+Fix, verify, and continue.
+
+---
+
+# FINAL EXECUTION INSTRUCTION
+
+Begin with **Step 1: Audit the Existing Repository**.
+
+Do not redesign anything before completing the repository audit.
+
+After each step:
+
+1. Present the required output.
+2. Run the verification.
+3. Report pass or fail.
+4. Fix failures.
+5. Proceed only after the step passes.
+
+The final result must be a working AIRWORTHY application, not a design essay, mood board, static mockup, or superficial theme change.
