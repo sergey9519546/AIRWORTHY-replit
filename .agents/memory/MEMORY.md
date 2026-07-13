@@ -11,3 +11,4 @@
 - [Rentalizer listings bathrooms column](rentalizer-listings-bathrooms.md) — listings table lacked bathrooms; parse from raw bathrooms_text, backfill in-place (ALTER+UPDATE) to preserve demand_curve
 - [Project-task queue main-agent limits](project-task-queue-main-agent-limits.md) — main agent can't force-claim/complete a PENDING task-agent-queued task via the task API; do the code work directly and let the user reconcile the queue entry
 - [Amenity revenue calibration](amenity-calibration.md) — amenity % impact derived from real listings, city-level preferred over state when the city has enough listings, else state, else fixed heuristic
+- [Rentalizer geocoder listings-DB fallback](rentalizer-geocoder-listings-db.md) — when Mapbox/Nominatim can't resolve an address, fall back to exact listing-name lookup in the local listings DB
