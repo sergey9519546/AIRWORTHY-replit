@@ -159,7 +159,7 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
     n = len(used)
     if n >= 15 and cv < 0.6:
         level = "high"
-    elif n >= 8:
+    elif n >= 8 and cv < 1.2:
         level = "medium"
     else:
         level = "low"

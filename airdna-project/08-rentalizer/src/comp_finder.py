@@ -181,6 +181,7 @@ def _find_comps_relaxed(lat: float, lng: float, k: int) -> list[Comp]:
     distances, indices = _tree.query(query, k=min(k, len(_listings)))
 
     distances_km = distances[0] * 6371
+    indices = indices[0]
     comps = []
     for dist_km, idx in zip(distances_km, indices):
         listing = _listings[idx]
@@ -216,11 +217,17 @@ def _score_comp(listing: dict, dist_km: float, target_bedrooms: int, target_bath
     bed_diff = abs(listing["bedrooms"] - target_bedrooms)
     bedroom_score = (1 - bed_diff / max(target_bedrooms, 1)) * 0.25
     bath_diff = abs(listing["bathrooms"] - target_bathrooms)
-    bath_score = (1 - bath_diff / max(target_bathrooms, 1)) * 0.15
+    bath_score = max(0, 1 - bath_diff / max(target_bathrooms, 1)) * 0.15
     cap_diff = abs(listing["accommodates"] - target_accommodates)
     capacity_score = (1 - cap_diff / max(target_accommodates, 1)) * 0.15
     type_score = 0.05
-    return distance_score + bedroom_score + bath_score + capacity_score + type_score
+    # Distance/bedroom/capacity terms are individually non-negative by
+    # construction (max(0, ...) or filtered to a bounded range upstream), so
+    # clamping the total at 0 keeps every comp usable as a non-negative
+    # weight in predict_from_comps()'s weighted average — a negative weight
+    # there would let the "average" fall outside the range of the comps'
+    # own revenues, which is not a valid weighted average.
+    return max(0.0, distance_score + bedroom_score + bath_score + capacity_score + type_score)
 
 
 def predict_from_comps(comps: list[Comp]) -> tuple[float | None, float]:
