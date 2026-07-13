@@ -269,6 +269,19 @@ def get_calibration():
     return current
 
 
+def warm_calibration():
+    """Kick off the background calibration recompute proactively (e.g. from
+    the app's startup hook) instead of waiting for the first /v1/estimate
+    request to discover a new/uncached snapshot. This shrinks the window
+    right after a fresh boot (or a new market-data load) during which
+    `lookup()` returns None and callers fall back to the fixed heuristic in
+    `enrichment.AMENITIES` instead of the data-backed percentage. Safe to
+    call even when the DB doesn't exist yet or is already warm/computing —
+    `get_calibration()` handles those cases without duplicating work.
+    """
+    get_calibration()
+
+
 def lookup(state, amenity_key, city_slug=None):
     """Return a calibrated entry for (state, amenity_key), preferring a
     city-level figure over the state-level one when the city has enough

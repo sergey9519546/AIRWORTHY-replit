@@ -36,6 +36,7 @@ from .enrichment import (
     estimate_adr_occupancy, monthly_forecast, performance_drivers, confidence_reasons,
     amenity_multiplier, amenity_drivers,
 )
+from .amenity_calibration import warm_calibration
 
 import pandas as pd
 
@@ -67,6 +68,9 @@ async def lifespan(app: FastAPI):
     logger.info("Building comp index...")
     train_df = pd.read_csv(settings.TRAIN_DATA_PATH)
     build_index(train_df, source_path=settings.TRAIN_DATA_PATH)
+
+    logger.info("Warming amenity calibration cache...")
+    warm_calibration()
 
     if not API_KEYS:
         _msg = ("AUTH DISABLED: no API_KEYS configured — /v1/estimate and /v1/batch accept "
