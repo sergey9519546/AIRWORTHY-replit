@@ -66,7 +66,7 @@ async def lifespan(app: FastAPI):
 
     logger.info("Building comp index...")
     train_df = pd.read_csv(settings.TRAIN_DATA_PATH)
-    build_index(train_df)
+    build_index(train_df, source_path=settings.TRAIN_DATA_PATH)
 
     if not API_KEYS:
         _msg = ("AUTH DISABLED: no API_KEYS configured — /v1/estimate and /v1/batch accept "

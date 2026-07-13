@@ -1,32 +1,10 @@
 ---
-name: Rentalizer estimator architecture (hybrid, coverage-driven)
-description: How the revenue estimator decides which engine to use and how coverage is defined
+name: Rentalizer estimator architecture
+description: Hybrid estimator routing and how each path's data can/can't go stale without a restart
 ---
 
-## Rule
-The `/v1/estimate` endpoint is a **hybrid** routed by geography, and coverage is
-**data-driven, not region-hardcoded**:
-- **NYC** (address inside the NYC bounding box) → the trained LightGBM model +
-  NYC comp index (train.csv). NYC data is NOT in the map/listings DB, so the ML
-  model is the only source for it. Reported `model_version` = the model's meta version.
-- **Everywhere else** → comp-based estimate over the shared listings SQLite DB
-  (`db/airbnb.db`) using real `estimated_revenue_l365d`. Reported `model_version` = `comps-1.0`.
-- **Coverage** = "are there ≥ MIN_COMPS comparable listings within MAX_RADIUS_KM of
-  the geocoded point?" If not → raise `OutsideCoverageError` with a message listing
-  the DB's distinct states. There is NO hardcoded CA/FL list anywhere in the routing.
+Hybrid routing in `src/api.py`: NYC addresses (`in_nyc_bounds`) use a trained ML model + `comp_finder.py`'s KD-tree; every other market uses `market_estimator.estimate_from_db()`, a pure per-request SQL query against the shared `db/airbnb.db` `listings` table (no caching, so it's always fresh — no staleness concern there).
 
-**Why:** The user explicitly wanted the estimator to stop being NYC-only and to
-"work for all cities and states" as data is added. Making coverage depend on DB
-data density means loading a new city/state into the `listings` table makes it work
-with zero code changes. The estimator and the map now share one data source, which
-fixes the original "two disconnected products" problem.
+`comp_finder.py`'s NYC comp index/market stats are built once from a **static** `data/train.csv` (engineered from a one-time InsideAirbnb export), which is a completely different pipeline from the growing `listings` table other markets use — it has no `snapshot_date` column and nothing currently regenerates it at runtime. Its freshness signal is therefore the CSV's file mtime, not a DB snapshot: `comp_finder._ensure_fresh()` stats the file cheaply on every `find_comps()`/`get_market_stats()` call and only reloads+rebuilds the KD-tree when the mtime has changed, mirroring `amenity_calibration.get_calibration()`'s cheap-check/expensive-rebuild pattern but keyed on file mtime since no DB snapshot exists for this path.
 
-## How to apply
-- To add a market: load its listings (with `estimated_revenue_l365d`, lat/lng,
-  room_type, snapshot_date) into the `listings` table. No estimator code change needed.
-- Do NOT reintroduce hardcoded region checks for the comp path; keep coverage a
-  function of comp density (see `src/market_estimator.py` constants).
-- The comp path returns real per-market `data_freshness` (MAX snapshot_date for that
-  city); the NYC/ML path still uses the config `DATA_FRESHNESS` string.
-- The response `market.borough` field is reused as a generic area label (NYC borough
-  or "City, ST"); the frontend labels it "Area".
+**Why:** avoids requiring a process restart to pick up either a new market snapshot (comp/amenity paths) or a refreshed NYC training CSV, while keeping the common case (nothing changed) a single cheap check.

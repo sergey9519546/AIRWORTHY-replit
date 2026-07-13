@@ -1,5 +1,6 @@
 """Comparable listing finder using KD-Tree."""
 import logging
+import os
 import numpy as np
 import pandas as pd
 from dataclasses import dataclass
@@ -31,12 +32,28 @@ _tree: KDTree | None = None
 _train_data: pd.DataFrame | None = None
 _listings: list[dict] | None = None
 
+# Path the training data was loaded from (if any) and the mtime it had at
+# last build, so we can detect when a fresh CSV has been dropped in (e.g. by
+# a data-refresh script) and rebuild without requiring a process restart.
+# Train.csv carries no snapshot_date column of its own, so file mtime is the
+# freshness signal here — mirroring the cheap-check/expensive-rebuild
+# pattern `amenity_calibration.get_calibration()` uses for the listings DB.
+_train_data_path: str | None = None
+_train_data_mtime: float | None = None
 
-def build_index(train_df: pd.DataFrame):
-    """Build KD-Tree index from training data."""
-    global _tree, _train_data, _listings
+
+def build_index(train_df: pd.DataFrame, source_path: str | None = None):
+    """Build KD-Tree index from training data.
+
+    `source_path`, if given, is remembered so later calls to `find_comps()`
+    / `get_market_stats()` can detect (via mtime) when the file has been
+    refreshed on disk and rebuild the index automatically.
+    """
+    global _tree, _train_data, _listings, _train_data_path, _train_data_mtime
 
     _train_data = train_df.copy()
+    _train_data_path = source_path
+    _train_data_mtime = _mtime(source_path) if source_path else None
 
     # Extract coordinates (convert to radians for haversine)
     coords = np.radians(train_df[["latitude", "longitude"]].values)
@@ -65,6 +82,25 @@ def build_index(train_df: pd.DataFrame):
     logger.info(f"Built KD-Tree index with {len(_listings)} listings")
 
 
+def _mtime(path: str) -> float | None:
+    try:
+        return os.path.getmtime(path)
+    except OSError:
+        return None
+
+
+def _ensure_fresh():
+    """Rebuild the index if the training CSV has changed on disk since the
+    last build. A no-op (single cheap stat call) when nothing has changed,
+    so this is safe to call on every request."""
+    if not _train_data_path:
+        return
+    current = _mtime(_train_data_path)
+    if current is not None and current != _train_data_mtime:
+        logger.info(f"Detected updated training data at {_train_data_path}, rebuilding comp index")
+        build_index(pd.read_csv(_train_data_path), source_path=_train_data_path)
+
+
 def _get_borough(row):
     """Extract borough label from one-hot encoded columns."""
     for col in ["borough_Manhattan", "borough_Brooklyn", "borough_Queens", "borough_Bronx", "borough_Staten Island"]:
@@ -78,6 +114,7 @@ def find_comps(lat: float, lng: float, bedrooms: int, accommodates: int, bathroo
     """Find k nearest comparable listings. `exclude_ids` drops specific
     listing IDs before scoring, so a caller can recompute after a user
     excludes a comparable from the set."""
+    _ensure_fresh()
     if _tree is None or _listings is None:
         raise RuntimeError("Index not built. Call build_index() first.")
 
@@ -226,7 +263,9 @@ def _precompute_market_stats(train_df: pd.DataFrame):
 
 
 def get_market_stats(borough: str) -> dict:
-    """Get market statistics for a borough (uses pre-computed cache)."""
+    """Get market statistics for a borough (uses pre-computed cache, refreshed
+    automatically when the underlying training data changes on disk)."""
+    _ensure_fresh()
     if borough in _market_stats_cache:
         return _market_stats_cache[borough]
     # Fallback: compute on the fly
