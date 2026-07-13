@@ -348,14 +348,12 @@ class TestPoolMatcher:
     def test_pool_table_is_not_a_pool(self):
         assert self.matcher("pool table, wifi") is False
 
-    def test_pool_alongside_whirlpool_is_a_known_false_negative(self):
-        # Known limitation: the "whirlpool" exclusion is a blanket substring
-        # check on the whole text, so a listing that genuinely has both a
-        # pool and a whirlpool tub is misclassified as "without" a pool.
-        # This test documents the current (imperfect) behavior rather than
-        # asserting it's correct -- see task "Catch amenity keyword matchers
-        # misfiring on similar-but-different listing text" for context.
-        assert self.matcher("pool, whirlpool tub, wifi") is False
+    def test_pool_alongside_whirlpool_is_correctly_a_pool(self):
+        # A listing that genuinely lists both a pool and a whirlpool tub
+        # separately must still count as having a pool -- the "whirlpool"
+        # exclusion is scoped to that specific occurrence, not a blanket
+        # substring check over the whole text.
+        assert self.matcher("pool, whirlpool tub, wifi") is True
 
 
 class TestHotTubMatcher:

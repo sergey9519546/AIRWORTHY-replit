@@ -41,10 +41,15 @@ def _bedroom_bucket(bedrooms):
 # need to be specific enough to avoid false positives (e.g. "pool" should
 # not match "pool table" or "whirlpool").
 _PARKING_RE = re.compile(r"free[a-z ]*parking")
+# Matches "pool" as long as it isn't the tail of "whirlpool" or immediately
+# followed by "table" (e.g. "pool table"), scoped to the specific occurrence
+# rather than a blanket substring check over the whole text -- so a listing
+# with both a genuine pool and a whirlpool tub still counts as having a pool.
+_POOL_RE = re.compile(r"(?<!whirl)pool\b(?!\s*table)")
 
 
 def _has_pool(text):
-    return "pool" in text and "whirlpool" not in text and "pool table" not in text
+    return bool(_POOL_RE.search(text))
 
 
 AMENITY_MATCHERS = {
