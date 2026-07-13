@@ -537,14 +537,44 @@ function renderInspectorSeason(listing) {
     const vals = curve.map(v => (typeof v === 'number' ? v : 0));
     const max = Math.max(...vals, 0.01);
     curve.forEach((v, i) => {
-        const bar = document.createElement('div');
+        // A real <button>, not a decorative bar: tapping a month jumps the
+        // whole map's active layer + timeline to that month (absorbs #24).
+        const bar = document.createElement('button');
+        bar.type = 'button';
         bar.className = 'inspector-season-bar';
         const value = typeof v === 'number' ? v : 0;
         if (value >= max * 0.97 && value > 0) bar.classList.add('peak');
+        if (activeLayer === 'demand' && activeMonth === i) bar.classList.add('active');
         bar.style.height = Math.max((value / max) * 100, typeof v === 'number' ? 8 : 3) + '%';
-        bar.title = `${MONTH_ABBR[i]}: ${typeof v === 'number' ? Math.round(v * 100) + '% booked' : 'no data'}`;
+        const label = `${MONTH_ABBR[i]}: ${typeof v === 'number' ? Math.round(v * 100) + '% booked' : 'no data'}`;
+        bar.title = label;
+        bar.setAttribute('aria-label', `Jump map to ${label}`);
+        bar.addEventListener('click', () => jumpMapToMonth(i));
         chart.appendChild(bar);
     });
+}
+
+// Tapping a month in the inspector's seasonal chart switches the map to the
+// Demand layer, sets that month as the active month, updates the timeline
+// UI to match, and refreshes the season chart's own active-bar highlight.
+function jumpMapToMonth(monthIdx) {
+    activeLayer = 'demand';
+    activeMonth = monthIdx;
+
+    document.querySelectorAll('.layer-btn').forEach(b => {
+        const on = b.dataset.layer === 'demand';
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', String(on));
+    });
+
+    syncTimelineUI();
+    updateTimelineVisibility();
+    renderLayer();
+
+    if (selectedId != null) {
+        const entry = markerById.get(selectedId);
+        if (entry) renderInspectorSeason(entry.listing);
+    }
 }
 
 document.getElementById('inspector-close').addEventListener('click', () => {
@@ -850,13 +880,50 @@ document.getElementById('reset-filters').addEventListener('click', () => {
     loadListings();
 });
 
-// ─── More filters disclosure ────────────────────────────────────────────
+// ─── Command bar popovers (location + more filters) ─────────────────────
+// Both popovers anchor under their trigger button and close when the other
+// opens or when the user clicks outside — this is the narrow contextual
+// disclosure surface the brief calls for, not a permanent filter column.
 const moreFiltersPanel = document.getElementById('more-filters');
 const toggleMoreBtn = document.getElementById('toggle-more-filters');
-toggleMoreBtn.addEventListener('click', () => {
-    const isHidden = moreFiltersPanel.hidden;
-    moreFiltersPanel.hidden = !isHidden;
-    toggleMoreBtn.setAttribute('aria-expanded', String(isHidden));
+const locationPopover = document.getElementById('location-popover');
+const locationTrigger = document.getElementById('location-trigger');
+
+function setPopoverOpen(panel, trigger, open) {
+    panel.hidden = !open;
+    trigger.setAttribute('aria-expanded', String(open));
+}
+
+function closeAllPopovers(except) {
+    if (moreFiltersPanel !== except) setPopoverOpen(moreFiltersPanel, toggleMoreBtn, false);
+    if (locationPopover !== except) setPopoverOpen(locationPopover, locationTrigger, false);
+}
+
+toggleMoreBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const willOpen = moreFiltersPanel.hidden;
+    closeAllPopovers();
+    setPopoverOpen(moreFiltersPanel, toggleMoreBtn, willOpen);
+});
+
+locationTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const willOpen = locationPopover.hidden;
+    closeAllPopovers();
+    setPopoverOpen(locationPopover, locationTrigger, willOpen);
+});
+
+document.addEventListener('click', (e) => {
+    if (!moreFiltersPanel.hidden && !moreFiltersPanel.contains(e.target) && e.target !== toggleMoreBtn && !toggleMoreBtn.contains(e.target)) {
+        setPopoverOpen(moreFiltersPanel, toggleMoreBtn, false);
+    }
+    if (!locationPopover.hidden && !locationPopover.contains(e.target) && e.target !== locationTrigger && !locationTrigger.contains(e.target)) {
+        setPopoverOpen(locationPopover, locationTrigger, false);
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAllPopovers();
 });
 
 // ─── Map events ────────────────────────────────────────────────────────────

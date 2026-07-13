@@ -21,53 +21,51 @@
 
     <div class="map-workspace">
 
-        <!-- ===== Left sidebar: location, filters, analytical layer ===== -->
-        <aside class="map-sidebar">
-            <div class="sidebar-section sidebar-location">
-                <svg class="rail-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                <div class="rail-location-text">
-                    <span class="rail-location-title" id="rail-title">California &amp; Florida</span>
-                    <span class="rail-location-sub" id="rail-sub">Loading listings&hellip;</span>
+        <!-- ===== Top command bar: location, filters, mode tabs ===== -->
+        <div class="map-command-bar">
+            <button class="cmd-location" id="location-trigger" aria-expanded="false" aria-controls="location-popover">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <span class="cmd-location-text">
+                    <span class="cmd-location-title" id="rail-title">California &amp; Florida</span>
+                    <span class="cmd-location-sub" id="rail-sub">Loading listings&hellip;</span>
+                </span>
+                <svg class="cmd-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+
+            <div class="cmd-popover" id="location-popover" hidden>
+                <div class="cmd-popover-group">
+                    <span class="cmd-popover-title">Location</span>
+                    <div class="cmd-popover-row">
+                        <select id="state-filter" class="rail-select" aria-label="Filter by state">
+                            <option value="">All states</option>
+                            <option value="ca">California</option>
+                            <option value="fl">Florida</option>
+                        </select>
+                        <select id="city-filter" class="rail-select" aria-label="Filter by city or region">
+                            <option value="">All cities</option>
+                        </select>
+                    </div>
+                    <div class="rail-chips" id="map-chips"></div>
                 </div>
             </div>
 
-            <div class="sidebar-section">
-                <span class="sidebar-section-title">Location</span>
-                <div class="sidebar-field">
-                    <select id="state-filter" class="rail-select" aria-label="Filter by state">
-                        <option value="">All states</option>
-                        <option value="ca">California</option>
-                        <option value="fl">Florida</option>
-                    </select>
-                </div>
-                <div class="sidebar-field">
-                    <select id="city-filter" class="rail-select" aria-label="Filter by city or region">
-                        <option value="">All cities</option>
-                    </select>
-                </div>
-                <div class="rail-chips" id="map-chips"></div>
-            </div>
-
-            <div class="sidebar-section">
-                <span class="sidebar-section-title">Property type</span>
-                <div class="sidebar-field">
-                    <select id="room-filter" class="rail-select" aria-label="Property type">
-                        <option value="">Any type</option>
-                        <option value="Entire home/apt">Entire home</option>
-                        <option value="Private room">Private room</option>
-                        <option value="Hotel room">Hotel room</option>
-                        <option value="Shared room">Shared room</option>
-                    </select>
-                </div>
+            <div class="cmd-filters">
+                <select id="room-filter" class="rail-select cmd-room-select" aria-label="Property type">
+                    <option value="">Any type</option>
+                    <option value="Entire home/apt">Entire home</option>
+                    <option value="Private room">Private room</option>
+                    <option value="Hotel room">Hotel room</option>
+                    <option value="Shared room">Shared room</option>
+                </select>
 
                 <button class="rail-more" id="toggle-more-filters" aria-expanded="false" aria-controls="more-filters">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-                    <span>More filters</span>
+                    <span>Filters</span>
                     <span class="filter-badge" id="filter-badge" hidden>0</span>
                 </button>
 
-                <!-- Progressive disclosure: secondary filters -->
-                <div class="more-filters" id="more-filters" hidden>
+                <!-- Progressive disclosure: secondary filters, anchored under the button -->
+                <div class="cmd-popover more-filters" id="more-filters" hidden>
                     <div class="mf-group">
                         <label class="mf-label" for="bedrooms-filter">Bedrooms</label>
                         <select id="bedrooms-filter" class="mf-select">
@@ -132,31 +130,49 @@
                 </div>
             </div>
 
-            <div class="sidebar-section sidebar-layers">
-                <span class="sidebar-section-title">Map layer</span>
-                <div class="layer-rail" id="layer-rail" role="tablist" aria-label="Map analytical layer">
-                    <button class="layer-btn active" data-layer="revenue" role="tab" aria-selected="true">
-                        <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
-                        Revenue
-                    </button>
-                    <button class="layer-btn" data-layer="adr" role="tab" aria-selected="false">
-                        <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
-                        ADR
-                    </button>
-                    <button class="layer-btn" data-layer="occupancy" role="tab" aria-selected="false">
-                        <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
-                        Occupancy
-                    </button>
-                    <button class="layer-btn" data-layer="demand" role="tab" aria-selected="false">
-                        <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
-                        Demand
-                    </button>
-                    <button class="layer-btn" data-layer="density" role="tab" aria-selected="false">
-                        <span class="layer-swatch" style="background:linear-gradient(90deg,var(--aw-coral),var(--aw-blue),var(--aw-lime))"></span>
-                        Comp density
-                    </button>
+            <nav class="cmd-modes" aria-label="Workflow mode">
+                <a href="/" class="cmd-mode">Property</a>
+                <a href="/map" class="cmd-mode active" aria-current="page">Market</a>
+                <a href="/compare" class="cmd-mode">Compare</a>
+            </nav>
+        </div>
+
+        <div class="map-body-row">
+
+            <!-- ===== Narrow contextual rail: one analytical layer at a time ===== -->
+            <aside class="map-layer-rail" id="layer-rail" role="tablist" aria-label="Map analytical layer">
+                <button class="layer-btn active" data-layer="revenue" role="tab" aria-selected="true" title="Revenue">
+                    <span class="layer-icon" aria-hidden="true">$</span>
+                    <span class="layer-label">Revenue</span>
+                </button>
+                <button class="layer-btn" data-layer="adr" role="tab" aria-selected="false" title="ADR">
+                    <span class="layer-icon" aria-hidden="true">R</span>
+                    <span class="layer-label">ADR</span>
+                </button>
+                <button class="layer-btn" data-layer="occupancy" role="tab" aria-selected="false" title="Occupancy">
+                    <span class="layer-icon" aria-hidden="true">O</span>
+                    <span class="layer-label">Occupancy</span>
+                </button>
+                <button class="layer-btn" data-layer="demand" role="tab" aria-selected="false" title="Demand">
+                    <span class="layer-icon" aria-hidden="true">D</span>
+                    <span class="layer-label">Demand</span>
+                </button>
+                <button class="layer-btn" data-layer="density" role="tab" aria-selected="false" title="Comparable density">
+                    <span class="layer-icon" aria-hidden="true">#</span>
+                    <span class="layer-label">Comps</span>
+                </button>
+            </aside>
+
+            <!-- ===== Map canvas ===== -->
+            <div class="map-canvas">
+                <div id="map"></div>
+
+                <div class="visible-count" id="visible-count-pill">
+                    <span class="pulse-ring"></span><span class="pulse-dot"></span>
+                    <span id="visible-count">Loading&hellip;</span>
                 </div>
 
+                <!-- Restrained, integrated legend for the single active layer -->
                 <div class="map-legend" id="map-legend">
                     <div class="map-legend-title" id="legend-title">Revenue</div>
                     <div class="legend-gradient"><span></span></div>
@@ -165,78 +181,71 @@
                         <span id="legend-high">High</span>
                     </div>
                     <div class="legend-attribution">
-                        Data: <a href="https://insideairbnb.com" target="_blank">InsideAirbnb</a> &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
+                        <a href="https://insideairbnb.com" target="_blank">InsideAirbnb</a> &middot; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
                     </div>
                 </div>
-            </div>
-        </aside>
 
-        <!-- ===== Map canvas ===== -->
-        <div class="map-canvas">
-            <div id="map"></div>
-
-            <div class="visible-count" id="visible-count-pill">
-                <span class="pulse-ring"></span><span class="pulse-dot"></span>
-                <span id="visible-count">Loading&hellip;</span>
-            </div>
-
-            <!-- ===== Seasonal demand timeline (drives the Demand layer) ===== -->
-            <div class="map-timeline" id="map-timeline" hidden>
-                <div class="timeline-head">
-                    <span class="timeline-title">Seasonal demand</span>
-                    <span class="timeline-sub" id="timeline-sub">Full year average</span>
-                    <button class="timeline-clear" id="timeline-clear" hidden>Full year</button>
+                <!-- ===== Seasonal demand timeline (drives the Demand layer) ===== -->
+                <div class="map-timeline" id="map-timeline" hidden>
+                    <div class="timeline-head">
+                        <span class="timeline-title">Seasonal demand</span>
+                        <span class="timeline-sub" id="timeline-sub">Full year average</span>
+                        <button class="timeline-clear" id="timeline-clear" hidden>Full year</button>
+                    </div>
+                    <div class="timeline-months" id="timeline-months" role="group" aria-label="Select a month to see seasonal demand"></div>
+                    <div class="timeline-note">Booked share of nights from listings&rsquo; forward calendars &middot; not host-blocked vs. booked</div>
                 </div>
-                <div class="timeline-months" id="timeline-months" role="group" aria-label="Select a month to see seasonal demand"></div>
-                <div class="timeline-note">Booked share of nights from listings&rsquo; forward calendars &middot; not host-blocked vs. booked</div>
             </div>
         </div>
 
-        <!-- ===== Property inspection panel (right side) ===== -->
+        <!-- ===== Property inspection dock (bottom) ===== -->
         <aside class="inspector" id="inspector" hidden>
+            <div class="inspector-handle" id="inspector-handle" aria-hidden="true"></div>
             <button class="inspector-close" id="inspector-close" aria-label="Close inspection panel">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
-            <div class="inspector-handle" id="inspector-handle" aria-hidden="true"></div>
             <div class="inspector-body">
-                <div class="inspector-header">
-                    <div class="inspector-type-dot" id="inspector-dot"></div>
-                    <div class="inspector-heading">
-                        <div class="inspector-name" id="inspector-name">&mdash;</div>
-                        <div class="inspector-meta" id="inspector-meta">&mdash;</div>
+                <div class="inspector-col inspector-col-identity">
+                    <div class="inspector-header">
+                        <div class="inspector-type-dot" id="inspector-dot"></div>
+                        <div class="inspector-heading">
+                            <div class="inspector-name" id="inspector-name">&mdash;</div>
+                            <div class="inspector-meta" id="inspector-meta">&mdash;</div>
+                        </div>
+                    </div>
+                    <div class="inspector-verdict" id="inspector-verdict"></div>
+                    <a class="inspector-cta" id="inspector-cta" href="/property">
+                        Inspect property
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </a>
+                </div>
+
+                <div class="inspector-col inspector-col-envelope">
+                    <div class="inspector-envelope" id="inspector-envelope"></div>
+                    <div class="inspector-stats">
+                        <div class="inspector-stat">
+                            <div class="inspector-stat-label">ADR</div>
+                            <div class="inspector-stat-value" id="inspector-adr">&mdash;</div>
+                        </div>
+                        <div class="inspector-stat">
+                            <div class="inspector-stat-label">Occupancy</div>
+                            <div class="inspector-stat-value" id="inspector-occupancy">&mdash;</div>
+                        </div>
+                        <div class="inspector-stat">
+                            <div class="inspector-stat-label">Comparables</div>
+                            <div class="inspector-stat-value" id="inspector-comps">&mdash;</div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="inspector-verdict" id="inspector-verdict"></div>
-
-                <div class="inspector-envelope" id="inspector-envelope"></div>
-
-                <div class="inspector-stats">
-                    <div class="inspector-stat">
-                        <div class="inspector-stat-label">ADR</div>
-                        <div class="inspector-stat-value" id="inspector-adr">&mdash;</div>
-                    </div>
-                    <div class="inspector-stat">
-                        <div class="inspector-stat-label">Occupancy</div>
-                        <div class="inspector-stat-value" id="inspector-occupancy">&mdash;</div>
-                    </div>
-                    <div class="inspector-stat">
-                        <div class="inspector-stat-label">Comparables</div>
-                        <div class="inspector-stat-value" id="inspector-comps">&mdash;</div>
+                <div class="inspector-col inspector-col-season">
+                    <div class="inspector-season" id="inspector-season">
+                        <div class="inspector-season-label">
+                            Booking season <span class="inspector-season-hint">tap a month to jump the map there</span>
+                        </div>
+                        <div class="inspector-season-chart" id="inspector-season-chart"></div>
                     </div>
                 </div>
-
-                <div class="inspector-season" id="inspector-season">
-                    <div class="inspector-season-label">
-                        Booking season <span class="inspector-season-hint">% of nights booked, by month</span>
-                    </div>
-                    <div class="inspector-season-chart" id="inspector-season-chart"></div>
-                </div>
-
-                <a class="inspector-cta" id="inspector-cta" href="/property">
-                    Open estimate
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                </a>
             </div>
         </aside>
     </div>
