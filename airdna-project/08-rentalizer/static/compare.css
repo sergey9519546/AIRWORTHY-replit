@@ -223,19 +223,60 @@ body.compare-body {
 }
 .compare-metric-value { font-family: var(--aw-font-mono); font-size: 14px; font-weight: 700; }
 
-/* Seasonality mini-chart */
+/* Booking season — same booked-share strip as the map inspector */
 .compare-section-label {
     font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
     color: var(--aw-muted); margin-bottom: var(--aw-space-2);
 }
-.compare-sparkline {
-    display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px;
-    align-items: end; height: 48px;
+.compare-season-chart {
+    display: flex; align-items: flex-end; gap: 2px; height: 48px;
+    border-top: 1px solid var(--aw-border); padding-top: 6px;
 }
-.compare-sparkline-bar {
-    background: var(--aw-blue); border-radius: 2px 2px 0 0; opacity: 0.75; min-height: 3px;
+.compare-season-bar {
+    flex: 1; min-width: 0; background: var(--aw-blue); border-radius: 2px 2px 0 0;
+    opacity: 0.55; min-height: 3px;
 }
-.compare-sparkline-bar.peak { opacity: 1; background: var(--aw-blue-ink); }
+.compare-season-bar.peak { opacity: 1; background: var(--aw-blue-ink); }
+.compare-season-empty {
+    font-size: 12.5px; color: var(--aw-muted);
+    border-top: 1px solid var(--aw-border); padding-top: 10px;
+}
+
+/* Key drivers */
+.compare-drivers { list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.compare-driver { display: flex; justify-content: space-between; gap: var(--aw-space-2); }
+.compare-driver-label { color: var(--aw-ink); }
+.compare-driver-impact { font-family: var(--aw-font-mono); font-weight: 700; white-space: nowrap; }
+.compare-driver-impact.positive { color: var(--aw-lime-ink); }
+.compare-driver-impact.negative { color: var(--aw-coral-ink); }
+.compare-drivers-empty { font-size: 12.5px; color: var(--aw-muted); }
+
+/* ===== Material-difference highlighting =====
+   A transparent, per-metric rule (highest/lowest tagged value across the
+   compared properties) — never a fabricated overall "winner". */
+.compare-highlight-note {
+    font-size: 12.5px; color: var(--aw-muted); margin-bottom: var(--aw-space-4);
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.cmp-highlight-max-swatch { color: var(--aw-lime-ink); font-weight: 700; }
+.cmp-highlight-min-swatch { color: var(--aw-coral-ink); font-weight: 700; }
+
+[data-metric] { position: relative; border-radius: var(--aw-radius-sm); }
+[data-metric].cmp-highlight-max { box-shadow: inset 0 0 0 1.5px var(--aw-lime-ink); }
+[data-metric].cmp-highlight-min { box-shadow: inset 0 0 0 1.5px var(--aw-coral-ink); }
+/* The ▲/▼ marker only renders on the compact metric cells — the envelope
+   and verdict components already occupy their own top-right corner, so
+   those two rely on the border highlight alone to avoid visual clashes. */
+.compare-metric[data-metric].cmp-highlight-max::after {
+    content: '\25B2';
+    position: absolute; top: 6px; right: 8px;
+    color: var(--aw-lime-ink); font-size: 10px;
+}
+.compare-metric[data-metric].cmp-highlight-min::after {
+    content: '\25BC';
+    position: absolute; top: 6px; right: 8px;
+    color: var(--aw-coral-ink); font-size: 10px;
+}
 
 /* Features list */
 .compare-features { list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }

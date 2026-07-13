@@ -6,6 +6,7 @@ Any market loaded into the `listings` table is supported automatically — no
 code changes needed to add a new city or state. Estimates use the real
 `estimated_revenue_l365d` figures from InsideAirbnb rather than a model.
 """
+import json
 import math
 from collections import Counter
 from statistics import median
@@ -53,6 +54,70 @@ def covered_markets(conn):
         "SELECT DISTINCT state FROM listings WHERE state IS NOT NULL ORDER BY state"
     ).fetchall()
     return [r[0].upper() for r in rows]
+
+
+DEMAND_CURVE_RADIUS_KM = 5.0   # tight ring — seasonality is hyper-local
+DEMAND_CURVE_MIN_COMPS = 3
+DEMAND_CURVE_MAX_COMPS = 25
+
+
+def get_demand_curve(conn, lat, lng, bedrooms, room_type="Entire home/apt"):
+    """Average 12-month booked-share seasonality curve for the nearest
+    listings that actually have one, or None if there's no local coverage.
+
+    This is independent of whichever comp set produced the revenue estimate
+    (NYC's trained-model comps live in a separate index with a different id
+    space) — it queries the shared listings DB directly by lat/lng, so it
+    works the same way for every market that has demand_curve data and
+    degrades to "no data" (None) everywhere else, e.g. NYC.
+    """
+    dlat = DEMAND_CURVE_RADIUS_KM / 111.0
+    coslat = max(0.1, math.cos(math.radians(lat)))
+    dlng = DEMAND_CURVE_RADIUS_KM / (111.0 * coslat)
+
+    rows = conn.execute(
+        """
+        SELECT bedrooms, latitude, longitude, demand_curve
+        FROM listings
+        WHERE (state, city, snapshot_date) IN (
+                SELECT state, city, MAX(snapshot_date) FROM listings GROUP BY state, city
+              )
+          AND room_type = ?
+          AND demand_curve IS NOT NULL
+          AND latitude BETWEEN ? AND ?
+          AND longitude BETWEEN ? AND ?
+        """,
+        (room_type, lat - dlat, lat + dlat, lng - dlng, lng + dlng),
+    ).fetchall()
+    if not rows:
+        return None
+
+    candidates = []
+    for r in rows:
+        d = _haversine_km(lat, lng, r["latitude"], r["longitude"])
+        if d > DEMAND_CURVE_RADIUS_KM:
+            continue
+        try:
+            curve = json.loads(r["demand_curve"])
+        except (TypeError, ValueError):
+            continue
+        if not isinstance(curve, list) or len(curve) != 12:
+            continue
+        bed_sim = 1.0 / (1.0 + abs((r["bedrooms"] or bedrooms) - bedrooms))
+        dist_w = 1.0 / (1.0 + d)
+        candidates.append((dist_w * bed_sim, curve))
+
+    if len(candidates) < DEMAND_CURVE_MIN_COMPS:
+        return None
+
+    candidates.sort(key=lambda c: -c[0])
+    used = candidates[:DEMAND_CURVE_MAX_COMPS]
+    wsum = sum(w for w, _ in used) or 1.0
+    averaged = [
+        sum(w * curve[i] for w, curve in used) / wsum
+        for i in range(12)
+    ]
+    return [round(v, 4) for v in averaged]
 
 
 def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire home/apt",

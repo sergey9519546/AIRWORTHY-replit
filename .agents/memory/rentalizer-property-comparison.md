@@ -1,9 +1,26 @@
 ---
 name: Rentalizer property comparison page
-description: How /compare works — single flex-row layout, per-card independent estimate fetches, shared facts shape across pages.
+description: How /compare gets seasonal demand-curve data and highlights differences across cards
 ---
 
-- `/compare` (templates/compare.html + static/compare.js/css) renders each compared property as its own card with an independent `/v1/estimate` fetch/state (loading/ready/error), so adding, removing, or retrying one card never touches the others.
-- One property "facts" shape (`{address, bedrooms, bathrooms, accommodates, nightly_rate}`) is shared end-to-end: homepage → property report → `/compare?...` query params → the compare page's "add by address" form. Keep new entry points to comparison consistent with this shape.
-- The comparison grid is a single `display:flex; overflow-x:auto; scroll-snap-type:x` row (compare.css `.compare-grid`) — this alone gives side-by-side on wide viewports and swipeable/stacked on narrow ones, no separate mobile layout needed.
-- AirworthySaved (static/saved-properties.js) does not store bathrooms, so "add from saved" on the compare page defaults bathrooms to 1 — a known gap (see follow-up task on this topic).
+## Demand curve for compared properties
+`/v1/estimate` now also returns `demand_curve` (12-value Jan..Dec booked-share array, or null).
+It is NOT reused from whatever comp set produced the revenue number — NYC's ML-model comps come
+from `train.csv` with a different id space than `db/airbnb.db`'s `listings.id`, so comp ids can't
+be trusted to look up `demand_curve` there. Instead a dedicated lookup
+(`market_estimator.get_demand_curve`) re-queries the listings DB directly by lat/lng + bedroom
+similarity, independent of the revenue estimation path. This means NYC addresses correctly get
+`null` (no listings-DB coverage there), while CA/FL addresses get a real curve — a "graceful empty
+state" is expected behavior, not a bug.
+
+**Why:** avoids silently attaching the wrong property's seasonality just because an id happened
+to collide, and keeps the demand-curve feature decoupled from which estimation branch ran.
+
+**How to apply:** if a new market path is added (a new ML model, a new comp index), don't assume
+its comp ids map into `db/airbnb.db`. Reuse `get_demand_curve(conn, lat, lng, bedrooms, room_type)`
+instead of piggybacking on that path's own comps.
+
+## Cross-card difference highlighting
+`/compare` tags DOM elements with `data-metric`/`data-metric-value` (revenue, score, adr,
+occupancy, comps) and, once 2+ cards are ready, marks the single highest (▲) and lowest (▼) value
+per metric — never a fabricated overall "winner". See `updateHighlights()` in `compare.js`.

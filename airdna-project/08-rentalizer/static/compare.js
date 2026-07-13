@@ -18,10 +18,13 @@
         workspace: 'Dedicated workspace',
     };
 
+    const MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
     const grid = document.getElementById('compare-grid');
     const emptySection = document.getElementById('compare-empty');
     const nudge = document.getElementById('compare-nudge');
     const cardTemplate = document.getElementById('card-template');
+    const highlightNote = document.getElementById('compare-highlight-note');
 
     let entries = []; // { key, facts, status: 'loading'|'ready'|'error', data, error }
     let seq = 0;
@@ -168,11 +171,13 @@
             grid.appendChild(card);
             paintCard(entry);
         });
+        updateHighlights();
     }
 
     function renderCard(entry) {
         nudge.classList.toggle('hidden', entries.length !== 1);
         paintCard(entry);
+        updateHighlights();
     }
 
     function buildCardShell(entry) {
@@ -242,6 +247,8 @@
 
         // AIRWORTHY verdict + score (shared component)
         const verdictSlot = document.createElement('div');
+        verdictSlot.dataset.metric = 'score';
+        verdictSlot.dataset.metricValue = String(data.airworthy_score);
         body.appendChild(verdictSlot);
         AirworthyVerdict.render(verdictSlot, {
             score: data.airworthy_score,
@@ -252,6 +259,8 @@
 
         // Earnings Envelope (shared component, dialed down via compare.css)
         const envelopeSlot = document.createElement('div');
+        envelopeSlot.dataset.metric = 'revenue';
+        envelopeSlot.dataset.metricValue = String(data.annual_revenue);
         body.appendChild(envelopeSlot);
         AirworthyEnvelope.render(envelopeSlot, {
             downside: data.confidence.revenue_lower,
@@ -261,20 +270,26 @@
             label: 'Est. annual revenue',
         });
 
-        // Metrics: ADR, occupancy, confidence, comp quality
+        // Metrics: ADR, occupancy, confidence, comp quality — each tagged
+        // with a metric key + raw value so material differences across
+        // cards can be highlighted once every card has loaded.
         const avgSimilarity = data.comps.length
             ? data.comps.reduce((s, c) => s + c.similarity_score, 0) / data.comps.length
             : null;
         const metrics = document.createElement('div');
         metrics.className = 'compare-metrics';
         [
-            ['ADR', formatCurrency(data.market.adr) + '/night'],
-            ['Occupancy', formatPercent(data.market.occupancy_rate)],
-            ['Confidence', capitalize(data.confidence.level)],
-            ['Comp quality', data.comps.length ? `${data.comps.length} comps · ${avgSimilarity.toFixed(2)} sim` : 'No comps'],
-        ].forEach(([label, value]) => {
+            ['ADR', formatCurrency(data.market.adr) + '/night', 'adr', data.market.adr],
+            ['Occupancy', formatPercent(data.market.occupancy_rate), 'occupancy', data.market.occupancy_rate],
+            ['Confidence', capitalize(data.confidence.level), null, null],
+            ['Comp quality', data.comps.length ? `${data.comps.length} comps · ${avgSimilarity.toFixed(2)} sim` : 'No comps', 'comps', data.comps.length],
+        ].forEach(([label, value, metricKey, metricValue]) => {
             const cell = document.createElement('div');
             cell.className = 'compare-metric';
+            if (metricKey) {
+                cell.dataset.metric = metricKey;
+                cell.dataset.metricValue = String(metricValue);
+            }
             const l = document.createElement('span');
             l.className = 'compare-metric-label';
             l.textContent = label;
@@ -287,29 +302,49 @@
         });
         body.appendChild(metrics);
 
-        // Seasonality / monthly pattern sparkline
-        const forecast = data.monthly_forecast || [];
-        if (forecast.length) {
-            const seasonWrap = document.createElement('div');
-            const label = document.createElement('div');
-            label.className = 'compare-section-label';
-            label.textContent = 'Monthly pattern';
-            seasonWrap.appendChild(label);
+        // Booking season — the same 12-month booked-share strip used in the
+        // map inspector, sourced from this property's demand curve (absorbs
+        // draft #23), with a graceful empty state when there's no local
+        // demand-curve coverage for this address.
+        body.appendChild(buildSeasonStrip(data.demand_curve));
 
-            const spark = document.createElement('div');
-            spark.className = 'compare-sparkline';
-            const maxExpected = Math.max(...forecast.map((m) => m.expected), 1);
-            forecast.forEach((m) => {
-                const bar = document.createElement('div');
-                bar.className = 'compare-sparkline-bar';
-                if (m.expected >= maxExpected * 0.97) bar.classList.add('peak');
-                bar.style.height = Math.max((m.expected / maxExpected) * 100, 6) + '%';
-                bar.title = `${m.month}: ${formatCurrency(m.expected)}`;
-                spark.appendChild(bar);
+        // Key drivers — the same performance-driver signal shown on the
+        // full property report, condensed to the top few.
+        const driversWrap = document.createElement('div');
+        const driversLabel = document.createElement('div');
+        driversLabel.className = 'compare-section-label';
+        driversLabel.textContent = 'Key drivers';
+        driversWrap.appendChild(driversLabel);
+
+        const drivers = (data.performance_drivers || [])
+            .slice()
+            .sort((a, b) => Math.abs(b.impact_dollars) - Math.abs(a.impact_dollars))
+            .slice(0, 3);
+        if (drivers.length) {
+            const driversList = document.createElement('ul');
+            driversList.className = 'compare-drivers';
+            drivers.forEach((d) => {
+                const li = document.createElement('li');
+                li.className = `compare-driver ${d.direction}`;
+                const l = document.createElement('span');
+                l.className = 'compare-driver-label';
+                l.textContent = d.label;
+                const v = document.createElement('span');
+                v.className = `compare-driver-impact ${d.direction}`;
+                const sign = d.impact_dollars >= 0 ? '+' : '\u2212';
+                v.textContent = `${sign}${formatCurrency(Math.abs(d.impact_dollars))}/yr`;
+                li.appendChild(l);
+                li.appendChild(v);
+                driversList.appendChild(li);
             });
-            seasonWrap.appendChild(spark);
-            body.appendChild(seasonWrap);
+            driversWrap.appendChild(driversList);
+        } else {
+            const none = document.createElement('div');
+            none.className = 'compare-drivers-empty';
+            none.textContent = 'No standout drivers — this property tracks close to its comparable set.';
+            driversWrap.appendChild(none);
         }
+        body.appendChild(driversWrap);
 
         // Key property features
         const featuresWrap = document.createElement('div');
@@ -400,6 +435,73 @@
         footer.appendChild(saveBtn);
 
         body.appendChild(footer);
+    }
+
+    // ---- Booking season (booked-share strip, shared with the map inspector) ----
+    function buildSeasonStrip(curve) {
+        const wrap = document.createElement('div');
+        const label = document.createElement('div');
+        label.className = 'compare-section-label';
+        label.textContent = 'Booking season';
+        wrap.appendChild(label);
+
+        if (!Array.isArray(curve) || curve.length !== 12) {
+            const empty = document.createElement('div');
+            empty.className = 'compare-season-empty';
+            empty.textContent = 'No seasonal booking data for this address yet.';
+            wrap.appendChild(empty);
+            return wrap;
+        }
+
+        const chart = document.createElement('div');
+        chart.className = 'compare-season-chart';
+        const vals = curve.map((v) => (typeof v === 'number' ? v : 0));
+        const max = Math.max(...vals, 0.01);
+        curve.forEach((v, i) => {
+            const bar = document.createElement('div');
+            bar.className = 'compare-season-bar';
+            const value = typeof v === 'number' ? v : 0;
+            if (value >= max * 0.97 && value > 0) bar.classList.add('peak');
+            bar.style.height = Math.max((value / max) * 100, typeof v === 'number' ? 8 : 3) + '%';
+            bar.title = `${MONTH_ABBR[i]}: ${typeof v === 'number' ? Math.round(v * 100) + '% booked' : 'no data'}`;
+            chart.appendChild(bar);
+        });
+        wrap.appendChild(chart);
+        return wrap;
+    }
+
+    // ---- Highlight material differences ----
+    // A transparent, per-metric rule — no fabricated overall "winner": the
+    // single highest and lowest value for each tagged metric (revenue,
+    // score, ADR, occupancy, comp count) is marked, only once 2+ properties
+    // have actually loaded and their values differ.
+    function updateHighlights() {
+        const readyCount = entries.filter((e) => e.status === 'ready').length;
+        const cells = Array.from(grid.querySelectorAll('[data-metric]'));
+        cells.forEach((c) => c.classList.remove('cmp-highlight-max', 'cmp-highlight-min'));
+        highlightNote.classList.toggle('hidden', readyCount < 2);
+        if (readyCount < 2) return;
+
+        const byMetric = new Map();
+        cells.forEach((c) => {
+            const key = c.dataset.metric;
+            const value = parseFloat(c.dataset.metricValue);
+            if (Number.isNaN(value)) return;
+            if (!byMetric.has(key)) byMetric.set(key, []);
+            byMetric.get(key).push({ el: c, value });
+        });
+
+        byMetric.forEach((items) => {
+            if (items.length < 2) return;
+            const values = items.map((i) => i.value);
+            const max = Math.max(...values);
+            const min = Math.min(...values);
+            if (max === min) return; // no material difference on this metric
+            items.forEach((i) => {
+                if (i.value === max) i.el.classList.add('cmp-highlight-max');
+                if (i.value === min) i.el.classList.add('cmp-highlight-min');
+            });
+        });
     }
 
     // ---- Add by address form ----

@@ -106,6 +106,11 @@ class EstimateResponse(BaseModel):
     market: MarketResponse
     monthly_forecast: list[MonthlyForecastResponse] = Field(default_factory=list)
     performance_drivers: list[PerformanceDriverResponse] = Field(default_factory=list)
+    # 12-value Jan..Dec booked-share seasonality curve, averaged from nearby
+    # listings' real booking calendars — same signal the map inspector's
+    # seasonal strip uses. None where there's no local demand-curve coverage
+    # (e.g. NYC, which isn't in the listings DB this is sourced from).
+    demand_curve: list[float] | None = None
     parcel: ParcelResponse | None = None
     disclaimer: str
     data_source: str

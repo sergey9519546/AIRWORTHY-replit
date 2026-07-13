@@ -28,7 +28,7 @@ from .validation import validate_input, in_nyc_bounds
 from .geocoder import geocode
 from .realie_client import get_parcel
 from .comp_finder import build_index, find_comps, predict_from_comps, get_market_stats
-from .market_estimator import estimate_from_db, covered_markets
+from .market_estimator import estimate_from_db, covered_markets, get_demand_curve
 from .features import build_features, get_borough_from_coords
 from .model import load_model, predict, get_model_info, get_feature_columns
 from .confidence import compute_confidence
@@ -478,6 +478,17 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
         n_comps=len(comps),
     )
 
+    # 11c. Seasonality curve — sourced from the shared listings DB, not this
+    # NYC path's own comp index (see get_demand_curve docstring). NYC has no
+    # rows in that DB, so this is expected to come back None there.
+    demand_curve = None
+    if os.path.exists(MAP_DB_PATH):
+        dc_conn = _get_map_db()
+        try:
+            demand_curve = get_demand_curve(dc_conn, geo.lat, geo.lng, req.bedrooms, req.property_type)
+        finally:
+            dc_conn.close()
+
     # 12. Format response
     return EstimateResponse(
         address=req.address,
@@ -522,6 +533,7 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
         ),
         monthly_forecast=monthly_forecast(annual_revenue, confidence.cv),
         performance_drivers=drivers,
+        demand_curve=demand_curve,
         parcel=_parcel_response(parcel),
         disclaimer=settings.DISCLAIMER,
         data_source=settings.DATA_SOURCE,
@@ -550,6 +562,7 @@ def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: flo
             amenities=req.amenities,
         )
         markets = covered_markets(conn)
+        demand_curve = get_demand_curve(conn, geo.lat, geo.lng, req.bedrooms, req.property_type) if result else None
     finally:
         conn.close()
 
@@ -580,6 +593,7 @@ def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: flo
         market=MarketResponse(**result["market"]),
         monthly_forecast=result.get("monthly_forecast", []),
         performance_drivers=result.get("performance_drivers", []),
+        demand_curve=demand_curve,
         parcel=_parcel_response(parcel),
         disclaimer=settings.DISCLAIMER,
         data_source=settings.DATA_SOURCE,
