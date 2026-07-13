@@ -16,3 +16,4 @@
 - [AIRWORTHY design brief vs reference image](airworthy-design.md) — brief was updated 2026-07-13: the reference image now IS the spec (superseded the old "text wins over image" policy); check the brief's top notice before assuming it's current
 - [map.js Edit tool corruption](map-js-edit-tool-corruption.md) — multi-line Edit calls on this file silently duplicated it 3-5x; verify with `wc -l`/`node -c` after risky edits, fix via Python script replace, not the Edit tool
 - [Rentalizer /v1/estimate auth model](rentalizer-api-key-auth.md) — every caller incl. browser needs a real X-API-Key (public browser key), no header/cookie exemption; missing API_KEYS fails closed in prod
+- [Rentalizer per-key rate limits](rentalizer-per-key-rate-limits.md) — limits key off partner API key (browser key IP-buckets); slowapi dynamic-limit callable param MUST be named `key`

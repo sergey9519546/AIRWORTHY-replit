@@ -96,7 +96,24 @@ async def lifespan(app: FastAPI):
 
 
 # Rate limiting
-limiter = Limiter(key_func=get_remote_address)
+#
+# Limits are keyed off the authenticated *partner* API key when one is
+# present, so each key gets its own budget instead of sharing an IP bucket
+# with everyone else behind the same NAT/proxy. Requests with no partner key
+# — same-origin browser traffic (which uses the low-privilege BROWSER_API_KEY
+# or, in dev, no key at all) — fall back to per-IP limiting so one shared
+# browser key can't collapse every visitor into a single bucket.
+#
+# verify_api_key stashes the resolved partner key on request.state.api_key;
+# _rate_limit_key reads it here.
+def _rate_limit_key(request: Request) -> str:
+    api_key = getattr(request.state, "api_key", None)
+    if api_key:
+        return f"key:{api_key}"
+    return f"ip:{get_remote_address(request)}"
+
+
+limiter = Limiter(key_func=_rate_limit_key)
 
 app = FastAPI(
     title="AIRWORTHY",
@@ -122,6 +139,64 @@ API_KEYS = [k.strip() for k in os.getenv("API_KEYS", "").split(",") if k.strip()
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 IS_PRODUCTION = bool(os.getenv("REPLIT_DEPLOYMENT"))
 
+# Per-key rate-limit budgets.
+#
+# By default every authenticated partner key gets DEFAULT_ESTIMATE_LIMIT /
+# DEFAULT_BATCH_LIMIT (and un-keyed browser/dev traffic is limited per-IP at
+# the same rate). Any key can be given a bespoke budget via the
+# API_KEY_RATE_LIMITS / API_KEY_BATCH_RATE_LIMITS secrets, each a
+# comma-separated list of "<key>=<limit>" pairs where <limit> is any
+# slowapi/limits string, e.g. "60/minute" or "1000/hour":
+#
+#   API_KEY_RATE_LIMITS="partnerA=120/minute,partnerB=10/minute"
+#
+# A key not listed falls back to the default. This lets us throttle a single
+# noisy or leaked key without touching anyone else's budget.
+DEFAULT_ESTIMATE_LIMIT = os.getenv("RATE_LIMIT_ESTIMATE", "30/minute")
+DEFAULT_BATCH_LIMIT = os.getenv("RATE_LIMIT_BATCH", "5/minute")
+
+
+def _parse_key_limits(env_value: str) -> dict[str, str]:
+    """Parse "<key>=<limit>,<key>=<limit>" into {key: limit}."""
+    out: dict[str, str] = {}
+    for part in env_value.split(","):
+        part = part.strip()
+        if not part or "=" not in part:
+            continue
+        key, limit = part.split("=", 1)
+        key, limit = key.strip(), limit.strip()
+        if key and limit:
+            out[key] = limit
+    return out
+
+
+API_KEY_RATE_LIMITS = _parse_key_limits(os.getenv("API_KEY_RATE_LIMITS", ""))
+API_KEY_BATCH_RATE_LIMITS = _parse_key_limits(os.getenv("API_KEY_BATCH_RATE_LIMITS", ""))
+
+
+def _limit_for(rate_limit_key: str, budgets: dict[str, str], default: str) -> str:
+    """Resolve the rate-limit string for a resolved rate-limit key.
+
+    _rate_limit_key tags authenticated partner keys as "key:<api_key>" and
+    everything else (browser/dev traffic) as "ip:<addr>". Only real partner
+    keys can carry a bespoke per-key budget; IP-bucketed traffic always uses
+    the default.
+    """
+    if rate_limit_key.startswith("key:"):
+        return budgets.get(rate_limit_key[len("key:"):], default)
+    return default
+
+
+# NB: slowapi only passes the resolved rate-limit key to a dynamic limit
+# provider when its parameter is literally named "key" (it inspects the
+# signature for that name), so do not rename this argument.
+def _estimate_limit(key: str) -> str:
+    return _limit_for(key, API_KEY_RATE_LIMITS, DEFAULT_ESTIMATE_LIMIT)
+
+
+def _batch_limit(key: str) -> str:
+    return _limit_for(key, API_KEY_BATCH_RATE_LIMITS, DEFAULT_BATCH_LIMIT)
+
 BROWSER_API_KEY = os.getenv("BROWSER_API_KEY")
 if not BROWSER_API_KEY:
     # No explicit browser key configured — mint one for this process so the
@@ -130,7 +205,7 @@ if not BROWSER_API_KEY:
     BROWSER_API_KEY = secrets.token_hex(16)
 
 
-async def verify_api_key(api_key: str = Depends(api_key_header)):
+async def verify_api_key(request: Request, api_key: str = Depends(api_key_header)):
     """Require a valid X-API-Key on every call.
 
     - Matches a configured partner key (API_KEYS) or the public browser key
@@ -140,12 +215,20 @@ async def verify_api_key(api_key: str = Depends(api_key_header)):
     - Anything else (missing, unknown, or wrong key; or unconfigured in
       production) -> rejected. There is no same-origin/cookie/header-based
       exemption — those are all spoofable by a plain script.
+
+    Side effect: records the *partner* key on request.state.api_key so the
+    rate limiter can give each key its own budget. The shared public
+    BROWSER_API_KEY is deliberately NOT recorded — browser traffic must be
+    limited per-IP (each visitor), not lumped into one bucket keyed off the
+    single browser key.
     """
     if api_key and (api_key in API_KEYS or api_key == BROWSER_API_KEY):
+        request.state.api_key = api_key if api_key in API_KEYS else None
         return api_key
 
     if not API_KEYS and not IS_PRODUCTION:
-        return None  # local dev, no keys configured at all
+        request.state.api_key = None  # local dev, no keys configured at all
+        return None
 
     raise HTTPException(status_code=401, detail="Missing or invalid API key")
 
@@ -648,7 +731,7 @@ def _estimate_from_market(req: EstimateRequest, geo, request_id: str, start: flo
 
 
 @app.post("/v1/estimate", response_model=EstimateResponse)
-@limiter.limit("30/minute")
+@limiter.limit(_estimate_limit)
 async def estimate(request: Request, req: EstimateRequest, api_key: str = Depends(verify_api_key)):
     """Single property revenue estimate."""
     return await _do_estimate(req)
@@ -663,7 +746,7 @@ _BATCH_ERROR_CODES = {
 
 
 @app.post("/v1/batch")
-@limiter.limit("5/minute")
+@limiter.limit(_batch_limit)
 async def batch_estimate(request: Request, requests: list[EstimateRequest], api_key: str = Depends(verify_api_key)):
     """Batch estimates (max 20)."""
     if len(requests) > settings.MAX_BATCH:
