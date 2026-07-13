@@ -133,9 +133,19 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
     # Similarity-weighted point estimate.
     wsum = sum(s["score"] for s in used) or 1.0
     pre_amenity_point = sum(s["score"] * s["rev"] for s in used) / wsum
-    # Property-facts amenity adjustment (facts editor) — modest, disclosed
-    # uplift applied after the comp-weighted point estimate.
-    point = pre_amenity_point * amenity_multiplier(amenities)
+
+    # Modal market among the comps used — also used to look up a
+    # market-calibrated amenity impact below.
+    (city_slug, state), _ = Counter(
+        (s["row"]["city"], s["row"]["state"]) for s in used
+    ).most_common(1)[0]
+    city_label = f"{_pretty_city(city_slug)}, {state.upper()}"
+
+    # Property-facts amenity adjustment (facts editor) — calibrated from
+    # real listings in this market where the data supports it, otherwise a
+    # modest, disclosed heuristic uplift — applied after the comp-weighted
+    # point estimate.
+    point = pre_amenity_point * amenity_multiplier(amenities, market_state=state)
 
     # Data-driven interval from the comp revenue distribution (IQR).
     revs = sorted(s["rev"] for s in used)
@@ -152,12 +162,6 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
         level = "medium"
     else:
         level = "low"
-
-    # Modal market among the comps used.
-    (city_slug, state), _ = Counter(
-        (s["row"]["city"], s["row"]["state"]) for s in used
-    ).most_common(1)[0]
-    city_label = f"{_pretty_city(city_slug)}, {state.upper()}"
 
     prices = sorted(
         float(s["row"]["price_numeric"]) for s in used
@@ -227,7 +231,7 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
         is_superhost=is_superhost,
         avg_distance_km=avg_distance_km,
     )
-    drivers = drivers + amenity_drivers(amenities, pre_amenity_point)
+    drivers = drivers + amenity_drivers(amenities, pre_amenity_point, market_state=state)
     reasons, weaknesses = confidence_reasons(
         n_comps=n,
         avg_distance_km=avg_distance_km,

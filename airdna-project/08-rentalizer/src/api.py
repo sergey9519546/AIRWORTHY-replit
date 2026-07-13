@@ -428,7 +428,7 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
     # disclosed uplift, applied after the model/comp blend so drivers below
     # can report its dollar impact against the pre-amenity figure.
     pre_amenity_revenue = annual_revenue
-    annual_revenue = annual_revenue * amenity_multiplier(req.amenities)
+    annual_revenue = annual_revenue * amenity_multiplier(req.amenities, market_state="ny")
 
     # 10. Confidence
     comp_revenues = [c.revenue for c in comps]
@@ -454,7 +454,7 @@ def _estimate_nyc_ml(req: EstimateRequest, geo, request_id: str, start: float, g
         is_superhost=req.is_superhost,
         avg_distance_km=avg_distance_km,
     )
-    drivers = drivers + amenity_drivers(req.amenities, pre_amenity_revenue)
+    drivers = drivers + amenity_drivers(req.amenities, pre_amenity_revenue, market_state="ny")
     reasons, weaknesses = confidence_reasons(
         n_comps=len(comps),
         avg_distance_km=avg_distance_km,

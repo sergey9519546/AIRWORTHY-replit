@@ -7,6 +7,7 @@ rule-based performance drivers, and structured confidence reasons. None of
 this changes which properties get an estimate or how the point estimate
 itself is computed — it only enriches the response around it.
 """
+from . import amenity_calibration
 
 MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -62,9 +63,11 @@ def monthly_forecast(annual_revenue: float, cv: float) -> list[dict]:
 
 
 # Amenity toggles the property-facts editor exposes. Each carries a modest,
-# disclosed percentage uplift applied to the annual revenue estimate — a
-# rough directional adjustment (like the other rule-based drivers below),
-# not a learned/precise amenity attribution.
+# disclosed fallback percentage uplift applied to the annual revenue
+# estimate. This fixed figure is only used where the listings DB doesn't
+# have enough same-market data to calibrate the amenity (see
+# `amenity_calibration.py`); when it is used, the response discloses it as
+# a rough heuristic rather than a data-backed figure.
 AMENITIES = {
     "pool": {"label": "Private pool", "impact_pct": 0.06},
     "hot_tub": {"label": "Hot tub / spa", "impact_pct": 0.04},
@@ -76,17 +79,42 @@ AMENITIES = {
 }
 
 
-def amenity_multiplier(amenities: list[str] | None) -> float:
+def _amenity_pct(key: str, market_state: str | None) -> tuple[float, bool]:
+    """Resolve an amenity's impact percentage for a market.
+
+    Prefers a calibration derived from real listings in the same state
+    (comparing revenue for listings with vs. without the amenity, controlled
+    for bedroom count). Falls back to the fixed heuristic in `AMENITIES`
+    when that market/amenity combination doesn't have enough listings on
+    both sides of the comparison to be trustworthy.
+    """
+    calibrated = amenity_calibration.lookup(market_state, key)
+    if calibrated is not None:
+        return calibrated["impact_pct"], True
+    info = AMENITIES.get(key)
+    return (info["impact_pct"], False) if info else (0.0, False)
+
+
+def amenity_multiplier(amenities: list[str] | None, market_state: str | None = None) -> float:
     """Combined revenue multiplier from the selected amenity toggles."""
     if not amenities:
         return 1.0
-    total_pct = sum(AMENITIES[a]["impact_pct"] for a in amenities if a in AMENITIES)
+    total_pct = 0.0
+    for a in amenities:
+        if a not in AMENITIES:
+            continue
+        pct, _ = _amenity_pct(a, market_state)
+        total_pct += pct
     return 1.0 + total_pct
 
 
-def amenity_drivers(amenities: list[str] | None, base_revenue: float) -> list[dict]:
+def amenity_drivers(amenities: list[str] | None, base_revenue: float, market_state: str | None = None) -> list[dict]:
     """Performance-driver entries for the selected amenities, dollar impact
-    computed against the pre-amenity revenue so it reflects this change only."""
+    computed against the pre-amenity revenue so it reflects this change only.
+
+    Each driver discloses whether its percentage is calibrated from real
+    listings in this market or a rough, non-market-specific estimate.
+    """
     if not amenities:
         return []
     out = []
@@ -94,10 +122,16 @@ def amenity_drivers(amenities: list[str] | None, base_revenue: float) -> list[di
         info = AMENITIES.get(key)
         if not info:
             continue
+        pct, is_data_backed = _amenity_pct(key, market_state)
+        if is_data_backed:
+            label = f"{info['label']} — listings with it earn {pct * 100:.0f}% more in this market"
+        else:
+            label = f"{info['label']} adds to guest appeal (rough estimate, not calibrated for this market)"
         out.append({
-            "label": f"{info['label']} adds to guest appeal",
-            "direction": "positive",
-            "impact_dollars": round(base_revenue * info["impact_pct"], 0),
+            "label": label,
+            "direction": "positive" if pct >= 0 else "negative",
+            "impact_dollars": round(base_revenue * pct, 0),
+            "is_data_backed": is_data_backed,
         })
     return out
 

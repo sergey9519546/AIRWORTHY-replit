@@ -1,0 +1,188 @@
+"""Data-derived amenity revenue impact, calibrated from the listings DB.
+
+For each amenity toggle in the property-facts editor, we compare the average
+annual revenue of listings that report the amenity (via InsideAirbnb's
+free-text `amenities` field) against listings that don't, within the same
+state and bedroom-count bucket (to avoid the comparison just reflecting
+"amenity X correlates with bigger homes"). Buckets are recombined into a
+single per-state, per-amenity percentage, weighted by how many listings
+back each bucket.
+
+This is intentionally coarse (state-level, not neighborhood-level) because
+that's the finest grain with enough listings on both sides of the
+with/without split to be meaningful. Where a market doesn't have enough
+listings to calibrate an amenity, callers should fall back to the fixed
+heuristic in `enrichment.AMENITIES` and disclose it as a rough estimate
+rather than presenting it as data-backed.
+"""
+import os
+import re
+import sqlite3
+from functools import lru_cache
+
+# Bedroom buckets used to control for the "bigger homes have more amenities
+# AND more revenue" confound: 0-1, 2, 3, 4+.
+def _bedroom_bucket(bedrooms):
+    if bedrooms is None:
+        return None
+    try:
+        b = int(round(float(bedrooms)))
+    except (TypeError, ValueError):
+        return None
+    return min(4, max(0, b))
+
+
+# Keyword matchers against the lowercased raw `amenities` text. These are
+# substring/regex checks on InsideAirbnb's free-text amenity list, so they
+# need to be specific enough to avoid false positives (e.g. "pool" should
+# not match "pool table" or "whirlpool").
+_PARKING_RE = re.compile(r"free[a-z ]*parking")
+
+
+def _has_pool(text):
+    return "pool" in text and "whirlpool" not in text and "pool table" not in text
+
+
+AMENITY_MATCHERS = {
+    "pool": _has_pool,
+    "hot_tub": lambda t: "hot tub" in t,
+    "parking": lambda t: bool(_PARKING_RE.search(t)),
+    "ev_charger": lambda t: "ev charger" in t,
+    "gym": lambda t: "gym" in t or "exercise equipment" in t,
+    "pet_friendly": lambda t: "pets allowed" in t,
+    "workspace": lambda t: "dedicated workspace" in t,
+}
+
+# A market-level calibration is only trusted if both sides of the
+# with/without comparison have enough listings backing them.
+MIN_BUCKET_N = 15
+MIN_MARKET_WEIGHT = 30
+# Clamp calibrated percentages to a plausible range; the raw comparison can
+# be skewed by remaining confounds (location, host quality, etc.) that
+# bedroom-bucketing doesn't fully control for.
+CLAMP_MIN, CLAMP_MAX = -0.30, 0.60
+
+
+def _db_path():
+    return os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        "db", "airbnb.db",
+    )
+
+
+def compute_calibration(conn):
+    """Return {state: {amenity_key: {impact_pct, n_with, n_without, is_data_backed}}}.
+
+    Reads the full listings table once; callers should cache the result
+    (see `get_calibration` below) rather than recomputing per request.
+    """
+    rows = conn.execute(
+        """
+        SELECT state, bedrooms, estimated_revenue_l365d AS rev, amenities
+        FROM listings
+        WHERE estimated_revenue_l365d IS NOT NULL
+          AND estimated_revenue_l365d > 0
+          AND amenities IS NOT NULL AND amenities != ''
+          AND state IS NOT NULL
+        """
+    ).fetchall()
+
+    # accum[state][amenity][bucket]["with"/"without"] = [sum_rev, n]
+    accum = {}
+    for r in rows:
+        state = r["state"].lower()
+        bucket = _bedroom_bucket(r["bedrooms"])
+        if bucket is None:
+            continue
+        rev = float(r["rev"])
+        text = r["amenities"].lower()
+
+        state_acc = accum.setdefault(state, {})
+        for key, matcher in AMENITY_MATCHERS.items():
+            amenity_acc = state_acc.setdefault(key, {})
+            bucket_acc = amenity_acc.setdefault(bucket, {"with": [0.0, 0], "without": [0.0, 0]})
+            side = "with" if matcher(text) else "without"
+            bucket_acc[side][0] += rev
+            bucket_acc[side][1] += 1
+
+    calibration = {}
+    for state, amenities in accum.items():
+        calibration[state] = {}
+        for key, buckets in amenities.items():
+            weighted_pct_sum = 0.0
+            weight_total = 0
+            n_with_total = 0
+            n_without_total = 0
+            for bucket, sides in buckets.items():
+                sum_with, n_with = sides["with"]
+                sum_without, n_without = sides["without"]
+                n_with_total += n_with
+                n_without_total += n_without
+                if n_with < MIN_BUCKET_N or n_without < MIN_BUCKET_N:
+                    continue
+                mean_with = sum_with / n_with
+                mean_without = sum_without / n_without
+                if mean_without <= 0:
+                    continue
+                pct = (mean_with / mean_without) - 1.0
+                weight = min(n_with, n_without)
+                weighted_pct_sum += pct * weight
+                weight_total += weight
+
+            if weight_total >= MIN_MARKET_WEIGHT:
+                impact_pct = weighted_pct_sum / weight_total
+                impact_pct = max(CLAMP_MIN, min(CLAMP_MAX, impact_pct))
+                calibration[state][key] = {
+                    "impact_pct": round(impact_pct, 4),
+                    "n_with": n_with_total,
+                    "n_without": n_without_total,
+                    "is_data_backed": True,
+                }
+            else:
+                calibration[state][key] = {
+                    "impact_pct": None,
+                    "n_with": n_with_total,
+                    "n_without": n_without_total,
+                    "is_data_backed": False,
+                }
+    return calibration
+
+
+_calibration_cache = None
+
+
+def get_calibration():
+    """Lazily compute and cache amenity calibration for the process lifetime.
+
+    The listings DB doesn't change while the server runs, so a one-time
+    computation (a single full-table scan) is cached in memory rather than
+    re-run per estimate request.
+    """
+    global _calibration_cache
+    if _calibration_cache is not None:
+        return _calibration_cache
+
+    db_path = _db_path()
+    if not os.path.exists(db_path):
+        _calibration_cache = {}
+        return _calibration_cache
+
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    try:
+        _calibration_cache = compute_calibration(conn)
+    finally:
+        conn.close()
+    return _calibration_cache
+
+
+def lookup(state, amenity_key):
+    """Return a calibrated entry for (state, amenity_key), or None if no
+    market data supports it (caller should fall back to a fixed heuristic)."""
+    if not state:
+        return None
+    calibration = get_calibration()
+    entry = calibration.get(state.lower(), {}).get(amenity_key)
+    if entry and entry["is_data_backed"]:
+        return entry
+    return None

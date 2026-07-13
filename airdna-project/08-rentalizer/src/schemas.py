@@ -32,6 +32,7 @@ class PerformanceDriverResponse(BaseModel):
     label: str
     direction: str  # "positive" | "negative"
     impact_dollars: float
+    is_data_backed: bool = False
 
 
 class ConfidenceResponse(BaseModel):
