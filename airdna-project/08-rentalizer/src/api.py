@@ -254,7 +254,22 @@ async def verify_api_key(request: Request, api_key: str = Depends(api_key_header
 
 # Static files and templates
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+
+
+class DevStaticFiles(StaticFiles):
+    """In development, force browsers to revalidate static assets on every
+    request so CSS/JS edits show up immediately instead of being served from a
+    stale heuristic cache. ETag/Last-Modified still allow cheap 304s when the
+    file is unchanged. In production, normal caching applies."""
+
+    async def get_response(self, path, scope):
+        response = await super().get_response(path, scope)
+        if not IS_PRODUCTION:
+            response.headers["Cache-Control"] = "no-cache, must-revalidate"
+        return response
+
+
+app.mount("/static", DevStaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 

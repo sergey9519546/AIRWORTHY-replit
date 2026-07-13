@@ -413,7 +413,7 @@ html, body.map-body { margin: 0; padding: 0; }
     position: absolute;
     inset: 0;
     z-index: 1;
-    background: #E6E2D4;
+    background: var(--aw-bone);
 }
 
 .leaflet-control-zoom {
