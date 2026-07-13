@@ -272,9 +272,11 @@ body.report-body {
     border-radius: var(--aw-radius-md); padding: var(--aw-space-4); position: relative;
 }
 .month-detail-close {
-    position: absolute; top: 10px; right: 12px; border: none; background: none; font-size: 18px;
-    line-height: 1; color: var(--aw-muted); cursor: pointer;
+    position: absolute; top: 6px; right: 8px; width: 32px; height: 32px; border: none; background: none;
+    font-size: 18px; line-height: 1; color: var(--aw-muted); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; border-radius: 50%;
 }
+.month-detail-close:hover { background: var(--aw-paper); color: var(--aw-ink); }
 .month-detail-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--aw-space-3);
 }
@@ -449,6 +451,17 @@ body.report-body {
     .report-section-head { flex-direction: column; align-items: flex-start; }
     .forecast-chart { grid-auto-columns: minmax(28px, 1fr); grid-template-columns: repeat(12, minmax(28px, 1fr)); }
     .report-footer-actions .btn-primary, .report-footer-actions .btn-secondary { flex: 1 1 auto; }
+}
+@media (max-width: 400px) {
+    /* Below ~400px, 12 columns at 28px + gaps no longer fit without forcing
+       a horizontal scroll — narrow the columns and gap so the full year is
+       visible at once rather than shrinking-and-scrolling. */
+    .forecast-chart { gap: 3px; grid-auto-columns: minmax(20px, 1fr); grid-template-columns: repeat(12, minmax(20px, 1fr)); }
+    .forecast-bar-range { max-width: 18px; }
+    .forecast-bar-label { font-size: 9px; margin-top: 4px; }
+    .summary-metrics { grid-template-columns: 1fr; }
+    .month-detail-grid { grid-template-columns: 1fr; }
+    .scenario-grid, .scenario-result-grid, .facts-grid, .amenities-grid { grid-template-columns: 1fr; }
 }
 @media print {
     .dashboard-grid { grid-template-columns: 1fr; }

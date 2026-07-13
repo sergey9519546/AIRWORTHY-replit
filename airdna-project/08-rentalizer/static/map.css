@@ -563,8 +563,8 @@ html, body.map-body { margin: 0; padding: 0; }
     position: absolute;
     top: 12px;
     right: 16px;
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     border: 1px solid var(--aw-border);
     background: var(--aw-paper);

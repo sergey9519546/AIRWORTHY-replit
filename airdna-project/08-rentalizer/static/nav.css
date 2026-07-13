@@ -94,3 +94,12 @@
 @media (max-width: 560px) {
     .aw-nav-links .aw-nav-link:first-child { display: none; }
 }
+
+@media (max-width: 400px) {
+    /* Guarantee no horizontal overflow on the smallest phone widths:
+       tighten remaining gaps/padding rather than letting the bar clip. */
+    .aw-nav { padding: 0 var(--aw-space-3); gap: var(--aw-space-2); }
+    .aw-nav-wordmark { font-size: 13px; }
+    .aw-nav-links { margin-left: var(--aw-space-2); }
+    .aw-nav-link { padding: 6px 8px; font-size: 12.5px; }
+}

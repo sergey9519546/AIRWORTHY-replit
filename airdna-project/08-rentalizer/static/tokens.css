@@ -88,3 +88,17 @@
     --color-bg: var(--aw-bg);
     --color-card: var(--aw-paper);
 }
+
+/* Global reduced-motion support (loaded on every AIRWORTHY page). Page-specific
+   stylesheets may add their own more tailored overrides on top of this — this
+   is the safety net so no animation (drifting backdrop, pulsing dots/rings,
+   loading spinners) runs unbounded for users who have asked the OS to
+   minimize motion. */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+}
