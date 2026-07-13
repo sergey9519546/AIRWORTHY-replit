@@ -24,12 +24,9 @@
          produces before anyone has typed anything, so the product's purpose
          reads in the first five seconds. -->
     <section class="cover">
-        <div class="cover-backdrop" aria-hidden="true">
-            <div class="cover-backdrop-contours"></div>
-            <div class="cover-backdrop-grid"></div>
-        </div>
         <div class="cover-inner">
-            <span class="cover-eyebrow">Property inspection, not a calculator</span>
+            <div class="cover-content">
+            <span class="cover-eyebrow">AI-powered property intelligence</span>
             <h1 class="cover-title">Know before you invest.<span class="cover-title-accent">Profit with clarity.</span></h1>
             <p class="cover-sub">Enter an address, listing URL, or parcel ID. AIRWORTHY locates the parcel, pulls comparable listings nearby, and resolves a modeled earnings range with a verdict — in seconds, no signup.</p>
 
@@ -109,19 +106,6 @@
                 <button type="button" class="sample-chip" data-address="350 5th Ave, New York, NY">New York, NY</button>
             </div>
 
-            <!-- Live inspection preview: an illustrative example of the output,
-                 clearly labeled as such — not a testimonial or fabricated result. -->
-            <div class="cover-preview" aria-hidden="true">
-                <span class="cover-preview-label">Example inspection &mdash; what you get back</span>
-                <div class="cover-preview-body">
-                    <div id="cover-preview-verdict" class="cover-preview-verdict-slot"></div>
-                    <div class="cover-preview-facts">
-                        <span class="cover-preview-range">$61K&ndash;$94K<span>/yr modeled range</span></span>
-                        <span class="cover-preview-meta">Medium confidence &middot; 14 comparable listings</span>
-                    </div>
-                </div>
-            </div>
-
             <div class="hero-sources">
                 <span class="hero-sources-label">Built on real data — not a partner claim, just where the numbers come from</span>
                 <div class="hero-sources-row">
@@ -130,6 +114,25 @@
                     <span class="source-mark">County assessor data</span>
                 </div>
             </div>
+            </div>
+
+            <aside class="cover-visual">
+                <div class="cover-photo">
+                    <!-- Live inspection preview: an illustrative example of the
+                         output, labeled as such — not a testimonial or fabricated
+                         result. Floats over the property photo like the reference. -->
+                    <div class="cover-preview">
+                        <span class="cover-preview-label">Example inspection &mdash; what you get back</span>
+                        <div class="cover-preview-body">
+                            <div id="cover-preview-verdict" class="cover-preview-verdict-slot"></div>
+                            <div class="cover-preview-facts">
+                                <span class="cover-preview-range">$61K&ndash;$94K<span>/yr modeled range</span></span>
+                                <span class="cover-preview-meta">Medium confidence &middot; 14 comparable listings</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
         </div>
     </section>
 

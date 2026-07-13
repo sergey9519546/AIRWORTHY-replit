@@ -29,6 +29,22 @@ best for me." The brief captures it so task agents (#6 map, #7 report, #8 compar
 and homepage rework all inherit one spec and don't drift.
 
 **How to apply:** Read the brief before building/redesigning any AIRWORTHY surface.
-The uploaded mockup image (`attached_assets/image_1783858005252.png`) is only
-approximate — it still contains forbidden elements (price bubbles, fake partner
-logos, KPI cards, "94% accuracy"). **The brief text wins over the image** on conflict.
+
+## SUPERSEDED 2026-07-13 — the reference image now wins, and it is a LIGHT design
+The old "brief text wins over the image" rule was reversed after the user rated a
+delivered redesign 1/10. The reference mockup
+(`attached_assets/0_Generated_image_1_1783931971613.png`, workspace ROOT dir, not
+inside 08-rentalizer; == `image_1783858005252.png`) **IS the spec** — reproduce it.
+Key facts that were gotten wrong and must not be repeated:
+- **It is LIGHT, not dark.** Do NOT invert the app to a dark hero or dark map — that
+  exact move got rejected. Hero = light split: bold black headline + a chartreuse
+  accent second line on a near-white/cream bg on the LEFT; a large property photo with
+  a floating example-inspection card on the RIGHT. Map = LIGHT tiles (Voyager) with
+  charcoal price-pill badges (dark pill + white value + small colored metric dot) —
+  the reference DOES have price badges, so the old "no scattered price bubbles" rule is
+  superseded (badge only at bounded zoom, ≤~60 listings).
+- Chartreuse accent text on white must be deepened (~#5E7A00) for contrast; pure lime
+  `#C9FF45` is illegible on white — keep pure lime only on dark chips/verdict fills.
+- Two honesty departures from the image remain: no fake partner-trust logos (use honest
+  data-source attribution) and no invented "94% accuracy" stat (real backtest figure or
+  omit). See the brief's "Honesty adaptations" section.

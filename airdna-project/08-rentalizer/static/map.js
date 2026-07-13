@@ -14,10 +14,10 @@ const map = L.map('map', {
 
 L.control.zoom({ position: 'topright' }).addTo(map);
 
-// Dark basemap -- the reference product shot is a dark map with light
-// price badges, not a light tourist map with pastel blobs.
+// Light basemap with dark charcoal price-pill badges, matching the
+// reference's map panel (light tiles, $-badges with a colored indicator).
 L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
     {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
@@ -367,7 +367,7 @@ function renderPropertyDots(listings, getValue, scale) {
         let icon;
         if (showBadges && def.badge) {
             icon = L.divIcon({
-                html: `<div class="aw-marker-badge" style="background:${color}">${def.badge(value)}</div>`,
+                html: `<div class="aw-marker-badge"><span class="aw-marker-dot-mini" style="background:${color}"></span>${def.badge(value)}</div>`,
                 className: '',
                 iconSize: null,
                 iconAnchor: [24, 14],
