@@ -79,23 +79,23 @@ AMENITIES = {
 }
 
 
-def _amenity_pct(key: str, market_state: str | None) -> tuple[float, bool]:
+def _amenity_pct(key: str, market_state: str | None, city_slug: str | None = None) -> tuple[float, bool]:
     """Resolve an amenity's impact percentage for a market.
 
-    Prefers a calibration derived from real listings in the same state
+    Prefers a calibration derived from real listings in the same city
     (comparing revenue for listings with vs. without the amenity, controlled
-    for bedroom count). Falls back to the fixed heuristic in `AMENITIES`
-    when that market/amenity combination doesn't have enough listings on
-    both sides of the comparison to be trustworthy.
+    for bedroom count), then falls back to the state-level calibration, then
+    the fixed heuristic in `AMENITIES` when neither the city nor the state
+    has enough listings on both sides of the comparison to be trustworthy.
     """
-    calibrated = amenity_calibration.lookup(market_state, key)
+    calibrated = amenity_calibration.lookup(market_state, key, city_slug=city_slug)
     if calibrated is not None:
         return calibrated["impact_pct"], True
     info = AMENITIES.get(key)
     return (info["impact_pct"], False) if info else (0.0, False)
 
 
-def amenity_multiplier(amenities: list[str] | None, market_state: str | None = None) -> float:
+def amenity_multiplier(amenities: list[str] | None, market_state: str | None = None, city_slug: str | None = None) -> float:
     """Combined revenue multiplier from the selected amenity toggles."""
     if not amenities:
         return 1.0
@@ -103,12 +103,12 @@ def amenity_multiplier(amenities: list[str] | None, market_state: str | None = N
     for a in amenities:
         if a not in AMENITIES:
             continue
-        pct, _ = _amenity_pct(a, market_state)
+        pct, _ = _amenity_pct(a, market_state, city_slug)
         total_pct += pct
     return 1.0 + total_pct
 
 
-def amenity_drivers(amenities: list[str] | None, base_revenue: float, market_state: str | None = None) -> list[dict]:
+def amenity_drivers(amenities: list[str] | None, base_revenue: float, market_state: str | None = None, city_slug: str | None = None) -> list[dict]:
     """Performance-driver entries for the selected amenities, dollar impact
     computed against the pre-amenity revenue so it reflects this change only.
 
@@ -122,7 +122,7 @@ def amenity_drivers(amenities: list[str] | None, base_revenue: float, market_sta
         info = AMENITIES.get(key)
         if not info:
             continue
-        pct, is_data_backed = _amenity_pct(key, market_state)
+        pct, is_data_backed = _amenity_pct(key, market_state, city_slug)
         if is_data_backed:
             label = f"{info['label']} — listings with it earn {pct * 100:.0f}% more in this market"
         else:

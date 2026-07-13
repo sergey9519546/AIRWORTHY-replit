@@ -142,10 +142,10 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
     city_label = f"{_pretty_city(city_slug)}, {state.upper()}"
 
     # Property-facts amenity adjustment (facts editor) — calibrated from
-    # real listings in this market where the data supports it, otherwise a
-    # modest, disclosed heuristic uplift — applied after the comp-weighted
-    # point estimate.
-    point = pre_amenity_point * amenity_multiplier(amenities, market_state=state)
+    # real listings in this city where the data supports it, else the state,
+    # else a modest, disclosed heuristic uplift — applied after the
+    # comp-weighted point estimate.
+    point = pre_amenity_point * amenity_multiplier(amenities, market_state=state, city_slug=city_slug)
 
     # Data-driven interval from the comp revenue distribution (IQR).
     revs = sorted(s["rev"] for s in used)
@@ -231,7 +231,7 @@ def estimate_from_db(conn, lat, lng, bedrooms, accommodates, room_type="Entire h
         is_superhost=is_superhost,
         avg_distance_km=avg_distance_km,
     )
-    drivers = drivers + amenity_drivers(amenities, pre_amenity_point, market_state=state)
+    drivers = drivers + amenity_drivers(amenities, pre_amenity_point, market_state=state, city_slug=city_slug)
     reasons, weaknesses = confidence_reasons(
         n_comps=n,
         avg_distance_km=avg_distance_km,
