@@ -34,6 +34,13 @@ response only if the endpoint returns a starlette `Response` OR declares a
 `/v1/estimate` and `/v1/batch` must keep the `response: Response` param or the
 headers silently vanish on 2xx (they'd still appear on 429).
 
+**Testing per-key limits:** API_KEYS/BROWSER_API_KEY/API_KEY_RATE_LIMITS are read
+at *import* time, and the Limiter's in-memory counters live on the module-level
+`limiter`. To test a specific budget, set env then `importlib.reload(src.api)` —
+that both re-reads the env AND gives a fresh counter store, so rate-limit state
+doesn't bleed between tests. Patch `src.api._do_estimate` (async) to a
+schema-valid EstimateResponse to get a 200 without geocoding/model/DB.
+
 **Custom 429 body:** `RateLimitExceeded` is a starlette HTTPException; without an
 explicit handler FastAPI's default renders an opaque `{"detail":"30 per 1 minute"}`.
 Register `@app.exception_handler(RateLimitExceeded)` and call
