@@ -17,7 +17,7 @@ L.control.zoom({ position: 'topright' }).addTo(map);
 // Light basemap with dark charcoal price-pill badges, matching the
 // reference's map panel (light tiles, $-badges with a colored indicator).
 L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png',
+    'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
     {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
@@ -47,9 +47,9 @@ function hexToRgb(hex) {
     const n = parseInt(hex.slice(1), 16);
     return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
-const CORAL = hexToRgb('#FF6350');
-const BLUE  = hexToRgb('#2A55FF');
-const LIME  = hexToRgb('#C6F135');
+const CORAL = hexToRgb('#F04438');
+const BLUE  = hexToRgb('#6472FF');
+const LIME  = hexToRgb('#B4E24D');
 
 function lerp(a, b, t) { return a + (b - a) * t; }
 
@@ -374,7 +374,7 @@ function renderPropertyDots(listings, getValue, scale) {
             });
         } else {
             icon = L.divIcon({
-                html: `<div class="aw-marker-dot" style="width:14px;height:14px;background:${color}"></div>`,
+                html: `<div class="aw-marker-dot" style="border-color:${color}"></div>`,
                 className: '',
                 iconSize: [14, 14],
                 iconAnchor: [7, 7],

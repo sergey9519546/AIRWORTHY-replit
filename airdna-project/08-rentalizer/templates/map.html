@@ -130,11 +130,6 @@
                 </div>
             </div>
 
-            <nav class="cmd-modes" aria-label="Workflow mode">
-                <a href="/" class="cmd-mode">Property</a>
-                <a href="/map" class="cmd-mode active" aria-current="page">Market</a>
-                <a href="/compare" class="cmd-mode">Compare</a>
-            </nav>
         </div>
 
         <div class="map-body-row">
@@ -142,24 +137,19 @@
             <!-- ===== Narrow contextual rail: one analytical layer at a time ===== -->
             <aside class="map-layer-rail" id="layer-rail" role="tablist" aria-label="Map analytical layer">
                 <span class="rail-heading">View layer</span>
-                <button class="layer-btn active" data-layer="revenue" role="tab" aria-selected="true" aria-controls="map map-legend" title="Revenue">
-                    <span class="layer-icon" aria-hidden="true">$</span>
+                <button class="layer-btn active" data-layer="revenue" role="tab" aria-selected="true" aria-controls="map map-legend" title="Revenue potential">
                     <span class="layer-label">Revenue potential</span>
                 </button>
-                <button class="layer-btn" data-layer="adr" role="tab" aria-selected="false" aria-controls="map map-legend" title="ADR">
-                    <span class="layer-icon" aria-hidden="true">R</span>
+                <button class="layer-btn" data-layer="adr" role="tab" aria-selected="false" aria-controls="map map-legend" title="Average daily rate">
                     <span class="layer-label">Average daily rate</span>
                 </button>
-                <button class="layer-btn" data-layer="occupancy" role="tab" aria-selected="false" aria-controls="map map-legend" title="Occupancy">
-                    <span class="layer-icon" aria-hidden="true">%</span>
+                <button class="layer-btn" data-layer="occupancy" role="tab" aria-selected="false" aria-controls="map map-legend" title="Occupancy rate">
                     <span class="layer-label">Occupancy rate</span>
                 </button>
-                <button class="layer-btn" data-layer="demand" role="tab" aria-selected="false" aria-controls="map map-legend" title="Demand">
-                    <span class="layer-icon" aria-hidden="true">~</span>
+                <button class="layer-btn" data-layer="demand" role="tab" aria-selected="false" aria-controls="map map-legend" title="Seasonal demand">
                     <span class="layer-label">Seasonal demand</span>
                 </button>
                 <button class="layer-btn" data-layer="density" role="tab" aria-selected="false" aria-controls="map map-legend" title="Comparable density">
-                    <span class="layer-icon" aria-hidden="true">#</span>
                     <span class="layer-label">Comparable density</span>
                 </button>
             </aside>
