@@ -41,4 +41,5 @@ timeoutMs = 120000
 [userenv]
 
 [userenv.shared]
-REALIE_API_KEY = "6b5881aceb7c87415b8c5b19d464edd9"
+# REALIE_API_KEY is read from the environment (src/config.py).
+# Set it in Replit Secrets, never in this file: .replit is committed.
